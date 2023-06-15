@@ -1,6 +1,6 @@
 "use client"
 import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const WarrantyForm = () => {
   const router = useRouter();

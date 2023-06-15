@@ -3,7 +3,10 @@ import Component from "./Component";
 
 function page() {
   return (
-    <Component />
+    <div>
+        <Component />
+    </div>
+   
   )
 }
 
