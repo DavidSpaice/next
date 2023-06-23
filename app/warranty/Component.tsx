@@ -19,12 +19,16 @@ const WarrantyForm = () => {
     extension: string;
     dealerName: string;
     dealerEmail: string;
-    models: string[];
-    serialNumbers: string[];
-    installationDates: string[];
+    items: { model: string; serialNumber: string; installationDate: string }[];
     step5: string;
     step6: string;
   }
+
+  const [newItem, setNewItem] = useState({
+    model: "",
+    serialNumber: "",
+    installationDate: "",
+  });
 
   const [formData, setFormData] = useState<FormData>({
     installType: "",
@@ -39,9 +43,7 @@ const WarrantyForm = () => {
     extension: "",
     dealerName: "",
     dealerEmail: "",
-    models: [],
-    serialNumbers: [],
-    installationDates: [],
+    items: [],
     step5: "",
     step6: "",
   });
@@ -58,12 +60,9 @@ const WarrantyForm = () => {
       phone,
       dealerName,
       dealerEmail,
-      models: [],
-      serialNumbers: [],
-      installationDates: [],
+      items
     } = formData;
 
-    // Check if any required field is empty
     return (
       firstName &&
       lastName &&
@@ -74,7 +73,8 @@ const WarrantyForm = () => {
       country &&
       phone &&
       dealerName &&
-      dealerEmail
+      dealerEmail &&
+      items
     );
   };
 
@@ -87,25 +87,14 @@ const WarrantyForm = () => {
   };
 
   const handleAddItem = () => {
-    const { models, serialNumbers, installationDates } = formData;
     setFormData((prevData) => ({
       ...prevData,
-      models: [...models, ""],
-      serialNumbers: [...serialNumbers, ""],
-      installationDates: [...installationDates, ""],
+      items: [...prevData.items, newItem],
     }));
-  };
-
-  const handleItemChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number,
-    field: keyof FormData
-  ) => {
-    const { value } = e.target;
-    setFormData((prevData) => {
-      const newData = { ...prevData };
-      (newData[field][index] as any) = value;
-      return newData;
+    setNewItem({
+      model: "",
+      serialNumber: "",
+      installationDate: "",
     });
   };
 
@@ -123,6 +112,9 @@ const WarrantyForm = () => {
       return;
     } else if (currentStep === 3 && !isFormValid()) {
       console.log("Please fill out all required fields.");
+      return;
+    } else if (currentStep === 4 && formData.items.length === 0) {
+      console.log("Please add at least one item.");
       return;
     }
 
@@ -282,7 +274,6 @@ const WarrantyForm = () => {
           <div className="container">
             <div className="form-content">
               <h2>Equipment Owner Information</h2>
-              <form onSubmit={handleNext}>
                 <div>
                   <label>
                     First Name <span>*</span>
@@ -419,7 +410,6 @@ const WarrantyForm = () => {
                 <button type="button" onClick={handleNext}>
                   Next
                 </button>
-              </form>
             </div>
           </div>
         );
@@ -428,43 +418,59 @@ const WarrantyForm = () => {
           <div className="container">
             <h2>Step 4</h2>
             <div>
-              <h3>Add Item</h3>
+              <input
+                type="text"
+                name="model"
+                value={newItem.model}
+                onChange={(e) =>
+                  setNewItem((prevItem) => ({
+                    ...prevItem,
+                    model: e.target.value,
+                  }))
+                }
+                placeholder="Model"
+                required
+              />
+              <input
+                type="text"
+                name="serialNumber"
+                value={newItem.serialNumber}
+                onChange={(e) =>
+                  setNewItem((prevItem) => ({
+                    ...prevItem,
+                    serialNumber: e.target.value,
+                  }))
+                }
+                placeholder="Serial Number"
+                required
+              />
+              <input
+                type="date"
+                name="installationDate"
+                value={newItem.installationDate}
+                onChange={(e) =>
+                  setNewItem((prevItem) => ({
+                    ...prevItem,
+                    installationDate: e.target.value,
+                  }))
+                }
+                placeholder="Installation Date"
+                required
+              />
               <button type="button" onClick={handleAddItem}>
                 Add Item
               </button>
-              {formData.models.map((model, index) => (
-                <div key={index}>
-                  <input
-                    type="text"
-                    name="models"
-                    placeholder="Model"
-                    value={model}
-                    onChange={(e) => handleItemChange(e, index, "models")}
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="serialNumbers"
-                    placeholder="Serial Number"
-                    value={formData.serialNumbers[index]}
-                    onChange={(e) =>
-                      handleItemChange(e, index, "serialNumbers")
-                    }
-                    required
-                  />
-                  <input
-                    type="date"
-                    name="installationDates"
-                    placeholder="Installation Date"
-                    value={formData.installationDates[index]}
-                    onChange={(e) =>
-                      handleItemChange(e, index, "installationDates")
-                    }
-                    required
-                  />
-                </div>
-              ))}
             </div>
+            {formData.items.length > 0 && (
+              <ul>
+                {formData.items.map((item, index) => (
+                  <li key={index}>
+                    Model: {item.model}, Serial Number: {item.serialNumber},
+                    Installation Date: {item.installationDate}
+                  </li>
+                ))}
+              </ul>
+            )}
             <button type="button" onClick={handlePrevious}>
               Previous
             </button>
