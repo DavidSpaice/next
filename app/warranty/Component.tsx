@@ -6,28 +6,25 @@ const WarrantyForm = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-
   interface FormData {
-    installType: string
-    firstName: string
-    lastName: string
-    streetAddress: string
-    city: string
-    stateProvince: string
-    postalCode: string
-    country: string
-    phone: string
-    extension: string
-    dealerName:string,
-    dealerEmail:string,
+    installType: string;
+    firstName: string;
+    lastName: string;
+    streetAddress: string;
+    city: string;
+    stateProvince: string;
+    postalCode: string;
+    country: string;
+    phone: string;
+    extension: string;
+    dealerName: string;
+    dealerEmail: string;
     models: string[];
     serialNumbers: string[];
     installationDates: string[];
-    step5:string;
-    step6:string;
+    step5: string;
+    step6: string;
   }
-
-
 
   const [formData, setFormData] = useState<FormData>({
     installType: "",
@@ -45,8 +42,8 @@ const WarrantyForm = () => {
     models: [],
     serialNumbers: [],
     installationDates: [],
-    step5:"",
-    step6:""
+    step5: "",
+    step6: "",
   });
 
   const isFormValid = () => {
@@ -89,15 +86,13 @@ const WarrantyForm = () => {
     }));
   };
 
-
-
   const handleAddItem = () => {
     const { models, serialNumbers, installationDates } = formData;
     setFormData((prevData) => ({
       ...prevData,
-      models: [...models, ''],
-      serialNumbers: [...serialNumbers, ''],
-      installationDates: [...installationDates, ''],
+      models: [...models, ""],
+      serialNumbers: [...serialNumbers, ""],
+      installationDates: [...installationDates, ""],
     }));
   };
 
@@ -109,7 +104,7 @@ const WarrantyForm = () => {
     const { value } = e.target;
     setFormData((prevData) => {
       const newData = { ...prevData };
-      newData[field][index] = value;
+      (newData[field][index] as any) = value;
       return newData;
     });
   };
@@ -458,7 +453,7 @@ const WarrantyForm = () => {
                     required
                   />
                   <input
-                    type="text"
+                    type="date"
                     name="installationDates"
                     placeholder="Installation Date"
                     value={formData.installationDates[index]}
