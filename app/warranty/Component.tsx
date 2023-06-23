@@ -20,8 +20,7 @@ const WarrantyForm = () => {
     dealerName: string;
     dealerEmail: string;
     items: { model: string; serialNumber: string; installationDate: string }[];
-    step5: string;
-    step6: string;
+    agreedToTerms: boolean;
   }
 
   const [newItem, setNewItem] = useState({
@@ -44,8 +43,7 @@ const WarrantyForm = () => {
     dealerName: "",
     dealerEmail: "",
     items: [],
-    step5: "",
-    step6: "",
+    agreedToTerms: false,
   });
 
   const isFormValid = () => {
@@ -60,7 +58,7 @@ const WarrantyForm = () => {
       phone,
       dealerName,
       dealerEmail,
-      items
+      items,
     } = formData;
 
     return (
@@ -79,10 +77,12 @@ const WarrantyForm = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
+    const inputValue = type === "checkbox" ? checked : value;
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: inputValue,
     }));
   };
 
@@ -274,245 +274,361 @@ const WarrantyForm = () => {
           <div className="container">
             <div className="form-content">
               <h2>Equipment Owner Information</h2>
-                <div>
-                  <label>
-                    First Name <span>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>
-                    Last Name <span>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>
-                    Street Address <span>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="streetAddress"
-                    value={formData.streetAddress}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>
-                    City <span>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>
-                    State / Province <span>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="stateProvince"
-                    value={formData.stateProvince}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>
-                    Postal / Zip code <span>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="postalCode"
-                    value={formData.postalCode}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>
-                    Country <span>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>
-                    Phone <span>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>Ext.</label>
-                  <input
-                    type="text"
-                    name="extension"
-                    value={formData.extension}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label>
-                    Dealer Name <span>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="dealerName"
-                    value={formData.dealerName}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>
-                    Dealer Email <span>*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="dealerEmail"
-                    value={formData.dealerEmail}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <button type="button" onClick={handlePrevious}>
-                  Previous
-                </button>
-                <button type="button" onClick={handleNext}>
-                  Next
-                </button>
+              <div>
+                <label>
+                  First Name <span>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>
+                  Last Name <span>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>
+                  Street Address <span>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="streetAddress"
+                  value={formData.streetAddress}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>
+                  City <span>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>
+                  State / Province <span>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="stateProvince"
+                  value={formData.stateProvince}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>
+                  Postal / Zip code <span>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="postalCode"
+                  value={formData.postalCode}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>
+                  Country <span>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>
+                  Phone <span>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Ext.</label>
+                <input
+                  type="text"
+                  name="extension"
+                  value={formData.extension}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>
+                  Dealer Name <span>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="dealerName"
+                  value={formData.dealerName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>
+                  Dealer Email <span>*</span>
+                </label>
+                <input
+                  type="email"
+                  name="dealerEmail"
+                  value={formData.dealerEmail}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+            <div className="form-btn">
+              <button type="button" onClick={handlePrevious}>
+                Previous
+              </button>
+              <button type="button" onClick={handleNext}>
+                Next
+              </button>
             </div>
           </div>
         );
       case 4:
         return (
           <div className="container">
-            <h2>Step 4</h2>
-            <div>
-              <input
-                type="text"
-                name="model"
-                value={newItem.model}
-                onChange={(e) =>
-                  setNewItem((prevItem) => ({
-                    ...prevItem,
-                    model: e.target.value,
-                  }))
-                }
-                placeholder="Model"
-                required
-              />
-              <input
-                type="text"
-                name="serialNumber"
-                value={newItem.serialNumber}
-                onChange={(e) =>
-                  setNewItem((prevItem) => ({
-                    ...prevItem,
-                    serialNumber: e.target.value,
-                  }))
-                }
-                placeholder="Serial Number"
-                required
-              />
-              <input
-                type="date"
-                name="installationDate"
-                value={newItem.installationDate}
-                onChange={(e) =>
-                  setNewItem((prevItem) => ({
-                    ...prevItem,
-                    installationDate: e.target.value,
-                  }))
-                }
-                placeholder="Installation Date"
-                required
-              />
-              <button type="button" onClick={handleAddItem}>
-                Add Item
+            <div className="form-content">
+              <h2>Tell Us About The Installation</h2>
+              <div>
+                <input
+                  type="text"
+                  name="model"
+                  value={newItem.model}
+                  onChange={(e) =>
+                    setNewItem((prevItem) => ({
+                      ...prevItem,
+                      model: e.target.value,
+                    }))
+                  }
+                  placeholder="Model"
+                  required
+                />
+                <input
+                  type="text"
+                  name="serialNumber"
+                  value={newItem.serialNumber}
+                  onChange={(e) =>
+                    setNewItem((prevItem) => ({
+                      ...prevItem,
+                      serialNumber: e.target.value,
+                    }))
+                  }
+                  placeholder="Serial Number"
+                  required
+                />
+                <input
+                  type="date"
+                  name="installationDate"
+                  value={newItem.installationDate}
+                  onChange={(e) =>
+                    setNewItem((prevItem) => ({
+                      ...prevItem,
+                      installationDate: e.target.value,
+                    }))
+                  }
+                  placeholder="Installation Date"
+                  required
+                />
+                <button type="button" onClick={handleAddItem}>
+                  Add Item
+                </button>
+              </div>
+              {formData.items.length > 0 && (
+                <ul>
+                  {formData.items.map((item, index) => (
+                    <li key={index}>
+                      Model: {item.model}, Serial Number: {item.serialNumber},
+                      Installation Date: {item.installationDate}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className=".form-btn">
+              <button type="button" onClick={handlePrevious}>
+                Previous
+              </button>
+              <button type="button" onClick={handleNext}>
+                Next
               </button>
             </div>
-            {formData.items.length > 0 && (
-              <ul>
-                {formData.items.map((item, index) => (
-                  <li key={index}>
-                    Model: {item.model}, Serial Number: {item.serialNumber},
-                    Installation Date: {item.installationDate}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <button type="button" onClick={handlePrevious}>
-              Previous
-            </button>
-            <button type="button" onClick={handleNext}>
-              Next
-            </button>
           </div>
         );
       case 5:
         return (
-          <div>
-            <h2>Step 5</h2>
-            <input
-              type="text"
-              name="step5"
-              value={formData.step5}
-              onChange={handleChange}
-              required
-            />
-            <button type="button" onClick={handlePrevious}>
-              Previous
-            </button>
-            <button type="button" onClick={handleNext}>
-              Next
-            </button>
-          </div>
-        );
-      case 6:
-        return (
-          <div>
-            <h2>Step 6</h2>
-            <input
-              type="text"
-              name="step6"
-              value={formData.step6}
-              onChange={handleChange}
-              required
-            />
-            <button type="button" onClick={handlePrevious}>
-              Previous
-            </button>
-            <button type="submit">Submit</button>
+          <div className="container">
+            <div className="form-content">
+              <h2>Confirmation</h2>
+              <p>
+                We offer a comprehensive warranty for their products, covering
+                failures resulting from defects in materials and workmanship
+                during normal use and maintenance. The warranty terms and
+                conditions are outlined below, with all warranty periods
+                commencing from the date of the original installation, start-up,
+                or commissioning of the equipment. Please note that this
+                warranty is subject to the provisions, conditions, limitations,
+                and exclusions listed:
+              </p>
+              <div className="list">
+                <ul>
+                  <li>
+                    A warranty period of ten (10) years on compressor to the
+                    original registered owner.
+                  </li>
+                  <li>
+                    A warranty period of five (5) years on compressor & all
+                    parts for PTAC to the original registered owner.
+                  </li>
+                  <li>
+                    A warranty period of one (1) year on the remote control
+                    provided with original equipment.
+                  </li>
+                  <li>
+                    This warranty only applies to systems that have been
+                    professionally installed by a certified & licensed
+                    contractor. In accordance with all applicable building codes
+                    and permits, installed via Airtek/Gree installation and
+                    operating instructions.
+                  </li>
+                  <li>
+                    This warranty applies to all products remaining in their
+                    original installed location.
+                  </li>
+                  <li>
+                    The warranty is void if the product serial identification
+                    tag is removed or defaced to a point where the unit cannot
+                    be identified.
+                  </li>
+                  <li>
+                    Field installed accessories are only covered for a period of
+                    one (1) year from date of installation.
+                  </li>
+                  <li>
+                    Warranty is not applicable if damage is a result of a flood,
+                    lightning, fire, wind, or any other acts of nature.
+                  </li>
+                  <li>
+                    Warranty is not applicable if damage or failure is a result
+                    of installation in a chemically corrosive environment.
+                  </li>
+                  <li>
+                    Warranty is not applicable if damage or failure is a result
+                    of Improper matching of Product components.
+                  </li>
+                  <li>
+                    Warranty is not applicable if damage or failure is a result
+                    of Improper sizing or design of product.
+                  </li>
+                  <li>
+                    Warranty is not applicable if damage or failure is a result
+                    of Inadequate Air Supply.
+                  </li>
+                  <li>
+                    Warranty is not applicable if damage or failure is a result
+                    of use of components or accessories not compatible with
+                    products.
+                  </li>
+                  <li>
+                    Any cost to replace, refill or dispose of refrigerant,
+                    including the cost of refrigerant is not covered.
+                  </li>
+                  <li>
+                    Warranty is not applicable if damage or failure is a result
+                    of Modification of or incorporation of installation into
+                    other products.
+                  </li>
+                  <li>
+                    Failure or damage to products during power failures, voltage
+                    conditions, interruptions, blown fuses, open circuit
+                    breakers, or incorrect/inadequate electrical service.
+                  </li>
+                  <li>
+                    Property damage, personal injury, malfunction, or failure of
+                    product by a result of accidents, misuse, abuse, negligence
+                    by contractor or consumer.
+                  </li>
+                  <li>
+                    Fault due to leaky, broken, restricted, frozen pipes and or
+                    restricted drain lines not covered under this warranty.
+                  </li>
+                  <li>
+                    Damage as a result from failure to perform routine
+                    maintenance as specified in the operator’s manual is not
+                    covered under this warranty.
+                  </li>
+                  <li>
+                    Proof of purchase from Airtek/Gree must be provided to claim
+                    for any parts or labour.
+                  </li>
+                  <li>
+                    Warranty void if replacement parts are not supplied by
+                    Airtek/Gree.
+                  </li>
+                  <li>
+                    Accessories such as condensate pumps, line sets and others
+                    are not covered under this warranty.
+                  </li>
+                  <li>
+                    Electricity or fuel costs, or increases in electricity or
+                    fuel costs, including additional or unusual use of
+                    supplemental electric heat is not covered under this
+                    warranty.
+                  </li>
+                </ul>
+              </div>
+              <br />
+              <div>
+                <label htmlFor="agreedToTerms">
+                  <input
+                    type="checkbox"
+                    id="agreedToTerms"
+                    name="agreedToTerms"
+                    checked={formData.agreedToTerms}
+                    onChange={handleChange}
+                    required
+                  />
+                  I&apos;ve read and agree with Terms of Service and Privacy
+                  Policy.
+                </label>
+              </div>
+              <br />
+            </div>
+            <div className=".form-btn">
+              <button type="button" onClick={handlePrevious}>
+                Previous
+              </button>
+              <button type="submit">Submit</button>
+            </div>
           </div>
         );
       default:
