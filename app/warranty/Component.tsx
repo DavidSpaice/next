@@ -8,7 +8,7 @@ import ListItem from "@mui/material/ListItem";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Controls from "./Controls";
 import { TextField } from "@mui/material";
-const url = process.env.URL;
+const url = process.env.SUB_URL;
 
 const WarrantyForm = () => {
   const searchParams = useSearchParams();
