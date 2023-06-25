@@ -177,7 +177,7 @@ const WarrantyForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     setIsDisabled(true);
     e.preventDefault();
-    await fetch(`https://airtek-warranty.onrender.com/warranty-register`, {
+    await fetch(`${url}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
