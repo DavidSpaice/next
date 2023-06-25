@@ -215,7 +215,12 @@ const WarrantyForm = () => {
       return;
     } else if (
       currentStep === 4 &&
-      formData.items.every((item) => item.model.length === 0 && item.serialNumber.length == 0 && item.installationDate.length == 0)
+      formData.items.every(
+        (item) =>
+          item.model.length === 0 &&
+          item.serialNumber.length == 0 &&
+          item.installationDate.length == 0
+      )
     ) {
       setModelValidate(true);
       return;
@@ -320,10 +325,16 @@ const WarrantyForm = () => {
             <div className="form-content">
               <h2>Tell Us About The Installation</h2>
               <h3>The equipment is installed in a:</h3>
-              <p className="radio-text">{radioValidate ? "This field is required." : ""}</p>
+              <p className="radio-text">
+                {radioValidate ? "This field is required." : ""}
+              </p>
               <label>
-                
                 <Radio
+                  sx={{
+                    "&.Mui-checked": {
+                      color: "#182887",
+                    },
+                  }}
                   name="installType"
                   value="Existing Home"
                   checked={formData.installType === "Existing Home"}
@@ -335,6 +346,11 @@ const WarrantyForm = () => {
               <br />
               <label>
                 <Radio
+                  sx={{
+                    "&.Mui-checked": {
+                      color: "#182887",
+                    },
+                  }}
                   name="installType"
                   value="Newly Constructed Home"
                   checked={formData.installType === "Newly Constructed Home"}
@@ -346,6 +362,11 @@ const WarrantyForm = () => {
               <br />
               <label>
                 <Radio
+                  sx={{
+                    "&.Mui-checked": {
+                      color: "#182887",
+                    },
+                  }}
                   name="installType"
                   value="Commercial Existing and New Construction"
                   checked={
@@ -394,6 +415,12 @@ const WarrantyForm = () => {
                     label="First Name"
                     name="firstName"
                     size="small"
+                    sx={{
+                      input: {
+                        color: "#182887",
+                        borderBottom: "1px solid #182887",
+                      },
+                    }}
                     value={formData.firstName}
                     onChange={handleChange}
                     autoFocus
@@ -591,7 +618,7 @@ const WarrantyForm = () => {
                     }
                     placeholder="Model"
                     error={modelValidate}
-                    helperText={ modelValidate ? "This field is required." : ""}
+                    helperText={modelValidate ? "This field is required." : ""}
                     required
                   />
                   <TextField
@@ -607,7 +634,7 @@ const WarrantyForm = () => {
                       }))
                     }
                     error={modelValidate}
-                    helperText={ modelValidate ? "This field is required." : ""}
+                    helperText={modelValidate ? "This field is required." : ""}
                     required
                   />
 
