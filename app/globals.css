@@ -75,5 +75,10 @@
   font-weight: 600;
 }
 
-::-webkit-datetime-edit { padding: 0.7em; margin: 0 1rem;}
-::-webkit-datetime-edit-fields-wrapper { border: rgb(188, 188, 188) }
+::-webkit-datetime-edit {
+  padding: 0.7em;
+  margin: 0 1rem;
+}
+::-webkit-datetime-edit-fields-wrapper {
+  border: rgb(188, 188, 188);
+}
