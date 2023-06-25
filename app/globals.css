@@ -22,6 +22,58 @@
   justify-content: center;
 }
 
+.form-btn > span {
+  padding: 11px 30px;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.next-btn,
+.pre-btn {
+  cursor: pointer;
+  border-radius: 4px;
+  border-color: rgba(0, 0, 0, 0);
+  color: rgb(255, 255, 255);
+  /* font-family: Arial, Helvetica, sans-serif; */
+  /* font-style: normal; */
+  background-color: rgb(24, 40, 135);
+  height: fit-content;
+  width: fit-content;
+  max-width: 100%;
+  line-height: 1.32;
+  font-weight: bold;
+  font-size: 16px;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 2px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  padding: 11px 30px;
+  margin: 4px 2px;
+}
+
+.next-btn:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  background-color: rgb(37, 48, 110);
+}
+
+.pre-btn {
+  background-color: rgb(231, 231, 231);
+  color: #111111;
+}
+
+.pre-btn:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  background-color: rgb(207, 207, 207);
+}
+
+.radio-text {
+  color: #d32f2f;
+}
+
 .list {
   font-weight: 600;
 }
+
+::-webkit-datetime-edit { padding: 0.7em; margin: 0 1rem;}
+::-webkit-datetime-edit-fields-wrapper { border: rgb(188, 188, 188) }

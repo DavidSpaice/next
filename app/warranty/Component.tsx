@@ -1,15 +1,28 @@
 "use client";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Box from "@mui/material/Box";
+import Radio from "@mui/material/Radio";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Controls from "./Controls";
+import { TextField } from "@mui/material";
+const url = process.env.URL;
 
 const WarrantyForm = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [errors, setErrors] = useState<any>({});
+  const [modelValidate, setModelValidate] = useState(false);
+  const [radioValidate, setRadioValidate] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const emailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-  interface FormData {
-    installType: string;
+  interface ComType {
     firstName: string;
     lastName: string;
+    email: string;
     streetAddress: string;
     city: string;
     stateProvince: string;
@@ -19,11 +32,25 @@ const WarrantyForm = () => {
     extension: string;
     dealerName: string;
     dealerEmail: string;
-    items: { model: string; serialNumber: string; installationDate: string }[];
+    dealerPhone: string;
+    dealerAddress: string;
+  }
+
+  interface Temp extends ComType {}
+
+  interface FormData extends ComType {
+    installType: string;
+    items: {
+      id: any;
+      model: string;
+      serialNumber: string;
+      installationDate: string;
+    }[];
     agreedToTerms: boolean;
   }
 
   const [newItem, setNewItem] = useState({
+    id: "",
     model: "",
     serialNumber: "",
     installationDate: "",
@@ -33,6 +60,7 @@ const WarrantyForm = () => {
     installType: "",
     firstName: "",
     lastName: "",
+    email: "",
     streetAddress: "",
     city: "",
     stateProvince: "",
@@ -42,38 +70,78 @@ const WarrantyForm = () => {
     extension: "",
     dealerName: "",
     dealerEmail: "",
+    dealerPhone: "",
+    dealerAddress: "",
     items: [],
     agreedToTerms: false,
   });
 
-  const isFormValid = () => {
-    const {
-      firstName,
-      lastName,
-      streetAddress,
-      city,
-      stateProvince,
-      postalCode,
-      country,
-      phone,
-      dealerName,
-      dealerEmail,
-      items,
-    } = formData;
+  let temp: Temp = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    streetAddress: "",
+    city: "",
+    stateProvince: "",
+    postalCode: "",
+    country: "",
+    phone: "",
+    extension: "",
+    dealerName: "",
+    dealerEmail: "",
+    dealerPhone: "",
+    dealerAddress: "",
+  };
 
-    return (
-      firstName &&
-      lastName &&
-      streetAddress &&
-      city &&
-      stateProvince &&
-      postalCode &&
-      country &&
-      phone &&
-      dealerName &&
-      dealerEmail &&
-      items
-    );
+  const validate = (fieldValues = formData) => {
+    temp = { ...errors };
+    if ("firstName" in fieldValues)
+      temp.firstName = fieldValues.firstName ? "" : "This field is required.";
+    if ("lastName" in fieldValues)
+      temp.lastName = fieldValues.lastName ? "" : "This field is required.";
+    if ("email" in fieldValues)
+      temp.email = emailValidate.test(fieldValues.email)
+        ? ""
+        : "Email is not valid.";
+    if ("phone" in fieldValues)
+      temp.phone =
+        fieldValues.phone.length > 9 ? "" : "Minimum 10 numbers required.";
+    if ("streetAddress" in fieldValues)
+      temp.streetAddress =
+        fieldValues.streetAddress.length != 0 ? "" : "This field is required.";
+    if ("city" in fieldValues)
+      temp.city = fieldValues.city.length != 0 ? "" : "This field is required.";
+    if ("stateProvince" in fieldValues)
+      temp.stateProvince =
+        fieldValues.stateProvince.length != 0 ? "" : "This field is required.";
+    if ("postalCode" in fieldValues)
+      temp.postalCode =
+        fieldValues.postalCode.length != 0 ? "" : "This field is required.";
+    if ("country" in fieldValues)
+      temp.country =
+        fieldValues.country.length != 0 ? "" : "This field is required.";
+    if ("dealerName" in fieldValues)
+      temp.dealerName =
+        fieldValues.dealerName.length != 0 ? "" : "This field is required.";
+    if ("dealerEmail" in fieldValues)
+      temp.dealerEmail = emailValidate.test(fieldValues.dealerEmail)
+        ? ""
+        : "Email is not valid.";
+    if ("dealerPhone" in fieldValues)
+      temp.dealerPhone =
+        fieldValues.dealerPhone.length > 9
+          ? ""
+          : "Minimum 10 numbers required.";
+    if ("dealerAddress" in fieldValues)
+      temp.dealerAddress =
+        fieldValues.dealerAddress.length != 0 ? "" : "This field is required.";
+
+    setErrors({
+      ...temp,
+    });
+
+    if (fieldValues == formData)
+      return Object.values(temp).every((x) => x == "");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,19 +157,49 @@ const WarrantyForm = () => {
   const handleAddItem = () => {
     setFormData((prevData) => ({
       ...prevData,
-      items: [...prevData.items, newItem],
+      items: [...prevData.items, { ...newItem, id: Date.now() }],
     }));
     setNewItem({
+      id: "",
       model: "",
       serialNumber: "",
       installationDate: "",
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleDeleteItem = (itemId: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      items: prevData.items.filter((item) => item.id !== itemId),
+    }));
+  };
 
-    console.log(formData);
+  const handleSubmit = async (e: React.FormEvent) => {
+    setIsDisabled(true);
+    e.preventDefault();
+    await fetch(`https://airtek-warranty.onrender.com/warranty-register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then(function (response) {
+        if (response.ok) {
+          return response.text();
+        }
+        throw new Error("Error: " + response.status);
+      })
+      .then(function (responseText) {
+        router.push("warranty/thank-you");
+        console.log(responseText);
+        setIsDisabled(false);
+      })
+      .catch(function (error) {
+        router.push("warranty/error");
+        console.error(error);
+        setIsDisabled(false);
+      });
   };
 
   const handleNext = () => {
@@ -109,12 +207,17 @@ const WarrantyForm = () => {
 
     if (currentStep === 2 && !formData.installType) {
       console.log("Please select an installation type.");
+      setRadioValidate(true);
       return;
-    } else if (currentStep === 3 && !isFormValid()) {
-      console.log("Please fill out all required fields.");
+    } else if (currentStep === 3 && !validate()) {
+      setRadioValidate(false);
+      console.log(errors);
       return;
-    } else if (currentStep === 4 && formData.items.length === 0) {
-      console.log("Please add at least one item.");
+    } else if (
+      currentStep === 4 &&
+      formData.items.every((item) => item.model.length === 0 && item.serialNumber.length == 0 && item.installationDate.length == 0)
+    ) {
+      setModelValidate(true);
       return;
     }
 
@@ -205,8 +308,8 @@ const WarrantyForm = () => {
               </p>
             </div>
             <div className="form-btn">
-              <button type="button" onClick={handleNext}>
-                Next
+              <button type="button" className="next-btn" onClick={handleNext}>
+                <span>Next</span>
               </button>
             </div>
           </div>
@@ -217,33 +320,32 @@ const WarrantyForm = () => {
             <div className="form-content">
               <h2>Tell Us About The Installation</h2>
               <h3>The equipment is installed in a:</h3>
+              <p className="radio-text">{radioValidate ? "This field is required." : ""}</p>
               <label>
-                <input
-                  type="radio"
+                
+                <Radio
                   name="installType"
                   value="Existing Home"
                   checked={formData.installType === "Existing Home"}
                   onChange={handleChange}
-                  required
+                  required={true}
                 />
                 Existing Home
               </label>
               <br />
               <label>
-                <input
-                  type="radio"
+                <Radio
                   name="installType"
                   value="Newly Constructed Home"
                   checked={formData.installType === "Newly Constructed Home"}
                   onChange={handleChange}
-                  required
+                  required={true}
                 />
                 Newly Constructed Home
               </label>
               <br />
               <label>
-                <input
-                  type="radio"
+                <Radio
                   name="installType"
                   value="Commercial Existing and New Construction"
                   checked={
@@ -251,7 +353,7 @@ const WarrantyForm = () => {
                     "Commercial Existing and New Construction"
                   }
                   onChange={handleChange}
-                  required
+                  required={true}
                 />
                 Commercial Existing and New Construction
               </label>
@@ -260,11 +362,15 @@ const WarrantyForm = () => {
             </div>
 
             <div className="form-btn">
-              <button type="button" onClick={handlePrevious}>
-                Previous
+              <button
+                type="button"
+                className="pre-btn"
+                onClick={handlePrevious}
+              >
+                Back
               </button>
-              <button type="button" onClick={handleNext}>
-                Next
+              <button type="button" className="next-btn" onClick={handleNext}>
+                <span>Next</span>
               </button>
             </div>
           </div>
@@ -274,141 +380,185 @@ const WarrantyForm = () => {
           <div className="container">
             <div className="form-content">
               <h2>Equipment Owner Information</h2>
-              <div>
-                <label>
-                  First Name <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>
-                  Last Name <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>
-                  Street Address <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="streetAddress"
-                  value={formData.streetAddress}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>
-                  City <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>
-                  State / Province <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="stateProvince"
-                  value={formData.stateProvince}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>
-                  Postal / Zip code <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="postalCode"
-                  value={formData.postalCode}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>
-                  Country <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="country"
-                  value={formData.country}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>
-                  Phone <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>Ext.</label>
-                <input
-                  type="text"
-                  name="extension"
-                  value={formData.extension}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label>
-                  Dealer Name <span>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="dealerName"
-                  value={formData.dealerName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>
-                  Dealer Email <span>*</span>
-                </label>
-                <input
-                  type="email"
-                  name="dealerEmail"
-                  value={formData.dealerEmail}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+
+              <Box
+                component="div"
+                sx={{
+                  "& .MuiTextField-root": { m: 1, width: "25ch" },
+                }}
+              >
+                <div>
+                  <Controls
+                    error={errors.firstName}
+                    type="text"
+                    label="First Name"
+                    name="firstName"
+                    size="small"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    autoFocus
+                    required
+                  />
+
+                  <Controls
+                    error={errors.lastName}
+                    type="text"
+                    label="Last Name"
+                    name="lastName"
+                    size="small"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Controls
+                    error={errors.email}
+                    required
+                    type="text"
+                    name="email"
+                    label="Email"
+                    size="small"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                  <Controls
+                    error={errors.streetAddress}
+                    type="text"
+                    name="streetAddress"
+                    label="Street Address"
+                    size="small"
+                    value={formData.streetAddress}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Controls
+                    error={errors.city}
+                    type="text"
+                    name="city"
+                    label="City"
+                    size="small"
+                    value={formData.city}
+                    onChange={handleChange}
+                    required
+                  />
+
+                  <Controls
+                    error={errors.stateProvince}
+                    type="text"
+                    name="stateProvince"
+                    label="State / Province"
+                    size="small"
+                    value={formData.stateProvince}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Controls
+                    error={errors.postalCode}
+                    type="text"
+                    name="postalCode"
+                    label="Postal / Zip code"
+                    size="small"
+                    value={formData.postalCode}
+                    onChange={handleChange}
+                    required
+                  />
+
+                  <Controls
+                    error={errors.country}
+                    type="text"
+                    name="country"
+                    label="Country"
+                    size="small"
+                    value={formData.country}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Controls
+                    error={errors.phone}
+                    type="text"
+                    name="phone"
+                    label="Phone"
+                    size="small"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                  />
+
+                  <Controls
+                    type="text"
+                    name="extension"
+                    label="Ext"
+                    size="small"
+                    value={formData.extension}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div>
+                  <Controls
+                    error={errors.dealerName}
+                    type="text"
+                    name="dealerName"
+                    label="Dealer Name"
+                    size="small"
+                    value={formData.dealerName}
+                    onChange={handleChange}
+                    required
+                  />
+
+                  <Controls
+                    error={errors.dealerEmail}
+                    type="email"
+                    name="dealerEmail"
+                    label="Dealer Email"
+                    size="small"
+                    value={formData.dealerEmail}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Controls
+                    error={errors.dealerPhone}
+                    type="text"
+                    name="dealerPhone"
+                    label="Dealer Phone"
+                    size="small"
+                    value={formData.dealerPhone}
+                    onChange={handleChange}
+                    required
+                  />
+
+                  <Controls
+                    error={errors.dealerAddress}
+                    type="text"
+                    name="dealerAddress"
+                    label="Dealer Address"
+                    size="small"
+                    value={formData.dealerAddress}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </Box>
             </div>
+            <br />
+            <br />
             <div className="form-btn">
-              <button type="button" onClick={handlePrevious}>
-                Previous
+              <button
+                type="button"
+                className="pre-btn"
+                onClick={handlePrevious}
+              >
+                Back
               </button>
-              <button type="button" onClick={handleNext}>
+              <button type="button" className="next-btn" onClick={handleNext}>
                 Next
               </button>
             </div>
@@ -419,66 +569,100 @@ const WarrantyForm = () => {
           <div className="container">
             <div className="form-content">
               <h2>Tell Us About The Installation</h2>
-              <div>
-                <input
-                  type="text"
-                  name="model"
-                  value={newItem.model}
-                  onChange={(e) =>
-                    setNewItem((prevItem) => ({
-                      ...prevItem,
-                      model: e.target.value,
-                    }))
-                  }
-                  placeholder="Model"
-                  required
-                />
-                <input
-                  type="text"
-                  name="serialNumber"
-                  value={newItem.serialNumber}
-                  onChange={(e) =>
-                    setNewItem((prevItem) => ({
-                      ...prevItem,
-                      serialNumber: e.target.value,
-                    }))
-                  }
-                  placeholder="Serial Number"
-                  required
-                />
-                <input
-                  type="date"
-                  name="installationDate"
-                  value={newItem.installationDate}
-                  onChange={(e) =>
-                    setNewItem((prevItem) => ({
-                      ...prevItem,
-                      installationDate: e.target.value,
-                    }))
-                  }
-                  placeholder="Installation Date"
-                  required
-                />
-                <button type="button" onClick={handleAddItem}>
-                  Add Item
-                </button>
-              </div>
+
+              <Box
+                component="div"
+                sx={{
+                  "& .MuiTextField-root": { m: 1, width: "25ch" },
+                }}
+              >
+                <div>
+                  <TextField
+                    type="text"
+                    name="model"
+                    label="model"
+                    size="small"
+                    value={newItem.model}
+                    onChange={(e) =>
+                      setNewItem((prevItem) => ({
+                        ...prevItem,
+                        model: e.target.value,
+                      }))
+                    }
+                    placeholder="Model"
+                    error={modelValidate}
+                    helperText={ modelValidate ? "This field is required." : ""}
+                    required
+                  />
+                  <TextField
+                    type="text"
+                    label="Serial Number"
+                    name="serialNumber"
+                    size="small"
+                    value={newItem.serialNumber}
+                    onChange={(e) =>
+                      setNewItem((prevItem) => ({
+                        ...prevItem,
+                        serialNumber: e.target.value,
+                      }))
+                    }
+                    error={modelValidate}
+                    helperText={ modelValidate ? "This field is required." : ""}
+                    required
+                  />
+
+                  <input
+                    type="date"
+                    value={newItem.installationDate}
+                    onChange={(e) =>
+                      setNewItem((prevItem) => ({
+                        ...prevItem,
+                        installationDate: e.target.value,
+                      }))
+                    }
+                  />
+
+                  <button
+                    type="button"
+                    className="next-btn"
+                    onClick={handleAddItem}
+                  >
+                    Add Item
+                  </button>
+                </div>
+              </Box>
               {formData.items.length > 0 && (
                 <ul>
-                  {formData.items.map((item, index) => (
-                    <li key={index}>
-                      Model: {item.model}, Serial Number: {item.serialNumber},
-                      Installation Date: {item.installationDate}
-                    </li>
+                  {formData.items.map((item) => (
+                    <List
+                      dense
+                      sx={{ width: "100%", border: "solid 1px #e9e9e9" }}
+                      key={item.id}
+                    >
+                      <ListItem>
+                        Model: {item.model}, Serial Number: {item.serialNumber},
+                        Installation Date: {item.installationDate}
+                        <DeleteIcon
+                          type="button"
+                          onClick={() => handleDeleteItem(item.id)}
+                        ></DeleteIcon>
+                      </ListItem>
+                    </List>
                   ))}
                 </ul>
               )}
             </div>
+            <br />
+            <br />
             <div className=".form-btn">
-              <button type="button" onClick={handlePrevious}>
-                Previous
+              <button
+                type="button"
+                className="pre-btn"
+                onClick={handlePrevious}
+              >
+                Back
               </button>
-              <button type="button" onClick={handleNext}>
+              <button type="button" className="next-btn" onClick={handleNext}>
                 Next
               </button>
             </div>
@@ -624,10 +808,16 @@ const WarrantyForm = () => {
               <br />
             </div>
             <div className=".form-btn">
-              <button type="button" onClick={handlePrevious}>
-                Previous
+              <button
+                className="pre-btn"
+                type="button"
+                onClick={handlePrevious}
+              >
+                Back
               </button>
-              <button type="submit">Submit</button>
+              <button type="submit" className="next-btn" disabled={isDisabled}>
+                Submit
+              </button>
             </div>
           </div>
         );
