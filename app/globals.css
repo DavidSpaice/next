@@ -27,6 +27,10 @@
   background-color: rgba(0, 0, 0, 0);
 }
 
+.list {
+  font-weight: 600;
+}
+
 .next-btn,
 .pre-btn,
 .list-btn {

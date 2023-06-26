@@ -3,6 +3,13 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import Radio from "@mui/material/Radio";
+
+import FormControl from "@mui/material/FormControl";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormHelperText from "@mui/material/FormHelperText";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
+
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -16,12 +23,12 @@ const WarrantyForm = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [errors, setErrors] = useState<any>({});
-  const [modelValidate, setModelValidate] = useState(false);
-  const [radioValidate, setRadioValidate] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [itemsErrors, setItemsErrors] = useState(false)
   const emailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
   interface ComType {
+    installType: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -41,7 +48,6 @@ const WarrantyForm = () => {
   interface Temp extends ComType {}
 
   interface FormData extends ComType {
-    installType: string;
     items: {
       id: any;
       model: string;
@@ -79,6 +85,7 @@ const WarrantyForm = () => {
   });
 
   let temp: Temp = {
+    installType: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -97,6 +104,10 @@ const WarrantyForm = () => {
 
   const validate = (fieldValues = formData) => {
     temp = { ...errors };
+    if ("installType" in fieldValues)
+      temp.installType = fieldValues.installType
+        ? ""
+        : "This field is required.";
     if ("firstName" in fieldValues)
       temp.firstName = fieldValues.firstName ? "" : "This field is required.";
     if ("lastName" in fieldValues)
@@ -146,14 +157,22 @@ const WarrantyForm = () => {
       return Object.values(temp).every((x) => x == "");
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    const inputValue = type === "checkbox" ? checked : value;
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    validateChange = false
+  ) => {
+    validateChange = true;
+    const { name, value } = e.target;
 
     setFormData((prevData) => ({
       ...prevData,
-      [name]: inputValue,
+      [name]: value,
     }));
+
+    if (validateChange) {
+      validate({ [name]: value });
+    }
+      
   };
 
   const handleAddItem = () => {
@@ -167,6 +186,7 @@ const WarrantyForm = () => {
       serialNumber: "",
       installationDate: "",
     });
+    setItemsErrors(false);
   };
 
   const handleDeleteItem = (itemId: string) => {
@@ -208,23 +228,15 @@ const WarrantyForm = () => {
     const currentStep = Number(searchParams.get("step")) || 1;
 
     if (currentStep === 2 && !formData.installType) {
+      validate();
       console.log("Please select an installation type.");
-      setRadioValidate(true);
       return;
     } else if (currentStep === 3 && !validate()) {
-      setRadioValidate(false);
       console.log(errors);
       return;
-    } else if (
-      currentStep === 4 &&
-      formData.items.every(
-        (item) =>
-          item.model.length === 0 &&
-          item.serialNumber.length == 0 &&
-          item.installationDate.length == 0
-      )
-    ) {
-      setModelValidate(true);
+    } else if (currentStep === 4 && formData.items.length == 0) {
+      setItemsErrors(true);
+      console.log("errors");
       return;
     }
 
@@ -326,60 +338,69 @@ const WarrantyForm = () => {
           <div className="container">
             <div className="form-content">
               <h2>Tell Us About The Installation</h2>
-              <h3>The equipment is installed in a:</h3>
-              <p className="radio-text">
-                {radioValidate ? "This field is required." : ""}
-              </p>
-              <label>
-                <Radio
+              <FormControl
+                sx={{ m: 3 }}
+                error={errors.installType ? true : false}
+                variant="standard"
+              >
+                <FormLabel
+                  id="demo-error-radios"
                   sx={{
-                    "&.Mui-checked": {
+                    "&.MuiFormLabel-root.Mui-focused": {
                       color: "#182887",
                     },
                   }}
+                >
+                  The equipment is installed in a:
+                </FormLabel>
+                <RadioGroup
+                  aria-labelledby="demo-error-radios"
                   name="installType"
-                  value="Existing Home"
-                  checked={formData.installType === "Existing Home"}
+                  value={formData.installType}
                   onChange={handleChange}
-                  required={true}
-                />
-                Existing Home
-              </label>
-              <br />
-              <label>
-                <Radio
-                  sx={{
-                    "&.Mui-checked": {
-                      color: "#182887",
-                    },
-                  }}
-                  name="installType"
-                  value="Newly Constructed Home"
-                  checked={formData.installType === "Newly Constructed Home"}
-                  onChange={handleChange}
-                  required={true}
-                />
-                Newly Constructed Home
-              </label>
-              <br />
-              <label>
-                <Radio
-                  sx={{
-                    "&.Mui-checked": {
-                      color: "#182887",
-                    },
-                  }}
-                  name="installType"
-                  value="Commercial Existing and New Construction"
-                  checked={
-                    formData.installType ===
-                    "Commercial Existing and New Construction"
-                  }
-                  onChange={handleChange}
-                  required={true}
-                />
-                Commercial Existing and New Construction
-              </label>
+                >
+                  <FormControlLabel
+                    value="Existing Home"
+                    control={
+                      <Radio
+                        sx={{
+                          "&.Mui-checked": {
+                            color: "#182887",
+                          },
+                        }}
+                      />
+                    }
+                    label="Existing Home"
+                  />
+                  <FormControlLabel
+                    value="Newly Constructed Home"
+                    control={
+                      <Radio
+                        sx={{
+                          "&.Mui-checked": {
+                            color: "#182887",
+                          },
+                        }}
+                      />
+                    }
+                    label="Newly Constructed Home"
+                  />
+                  <FormControlLabel
+                    value="Commercial Existing and New Construction"
+                    control={
+                      <Radio
+                        sx={{
+                          "&.Mui-checked": {
+                            color: "#182887",
+                          },
+                        }}
+                      />
+                    }
+                    label="Commercial Existing and New Construction"
+                  />
+                </RadioGroup>
+                <FormHelperText>{errors.installType}</FormHelperText>
+              </FormControl>
               <br />
               <br />
             </div>
@@ -619,8 +640,10 @@ const WarrantyForm = () => {
                       }))
                     }
                     placeholder="Model"
-                    error={modelValidate}
-                    helperText={modelValidate ? "This field is required." : ""}
+                    error={itemsErrors}
+                    helperText={
+                      itemsErrors ? "This field is required." : ""
+                    }
                     required
                   />
                   <TextField
@@ -635,8 +658,10 @@ const WarrantyForm = () => {
                         serialNumber: e.target.value,
                       }))
                     }
-                    error={modelValidate}
-                    helperText={modelValidate ? "This field is required." : ""}
+                    error={itemsErrors}
+                    helperText={
+                      itemsErrors ? "This field is required." : ""
+                    }
                     required
                   />
 
