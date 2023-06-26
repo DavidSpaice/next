@@ -5,6 +5,8 @@ import Box from "@mui/material/Box";
 import Radio from "@mui/material/Radio";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Controls from "./Controls";
 import { TextField } from "@mui/material";
@@ -607,7 +609,7 @@ const WarrantyForm = () => {
                   <TextField
                     type="text"
                     name="model"
-                    label="model"
+                    label="Model"
                     size="small"
                     value={newItem.model}
                     onChange={(e) =>
@@ -651,7 +653,7 @@ const WarrantyForm = () => {
 
                   <button
                     type="button"
-                    className="next-btn"
+                    className="list-btn"
                     onClick={handleAddItem}
                   >
                     Add Item
@@ -659,7 +661,7 @@ const WarrantyForm = () => {
                 </div>
               </Box>
               {formData.items.length > 0 && (
-                <ul>
+                <div>
                   {formData.items.map((item) => (
                     <List
                       dense
@@ -667,16 +669,23 @@ const WarrantyForm = () => {
                       key={item.id}
                     >
                       <ListItem>
-                        Model: {item.model}, Serial Number: {item.serialNumber},
-                        Installation Date: {item.installationDate}
-                        <DeleteIcon
-                          type="button"
-                          onClick={() => handleDeleteItem(item.id)}
-                        ></DeleteIcon>
+                        <ListItemText primary={`Model: ${item.model}`} />
+                        <ListItemText
+                          primary={`Serial Number: ${item.serialNumber}`}
+                        />
+                        <ListItemText
+                          primary={`Installation Date: ${item.installationDate}`}
+                        />
+                        <ListItemIcon>
+                          <DeleteIcon
+                            type="button"
+                            onClick={() => handleDeleteItem(item.id)}
+                          ></DeleteIcon>
+                        </ListItemIcon>
                       </ListItem>
                     </List>
                   ))}
-                </ul>
+                </div>
               )}
             </div>
             <br />

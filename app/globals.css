@@ -28,7 +28,8 @@
 }
 
 .next-btn,
-.pre-btn {
+.pre-btn,
+.list-btn {
   cursor: pointer;
   border-radius: 4px;
   border-color: rgba(0, 0, 0, 0);
@@ -71,14 +72,41 @@
   color: #d32f2f;
 }
 
-.list {
-  font-weight: 600;
+.list-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.list-btn {
+  padding: 0.4rem 0.3rem;
+  font-size: 0.8rem;
+}
+
+input[type="date"] {
+  font-size: 17px;
+  margin: 0.6rem;
+  margin-right: 1rem;
 }
 
 ::-webkit-datetime-edit {
-  padding: 0.7em;
+  padding: 0.35em;
   margin: 0 1rem;
 }
 ::-webkit-datetime-edit-fields-wrapper {
   border: rgb(188, 188, 188);
+}
+
+::-webkit-datetime-edit-text {
+  color: rgb(133, 133, 133);
+  padding: 0 0.3em;
+}
+::-webkit-datetime-edit-month-field {
+  color: rgb(133, 133, 133);
+}
+::-webkit-datetime-edit-day-field {
+  color: rgb(133, 133, 133);
+}
+::-webkit-datetime-edit-year-field {
+  color: rgb(133, 133, 133);
 }
