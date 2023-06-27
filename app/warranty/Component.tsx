@@ -172,18 +172,17 @@ const WarrantyForm = () => {
       temp.dealerAddress =
         fieldValues.dealerAddress.length != 0 ? "" : "This field is required.";
 
-    // if (searchParams.get("step") == "4") {
-    //   if ("items" in fieldValues)
-    //     temp.model = fieldValues.items.every((obj) => obj.model == "")
-    //       ? ""
-    //       : "This field is required.";
-    //   if ("items" in fieldValues)
-    //     temp.serialNumber = fieldValues.items.every(
-    //       (obj) => obj.serialNumber == ""
-    //     )
-    //       ? ""
-    //       : "This field is required.";
-    // }
+    if (searchParams.get("step") == "4") {
+      if ("items" in fieldValues)
+        temp.model = fieldValues.items.every((obj) => obj.model)
+          ? "This field is required."
+          : "";
+      if ("items" in fieldValues)
+        temp.serialNumber = fieldValues.items.every(
+          (obj) => obj.serialNumber)
+          ? "This field is required."
+          : "";
+    }
 
     setErrors({
       ...temp,
@@ -303,7 +302,8 @@ const WarrantyForm = () => {
     } else if (currentStep === 3 && !validate()) {
       console.log(errors);
       return;
-    } else if ((currentStep === 4) && (formData.items.length == 0 )&& (!validate())) {
+    } else if (currentStep === 4 && formData.items.length == 0) {
+      validate()
       console.log(errors);
       return;
     }
