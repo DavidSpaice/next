@@ -22,9 +22,25 @@ const url = process.env.SUB_URL;
 const WarrantyForm = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<Temp>({
+    installType: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    streetAddress: "",
+    city: "",
+    stateProvince: "",
+    postalCode: "",
+    country: "",
+    phone: "",
+    dealerName: "",
+    dealerEmail: "",
+    dealerPhone: "",
+    dealerAddress: "",
+    model: "",
+    serialNumber: "",
+  });
   const [isDisabled, setIsDisabled] = useState(false);
-  const [itemsErrors, setItemsErrors] = useState(false)
   const emailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
   interface ComType {
@@ -38,16 +54,21 @@ const WarrantyForm = () => {
     postalCode: string;
     country: string;
     phone: string;
-    extension: string;
+
     dealerName: string;
     dealerEmail: string;
     dealerPhone: string;
     dealerAddress: string;
   }
 
-  interface Temp extends ComType {}
+  interface Temp extends ComType {
+    model: string;
+    serialNumber: string;
+    // agreedToTerms: string;
+  }
 
   interface FormData extends ComType {
+    extension: string;
     items: {
       id: any;
       model: string;
@@ -95,11 +116,13 @@ const WarrantyForm = () => {
     postalCode: "",
     country: "",
     phone: "",
-    extension: "",
     dealerName: "",
     dealerEmail: "",
     dealerPhone: "",
     dealerAddress: "",
+    model: "",
+    serialNumber: "",
+    // agreedToTerms: ""
   };
 
   const validate = (fieldValues = formData) => {
@@ -149,6 +172,19 @@ const WarrantyForm = () => {
       temp.dealerAddress =
         fieldValues.dealerAddress.length != 0 ? "" : "This field is required.";
 
+    // if (searchParams.get("step") == "4") {
+    //   if ("items" in fieldValues)
+    //     temp.model = fieldValues.items.every((obj) => obj.model == "")
+    //       ? ""
+    //       : "This field is required.";
+    //   if ("items" in fieldValues)
+    //     temp.serialNumber = fieldValues.items.every(
+    //       (obj) => obj.serialNumber == ""
+    //     )
+    //       ? ""
+    //       : "This field is required.";
+    // }
+
     setErrors({
       ...temp,
     });
@@ -159,9 +195,10 @@ const WarrantyForm = () => {
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    validateChange = false
+    validateChange: boolean | string = false
   ) => {
     validateChange = true;
+
     const { name, value } = e.target;
 
     setFormData((prevData) => ({
@@ -170,12 +207,45 @@ const WarrantyForm = () => {
     }));
 
     if (validateChange) {
-      validate({ [name]: value });
+      validate({ ...formData, [name]: value } as FormData);
     }
-      
   };
 
   const handleAddItem = () => {
+    const trimmedModel = newItem.model.trim();
+    const trimmedSerialNumber = newItem.serialNumber.trim();
+
+    if (trimmedModel === "" && trimmedSerialNumber === "") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        model: "This field is required.",
+        serialNumber: "This field is required.",
+      }));
+      return;
+    }
+
+    if (trimmedModel === "") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        model: "This field is required.",
+      }));
+      return;
+    }
+
+    if (trimmedSerialNumber === "") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        serialNumber: "This field is required.",
+      }));
+      return;
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      model: "",
+      serialNumber: "",
+    }));
+
     setFormData((prevData) => ({
       ...prevData,
       items: [...prevData.items, { ...newItem, id: Date.now() }],
@@ -186,7 +256,6 @@ const WarrantyForm = () => {
       serialNumber: "",
       installationDate: "",
     });
-    setItemsErrors(false);
   };
 
   const handleDeleteItem = (itemId: string) => {
@@ -234,9 +303,8 @@ const WarrantyForm = () => {
     } else if (currentStep === 3 && !validate()) {
       console.log(errors);
       return;
-    } else if (currentStep === 4 && formData.items.length == 0) {
-      setItemsErrors(true);
-      console.log("errors");
+    } else if ((currentStep === 4) && (formData.items.length == 0 )&& (!validate())) {
+      console.log(errors);
       return;
     }
 
@@ -422,182 +490,174 @@ const WarrantyForm = () => {
       case 3:
         return (
           <div className="container">
-            <div className="form-content">
-              <h2>Equipment Owner Information</h2>
+            <h2>Equipment Owner Information</h2>
 
-              <Box
-                component="div"
-                sx={{
-                  "& .MuiTextField-root": { m: 1, width: "25ch" },
-                }}
-              >
-                <div>
-                  <Controls
-                    error={errors.firstName}
-                    type="text"
-                    label="First Name"
-                    name="firstName"
-                    size="small"
-                    sx={{
-                      input: {
-                        color: "#182887",
-                        borderBottom: "1px solid #182887",
-                      },
-                    }}
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    autoFocus
-                    required
-                  />
+            <Box
+              component="div"
+              sx={{
+                "& .MuiTextField-root": { m: 1, width: "25ch" },
+              }}
+            >
+              <div>
+                <Controls
+                  error={errors.firstName}
+                  type="text"
+                  label="First Name"
+                  name="firstName"
+                  size="small"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                />
 
-                  <Controls
-                    error={errors.lastName}
-                    type="text"
-                    label="Last Name"
-                    name="lastName"
-                    size="small"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <Controls
-                    error={errors.email}
-                    required
-                    type="text"
-                    name="email"
-                    label="Email"
-                    size="small"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                  <Controls
-                    error={errors.streetAddress}
-                    type="text"
-                    name="streetAddress"
-                    label="Street Address"
-                    size="small"
-                    value={formData.streetAddress}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <Controls
-                    error={errors.city}
-                    type="text"
-                    name="city"
-                    label="City"
-                    size="small"
-                    value={formData.city}
-                    onChange={handleChange}
-                    required
-                  />
+                <Controls
+                  error={errors.lastName}
+                  type="text"
+                  label="Last Name"
+                  name="lastName"
+                  size="small"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <Controls
+                  error={errors.email}
+                  required
+                  type="text"
+                  name="email"
+                  label="Email"
+                  size="small"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+                <Controls
+                  error={errors.streetAddress}
+                  type="text"
+                  name="streetAddress"
+                  label="Street Address"
+                  size="small"
+                  value={formData.streetAddress}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <Controls
+                  error={errors.city}
+                  type="text"
+                  name="city"
+                  label="City"
+                  size="small"
+                  value={formData.city}
+                  onChange={handleChange}
+                  required
+                />
 
-                  <Controls
-                    error={errors.stateProvince}
-                    type="text"
-                    name="stateProvince"
-                    label="State / Province"
-                    size="small"
-                    value={formData.stateProvince}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <Controls
-                    error={errors.postalCode}
-                    type="text"
-                    name="postalCode"
-                    label="Postal / Zip code"
-                    size="small"
-                    value={formData.postalCode}
-                    onChange={handleChange}
-                    required
-                  />
+                <Controls
+                  error={errors.stateProvince}
+                  type="text"
+                  name="stateProvince"
+                  label="State / Province"
+                  size="small"
+                  value={formData.stateProvince}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <Controls
+                  error={errors.postalCode}
+                  type="text"
+                  name="postalCode"
+                  label="Postal / Zip code"
+                  size="small"
+                  value={formData.postalCode}
+                  onChange={handleChange}
+                  required
+                />
 
-                  <Controls
-                    error={errors.country}
-                    type="text"
-                    name="country"
-                    label="Country"
-                    size="small"
-                    value={formData.country}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <Controls
-                    error={errors.phone}
-                    type="text"
-                    name="phone"
-                    label="Phone"
-                    size="small"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                  />
+                <Controls
+                  error={errors.country}
+                  type="text"
+                  name="country"
+                  label="Country"
+                  size="small"
+                  value={formData.country}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <Controls
+                  error={errors.phone}
+                  type="text"
+                  name="phone"
+                  label="Phone"
+                  size="small"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
 
-                  <Controls
-                    type="text"
-                    name="extension"
-                    label="Ext"
-                    size="small"
-                    value={formData.extension}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <Controls
-                    error={errors.dealerName}
-                    type="text"
-                    name="dealerName"
-                    label="Dealer Name"
-                    size="small"
-                    value={formData.dealerName}
-                    onChange={handleChange}
-                    required
-                  />
+                <Controls
+                  type="text"
+                  name="extension"
+                  label="Ext"
+                  size="small"
+                  value={formData.extension}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <Controls
+                  error={errors.dealerName}
+                  type="text"
+                  name="dealerName"
+                  label="Dealer Name"
+                  size="small"
+                  value={formData.dealerName}
+                  onChange={handleChange}
+                  required
+                />
 
-                  <Controls
-                    error={errors.dealerEmail}
-                    type="email"
-                    name="dealerEmail"
-                    label="Dealer Email"
-                    size="small"
-                    value={formData.dealerEmail}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <Controls
-                    error={errors.dealerPhone}
-                    type="text"
-                    name="dealerPhone"
-                    label="Dealer Phone"
-                    size="small"
-                    value={formData.dealerPhone}
-                    onChange={handleChange}
-                    required
-                  />
+                <Controls
+                  error={errors.dealerEmail}
+                  type="email"
+                  name="dealerEmail"
+                  label="Dealer Email"
+                  size="small"
+                  value={formData.dealerEmail}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <Controls
+                  error={errors.dealerPhone}
+                  type="text"
+                  name="dealerPhone"
+                  label="Dealer Phone"
+                  size="small"
+                  value={formData.dealerPhone}
+                  onChange={handleChange}
+                  required
+                />
 
-                  <Controls
-                    error={errors.dealerAddress}
-                    type="text"
-                    name="dealerAddress"
-                    label="Dealer Address"
-                    size="small"
-                    value={formData.dealerAddress}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </Box>
-            </div>
+                <Controls
+                  error={errors.dealerAddress}
+                  type="text"
+                  name="dealerAddress"
+                  label="Dealer Address"
+                  size="small"
+                  value={formData.dealerAddress}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </Box>
             <br />
             <br />
             <div className="form-btn">
@@ -623,11 +683,11 @@ const WarrantyForm = () => {
               <Box
                 component="div"
                 sx={{
-                  "& .MuiTextField-root": { m: 1, width: "25ch" },
+                  "& .MuiTextField-root": { m: 1, width: "20ch" },
                 }}
               >
                 <div>
-                  <TextField
+                  <Controls
                     type="text"
                     name="model"
                     label="Model"
@@ -639,14 +699,10 @@ const WarrantyForm = () => {
                         model: e.target.value,
                       }))
                     }
-                    placeholder="Model"
-                    error={itemsErrors}
-                    helperText={
-                      itemsErrors ? "This field is required." : ""
-                    }
+                    error={errors.model}
                     required
                   />
-                  <TextField
+                  <Controls
                     type="text"
                     label="Serial Number"
                     name="serialNumber"
@@ -658,10 +714,7 @@ const WarrantyForm = () => {
                         serialNumber: e.target.value,
                       }))
                     }
-                    error={itemsErrors}
-                    helperText={
-                      itemsErrors ? "This field is required." : ""
-                    }
+                    error={errors.serialNumber}
                     required
                   />
 
