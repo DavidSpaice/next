@@ -99,7 +99,7 @@ const WarrantyForm = () => {
     postalCode: "",
     country: "",
     phone: "",
-    extension: undefined,
+    extension: "",
     dealerName: "",
     dealerEmail: "",
     dealerPhone: "",
@@ -272,6 +272,7 @@ const WarrantyForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsDisabled(true);
     fetch(`https://airtek-warranty.onrender.com/warranty-register`, {
       method: "POST",
       headers: {
@@ -295,7 +296,6 @@ const WarrantyForm = () => {
         console.error(error);
         setIsDisabled(false);
       });
-    setIsDisabled(true);
   };
 
   const handleNext = () => {
