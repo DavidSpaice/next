@@ -16,7 +16,6 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Controls from "./Controls";
-import { TextField } from "@mui/material";
 const url = process.env.SUB_URL;
 
 const WarrantyForm = () => {
@@ -42,6 +41,7 @@ const WarrantyForm = () => {
   });
   const [isDisabled, setIsDisabled] = useState(false);
   const emailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  const [stepFourError, setStepFourError] = useState(false);
 
   interface ComType {
     installType: string;
@@ -54,7 +54,6 @@ const WarrantyForm = () => {
     postalCode: string;
     country: string;
     phone: string;
-
     dealerName: string;
     dealerEmail: string;
     dealerPhone: string;
@@ -64,11 +63,12 @@ const WarrantyForm = () => {
   interface Temp extends ComType {
     model: string;
     serialNumber: string;
-    // agreedToTerms: string;
   }
 
+  interface NewItem {}
+
   interface FormData extends ComType {
-    extension: string;
+    extension?: string;
     items: {
       id: any;
       model: string;
@@ -76,6 +76,11 @@ const WarrantyForm = () => {
       installationDate: string;
     }[];
     agreedToTerms: boolean;
+  }
+
+  interface NewItem {
+    model: string;
+    serialNumber: string;
   }
 
   const [newItem, setNewItem] = useState({
@@ -96,7 +101,7 @@ const WarrantyForm = () => {
     postalCode: "",
     country: "",
     phone: "",
-    extension: "",
+    extension: undefined,
     dealerName: "",
     dealerEmail: "",
     dealerPhone: "",
@@ -105,91 +110,94 @@ const WarrantyForm = () => {
     agreedToTerms: false,
   });
 
-  let temp: Temp = {
-    installType: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    streetAddress: "",
-    city: "",
-    stateProvince: "",
-    postalCode: "",
-    country: "",
-    phone: "",
-    dealerName: "",
-    dealerEmail: "",
-    dealerPhone: "",
-    dealerAddress: "",
-    model: "",
-    serialNumber: "",
-    // agreedToTerms: ""
-  };
-
-  const validate = (fieldValues = formData) => {
-    temp = { ...errors };
+  const validateType = (fieldValues: Partial<FormData> = formData) => {
     if ("installType" in fieldValues)
-      temp.installType = fieldValues.installType
+      errors.installType = fieldValues.installType
         ? ""
         : "This field is required.";
+    setErrors({ ...errors, installType: errors.installType });
+
+    return errors.installType ? true : false;
+  };
+
+  const validate = (fieldValues: Partial<FormData> = formData) => {
     if ("firstName" in fieldValues)
-      temp.firstName = fieldValues.firstName ? "" : "This field is required.";
+      errors.firstName = fieldValues.firstName ? "" : "This field is required.";
     if ("lastName" in fieldValues)
-      temp.lastName = fieldValues.lastName ? "" : "This field is required.";
+      errors.lastName = fieldValues.lastName ? "" : "This field is required.";
     if ("email" in fieldValues)
-      temp.email = emailValidate.test(fieldValues.email)
+      errors.email = emailValidate.test(fieldValues.email ?? "")
         ? ""
         : "Email is not valid.";
     if ("phone" in fieldValues)
-      temp.phone =
-        fieldValues.phone.length > 9 ? "" : "Minimum 10 numbers required.";
+      errors.phone =
+        fieldValues.phone ?? "".length > 9
+          ? ""
+          : "Minimum 10 numbers required.";
     if ("streetAddress" in fieldValues)
-      temp.streetAddress =
-        fieldValues.streetAddress.length != 0 ? "" : "This field is required.";
+      errors.streetAddress =
+        fieldValues.streetAddress ?? "".length != 0
+          ? ""
+          : "This field is required.";
     if ("city" in fieldValues)
-      temp.city = fieldValues.city.length != 0 ? "" : "This field is required.";
+      errors.city =
+        fieldValues.city ?? "".length != 0 ? "" : "This field is required.";
     if ("stateProvince" in fieldValues)
-      temp.stateProvince =
-        fieldValues.stateProvince.length != 0 ? "" : "This field is required.";
+      errors.stateProvince =
+        fieldValues.stateProvince ?? "".length != 0
+          ? ""
+          : "This field is required.";
     if ("postalCode" in fieldValues)
-      temp.postalCode =
-        fieldValues.postalCode.length != 0 ? "" : "This field is required.";
+      errors.postalCode =
+        fieldValues.postalCode ?? "".length != 0
+          ? ""
+          : "This field is required.";
     if ("country" in fieldValues)
-      temp.country =
-        fieldValues.country.length != 0 ? "" : "This field is required.";
+      errors.country =
+        fieldValues.country ?? "".length != 0 ? "" : "This field is required.";
     if ("dealerName" in fieldValues)
-      temp.dealerName =
-        fieldValues.dealerName.length != 0 ? "" : "This field is required.";
+      errors.dealerName =
+        fieldValues.dealerName ?? "".length != 0
+          ? ""
+          : "This field is required.";
     if ("dealerEmail" in fieldValues)
-      temp.dealerEmail = emailValidate.test(fieldValues.dealerEmail)
+      errors.dealerEmail = emailValidate.test(fieldValues.dealerEmail ?? "")
         ? ""
         : "Email is not valid.";
     if ("dealerPhone" in fieldValues)
-      temp.dealerPhone =
-        fieldValues.dealerPhone.length > 9
+      errors.dealerPhone =
+        fieldValues.dealerPhone ?? "".length > 9
           ? ""
           : "Minimum 10 numbers required.";
     if ("dealerAddress" in fieldValues)
-      temp.dealerAddress =
-        fieldValues.dealerAddress.length != 0 ? "" : "This field is required.";
-
-    if (searchParams.get("step") == "4") {
-      if ("items" in fieldValues)
-        temp.model = fieldValues.items.every((obj) => obj.model)
-          ? "This field is required."
-          : "";
-      if ("items" in fieldValues)
-        temp.serialNumber = fieldValues.items.every(
-          (obj) => obj.serialNumber)
-          ? "This field is required."
-          : "";
-    }
+      errors.dealerAddress =
+        fieldValues.dealerAddress ?? "".length != 0
+          ? ""
+          : "This field is required.";
 
     setErrors({
-      ...temp,
+      ...errors,
     });
 
     if (fieldValues == formData)
-      return Object.values(temp).every((x) => x == "");
+      return Object.values(errors).every((x) => x == "");
+  };
+
+  const validateItems = (fieldValues: Partial<NewItem> = newItem) => {
+    if ("model" in fieldValues)
+      errors.model = fieldValues.model ? "" : "This field is required.";
+    if ("serialNumber" in fieldValues)
+      errors.serialNumber = fieldValues.serialNumber
+        ? ""
+        : "This field is required.";
+
+    setErrors({
+      ...errors,
+      model: errors.model,
+      serialNumber: errors.serialNumber,
+    });
+    if (fieldValues == newItem)
+      return Object.values(errors).every((x) => x == "");
   };
 
   const handleChange = (
@@ -206,36 +214,31 @@ const WarrantyForm = () => {
     }));
 
     if (validateChange) {
-      validate({ ...formData, [name]: value } as FormData);
+      validateType({ [name]: value });
+      validate({ [name]: value });
+    }
+  };
+
+  const itemsOnChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    validateChange: boolean | string = false
+  ) => {
+    validateChange = true;
+    const { name, value } = e.target;
+
+    setNewItem((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+
+    if (validateChange) {
+      validateItems({ [name]: value });
+      setStepFourError(false);
     }
   };
 
   const handleAddItem = () => {
-    const trimmedModel = newItem.model.trim();
-    const trimmedSerialNumber = newItem.serialNumber.trim();
-
-    if (trimmedModel === "" && trimmedSerialNumber === "") {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        model: "This field is required.",
-        serialNumber: "This field is required.",
-      }));
-      return;
-    }
-
-    if (trimmedModel === "") {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        model: "This field is required.",
-      }));
-      return;
-    }
-
-    if (trimmedSerialNumber === "") {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        serialNumber: "This field is required.",
-      }));
+    if (!validateItems()) {
       return;
     }
 
@@ -249,12 +252,6 @@ const WarrantyForm = () => {
       ...prevData,
       items: [...prevData.items, { ...newItem, id: Date.now() }],
     }));
-    setNewItem({
-      id: "",
-      model: "",
-      serialNumber: "",
-      installationDate: "",
-    });
   };
 
   const handleDeleteItem = (itemId: string) => {
@@ -295,19 +292,20 @@ const WarrantyForm = () => {
   const handleNext = () => {
     const currentStep = Number(searchParams.get("step")) || 1;
 
-    if (currentStep === 2 && !formData.installType) {
-      validate();
-      console.log("Please select an installation type.");
+    if (currentStep === 2 && formData.installType.length == 0) {
+      validateType();
+      console.log(errors);
       return;
     } else if (currentStep === 3 && !validate()) {
       console.log(errors);
       return;
     } else if (currentStep === 4 && formData.items.length == 0) {
-      validate()
+      setStepFourError(true);
       console.log(errors);
       return;
     }
 
+    console.log(errors);
     router.push(`/warranty?step=${currentStep + 1}`);
   };
 
@@ -606,7 +604,7 @@ const WarrantyForm = () => {
                   name="extension"
                   label="Ext"
                   size="small"
-                  value={formData.extension}
+                  value={formData.extension || ""}
                   onChange={handleChange}
                   required
                 />
@@ -679,7 +677,7 @@ const WarrantyForm = () => {
           <div className="container">
             <div className="form-content">
               <h2>Tell Us About The Installation</h2>
-
+              <div style={{color: "#d32f2f"}}>{stepFourError? "This is required" : ""}</div>
               <Box
                 component="div"
                 sx={{
@@ -693,12 +691,7 @@ const WarrantyForm = () => {
                     label="Model"
                     size="small"
                     value={newItem.model}
-                    onChange={(e) =>
-                      setNewItem((prevItem) => ({
-                        ...prevItem,
-                        model: e.target.value,
-                      }))
-                    }
+                    onChange={itemsOnChange}
                     error={errors.model}
                     required
                   />
@@ -708,12 +701,7 @@ const WarrantyForm = () => {
                     name="serialNumber"
                     size="small"
                     value={newItem.serialNumber}
-                    onChange={(e) =>
-                      setNewItem((prevItem) => ({
-                        ...prevItem,
-                        serialNumber: e.target.value,
-                      }))
-                    }
+                    onChange={itemsOnChange}
                     error={errors.serialNumber}
                     required
                   />
@@ -721,12 +709,7 @@ const WarrantyForm = () => {
                   <input
                     type="date"
                     value={newItem.installationDate}
-                    onChange={(e) =>
-                      setNewItem((prevItem) => ({
-                        ...prevItem,
-                        installationDate: e.target.value,
-                      }))
-                    }
+                    onChange={itemsOnChange}
                   />
 
                   <button
