@@ -16,6 +16,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Controls from "./Controls";
+
+import dayjs, { Dayjs } from "dayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 const url = process.env.SUB_URL;
 
 const WarrantyForm = () => {
@@ -65,29 +69,29 @@ const WarrantyForm = () => {
     serialNumber: string;
   }
 
-  interface NewItem {}
-
   interface FormData extends ComType {
     extension?: string;
     items: {
       id: any;
       model: string;
       serialNumber: string;
-      installationDate: string;
+      installationDate: Dayjs | null;
     }[];
     agreedToTerms: boolean;
   }
 
   interface NewItem {
+    id: any;
     model: string;
     serialNumber: string;
+    installationDate: Dayjs | null;
   }
 
-  const [newItem, setNewItem] = useState({
+  const [newItem, setNewItem] = useState<NewItem>({
     id: "",
     model: "",
     serialNumber: "",
-    installationDate: "",
+    installationDate: dayjs("2023-05-17"),
   });
 
   const [formData, setFormData] = useState<FormData>({
@@ -220,7 +224,7 @@ const WarrantyForm = () => {
   };
 
   const itemsOnChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     validateChange: boolean | string = false
   ) => {
     validateChange = true;
@@ -237,6 +241,16 @@ const WarrantyForm = () => {
     }
   };
 
+  const dateOnChange = (date: Dayjs | null) => {
+    // const formattedDate = date ? date.toISOString() : '';
+    const dayjsDate = date ? dayjs(date) : null;
+
+    setNewItem((prevData) => ({
+      ...prevData,
+      installationDate: dayjsDate,
+    }));
+  };
+
   const handleAddItem = () => {
     if (!validateItems()) {
       return;
@@ -246,6 +260,7 @@ const WarrantyForm = () => {
       ...prevErrors,
       model: "",
       serialNumber: "",
+      installationDate: "",
     }));
 
     setFormData((prevData) => ({
@@ -262,7 +277,6 @@ const WarrantyForm = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    setIsDisabled(true);
     e.preventDefault();
     fetch(`https://airtek-warranty.onrender.com/warranty-register`, {
       method: "POST",
@@ -287,6 +301,7 @@ const WarrantyForm = () => {
         console.error(error);
         setIsDisabled(false);
       });
+    setIsDisabled(true);
   };
 
   const handleNext = () => {
@@ -677,7 +692,9 @@ const WarrantyForm = () => {
           <div className="container">
             <div className="form-content">
               <h2>Tell Us About The Installation</h2>
-              <div style={{color: "#d32f2f"}}>{stepFourError? "This is required" : ""}</div>
+              <div style={{ color: "#d32f2f" }}>
+                {stepFourError ? "Please provide the necessary details or information." : ""}
+              </div>
               <Box
                 component="div"
                 sx={{
@@ -706,12 +723,14 @@ const WarrantyForm = () => {
                     required
                   />
 
-                  <input
-                    type="date"
-                    value={newItem.installationDate}
-                    onChange={itemsOnChange}
-                  />
-
+                  {/* <DemoContainer components={["DatePicker", "DatePicker"]}> */}
+                    <DatePicker
+                      label="Installation Date"
+                      slotProps={{ textField: { size: 'small' } }}
+                      value={newItem.installationDate}
+                      onChange={dateOnChange}
+                    />
+                  {/* </DemoContainer> */}
                   <button
                     type="button"
                     className="list-btn"
@@ -735,7 +754,7 @@ const WarrantyForm = () => {
                           primary={`Serial Number: ${item.serialNumber}`}
                         />
                         <ListItemText
-                          primary={`Installation Date: ${item.installationDate}`}
+                          primary={`Installation Date: ${item.installationDate?.format("MM/DD/YYYY")}`}
                         />
                         <ListItemIcon>
                           <DeleteIcon

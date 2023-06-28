@@ -83,34 +83,6 @@
 }
 
 .list-btn {
-  padding: 0.4rem 0.3rem;
+  padding: 0.75rem 0.3rem;
   font-size: 0.8rem;
-}
-
-input[type="date"] {
-  font-size: 17px;
-  margin: 0.6rem;
-  margin-right: 1rem;
-}
-
-::-webkit-datetime-edit {
-  padding: 0.35em;
-  margin: 0 1rem;
-}
-::-webkit-datetime-edit-fields-wrapper {
-  border: rgb(188, 188, 188);
-}
-
-::-webkit-datetime-edit-text {
-  color: rgb(133, 133, 133);
-  padding: 0 0.3em;
-}
-::-webkit-datetime-edit-month-field {
-  color: rgb(133, 133, 133);
-}
-::-webkit-datetime-edit-day-field {
-  color: rgb(133, 133, 133);
-}
-::-webkit-datetime-edit-year-field {
-  color: rgb(133, 133, 133);
 }
