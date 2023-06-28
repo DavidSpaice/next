@@ -18,7 +18,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Controls from "./Controls";
 
 import dayjs, { Dayjs } from "dayjs";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 const url = process.env.SUB_URL;
 
@@ -69,22 +68,17 @@ const WarrantyForm = () => {
     serialNumber: string;
   }
 
-  interface FormData extends ComType {
-    extension?: string;
-    items: {
-      id: any;
-      model: string;
-      serialNumber: string;
-      installationDate: Dayjs | null;
-    }[];
-    agreedToTerms: boolean;
-  }
-
   interface NewItem {
     id: any;
     model: string;
     serialNumber: string;
     installationDate: Dayjs | null;
+  }
+
+  interface FormData extends ComType {
+    extension?: string;
+    items: NewItem[];
+    agreedToTerms: boolean;
   }
 
   const [newItem, setNewItem] = useState<NewItem>({
@@ -693,7 +687,9 @@ const WarrantyForm = () => {
             <div className="form-content">
               <h2>Tell Us About The Installation</h2>
               <div style={{ color: "#d32f2f" }}>
-                {stepFourError ? "Please provide the necessary details or information." : ""}
+                {stepFourError
+                  ? "Please provide the necessary details or information."
+                  : ""}
               </div>
               <Box
                 component="div"
@@ -724,12 +720,12 @@ const WarrantyForm = () => {
                   />
 
                   {/* <DemoContainer components={["DatePicker", "DatePicker"]}> */}
-                    <DatePicker
-                      label="Installation Date"
-                      slotProps={{ textField: { size: 'small' } }}
-                      value={newItem.installationDate}
-                      onChange={dateOnChange}
-                    />
+                  <DatePicker
+                    label="Installation Date"
+                    slotProps={{ textField: { size: "small" } }}
+                    value={newItem.installationDate}
+                    onChange={dateOnChange}
+                  />
                   {/* </DemoContainer> */}
                   <button
                     type="button"
@@ -754,7 +750,9 @@ const WarrantyForm = () => {
                           primary={`Serial Number: ${item.serialNumber}`}
                         />
                         <ListItemText
-                          primary={`Installation Date: ${item.installationDate?.format("MM/DD/YYYY")}`}
+                          primary={`Installation Date: ${item.installationDate?.format(
+                            "MM/DD/YYYY"
+                          )}`}
                         />
                         <ListItemIcon>
                           <DeleteIcon
