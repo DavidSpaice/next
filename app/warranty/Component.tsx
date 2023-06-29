@@ -316,6 +316,10 @@ const WarrantyForm = () => {
 
     console.log(errors);
     router.push(`/warranty?step=${currentStep + 1}`);
+    window.scrollTo({
+      top: 0, 
+      behavior: 'smooth'
+    });
   };
 
   const handlePrevious = () => {
