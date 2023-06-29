@@ -236,13 +236,13 @@ const WarrantyForm = () => {
   };
 
   const dateOnChange = (date: Dayjs | null) => {
-    // const formattedDate = date ? date.toISOString() : '';
     const dayjsDate = date ? dayjs(date) : null;
 
     setNewItem((prevData) => ({
       ...prevData,
       installationDate: dayjsDate,
     }));
+
   };
 
   const handleAddItem = () => {
@@ -261,6 +261,13 @@ const WarrantyForm = () => {
       ...prevData,
       items: [...prevData.items, { ...newItem, id: Date.now() }],
     }));
+
+    setNewItem({
+      id: null,
+      model: "",
+      serialNumber: "",
+      installationDate: dayjs("2023-05-17"),
+    });
   };
 
   const handleDeleteItem = (itemId: string) => {
