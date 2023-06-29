@@ -615,7 +615,7 @@ const WarrantyForm = () => {
                   size="small"
                   value={formData.extension || ""}
                   onChange={handleChange}
-                  required
+                  required={false}
                 />
               </div>
               <div>
