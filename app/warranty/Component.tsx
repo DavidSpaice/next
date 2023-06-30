@@ -22,6 +22,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 const url = process.env.SUB_URL;
 
 const WarrantyForm = () => {
+  const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [errors, setErrors] = useState<Temp>({
@@ -242,7 +243,6 @@ const WarrantyForm = () => {
       ...prevData,
       installationDate: dayjsDate,
     }));
-
   };
 
   const handleAddItem = () => {
@@ -279,8 +279,8 @@ const WarrantyForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsDisabled(true);
-    fetch(`https://airtek-warranty.onrender.com/warranty-register`, {
+    setLoading(true);
+    await fetch(`https://airtek-warranty.onrender.com/warranty-register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -294,6 +294,7 @@ const WarrantyForm = () => {
         throw new Error("Error: " + response.status);
       })
       .then(function (responseText) {
+        setLoading(true);
         router.push("warranty/thank-you");
         console.log(responseText);
         setIsDisabled(false);
@@ -324,8 +325,8 @@ const WarrantyForm = () => {
     console.log(errors);
     router.push(`/warranty?step=${currentStep + 1}`);
     window.scrollTo({
-      top: 0, 
-      behavior: 'smooth'
+      top: 0,
+      behavior: "smooth",
     });
   };
 
@@ -423,7 +424,7 @@ const WarrantyForm = () => {
         return (
           <div className="container">
             <div className="form-content">
-            <p className="title">Tell Us About The Installation</p>
+              <p className="title">Tell Us About The Installation</p>
               <FormControl
                 sx={{ m: 3, ".MuiFormControlLabel-label": { fontSize: 14 } }}
                 error={errors.installType ? true : false}
@@ -508,7 +509,7 @@ const WarrantyForm = () => {
       case 3:
         return (
           <div className="container">
-             <p className="title">Equipment Owner Information</p>
+            <p className="title">Equipment Owner Information</p>
 
             <Box
               component="div"
@@ -696,7 +697,7 @@ const WarrantyForm = () => {
         return (
           <div className="container">
             <div className="form-content">
-            <p className="title">Tell Us About The Installation</p>
+              <p className="title">Tell Us About The Installation</p>
               <div style={{ color: "#d32f2f" }}>
                 {stepFourError
                   ? "Please provide the necessary details or information."
@@ -797,7 +798,7 @@ const WarrantyForm = () => {
         return (
           <div className="container">
             <div className="form-content">
-            <p className="title">Confirmation</p>
+              <p className="title">Confirmation</p>
               <p>
                 We offer a comprehensive warranty for their products, covering
                 failures resulting from defects in materials and workmanship
@@ -951,7 +952,37 @@ const WarrantyForm = () => {
     }
   };
 
-  return <form onSubmit={handleSubmit}>{renderForm()}</form>;
+  return (
+    <form onSubmit={handleSubmit}>
+      {loading ? (
+        <>
+          <style jsx>{`
+            .loader {
+              border: 16px solid #f3f3f3;
+              border-top: 16px solid #182887;
+              border-radius: 50%;
+              width: 120px;
+              height: 120px;
+              animation: spin 2s linear infinite;
+              margin: auto;
+            }
+
+            @keyframes spin {
+              0% {
+                transform: rotate(0deg);
+              }
+              100% {
+                transform: rotate(360deg);
+              }
+            }
+          `}</style>
+          <div className="loader"></div>
+        </>
+      ) : (
+        renderForm()
+      )}
+    </form>
+  );
 };
 
 export default WarrantyForm;
