@@ -425,7 +425,7 @@ const WarrantyForm = () => {
             <div className="form-content">
               <h2>Tell Us About The Installation</h2>
               <FormControl
-                sx={{ m: 3 }}
+                sx={{ m: 3, ".MuiFormControlLabel-label": { fontSize: 14 } }}
                 error={errors.installType ? true : false}
                 variant="standard"
               >
