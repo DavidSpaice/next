@@ -1,6 +1,11 @@
 .container {
   text-align: center;
   font-size: 14px;
+  color: #313130;
+}
+
+.title {
+  font-weight: 700;
 }
 
 .form-content {
@@ -15,7 +20,6 @@
 
 .form-content > p {
   font-size: 14px;
-  color: #313130;
 }
 
 .form-btn {

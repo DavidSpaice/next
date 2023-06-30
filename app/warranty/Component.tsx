@@ -342,10 +342,10 @@ const WarrantyForm = () => {
         return (
           <div className="container">
             <div className="form-content">
-              <h3>
+              <p className="title">
                 Airtek/Gree represents more than just HVAC. It embodies a
                 commitment.
-              </h3>
+              </p>
               <br />
               <p>
                 Gree transcends the realm of HVAC and embodies a steadfast
@@ -423,7 +423,7 @@ const WarrantyForm = () => {
         return (
           <div className="container">
             <div className="form-content">
-              <h3>Tell Us About The Installation</h3>
+            <p className="title">Tell Us About The Installation</p>
               <FormControl
                 sx={{ m: 3, ".MuiFormControlLabel-label": { fontSize: 14 } }}
                 error={errors.installType ? true : false}
@@ -508,7 +508,7 @@ const WarrantyForm = () => {
       case 3:
         return (
           <div className="container">
-            <h3>Equipment Owner Information</h3>
+             <p className="title">Equipment Owner Information</p>
 
             <Box
               component="div"
@@ -696,7 +696,7 @@ const WarrantyForm = () => {
         return (
           <div className="container">
             <div className="form-content">
-              <h3>Tell Us About The Installation</h3>
+            <p className="title">Tell Us About The Installation</p>
               <div style={{ color: "#d32f2f" }}>
                 {stepFourError
                   ? "Please provide the necessary details or information."
@@ -797,7 +797,7 @@ const WarrantyForm = () => {
         return (
           <div className="container">
             <div className="form-content">
-              <h3>Confirmation</h3>
+            <p className="title">Confirmation</p>
               <p>
                 We offer a comprehensive warranty for their products, covering
                 failures resulting from defects in materials and workmanship
