@@ -955,7 +955,7 @@ const WarrantyForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       {loading ? (
-        <>
+        <div className="loader-container">
           <style jsx>{`
             .loader {
               border: 16px solid #f3f3f3;
@@ -977,7 +977,7 @@ const WarrantyForm = () => {
             }
           `}</style>
           <div className="loader"></div>
-        </>
+        </div>
       ) : (
         renderForm()
       )}

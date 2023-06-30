@@ -2,6 +2,13 @@
   text-align: center;
   font-size: 14px;
   color: #313130;
+  height: 100vh;
+}
+.loader-container {
+  height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .title {
