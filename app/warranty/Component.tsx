@@ -356,7 +356,7 @@ const WarrantyForm = () => {
                 perfecting air quality has been the catalyst behind every
                 innovation we have introduced.
               </p>
-              <br />
+
               <p>
                 Gree revolutionizes the air, making it cooler, warmer, drier,
                 cleaner, and ultimately better through our exceptional systems.
@@ -364,7 +364,7 @@ const WarrantyForm = () => {
                 exceptional efficiency and whisper-quiet operation, setting new
                 industry standards.
               </p>
-              <br />
+
               <p>
                 For residential applications, we offer a range of coverage
                 options, including the opportunity to extend parts and labor
@@ -374,7 +374,7 @@ const WarrantyForm = () => {
                 Gree owners. You can find a list of eligible products on our
                 website.
               </p>
-              <br />
+   
               <p>
                 To begin the registration process, please gather the following
                 information:
