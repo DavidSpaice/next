@@ -280,7 +280,7 @@ const WarrantyForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await fetch(`https://warranty-server.onrender.com/warranty-register`, {
+    await fetch(`https://airtek-warranty.onrender.com/warranty-register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -509,7 +509,7 @@ const WarrantyForm = () => {
       case 3:
         return (
           <div className="container">
-            <p className="title">Equipment Owner Information</p>
+            <p className="title">Home Owner Information</p>
 
             <Box
               component="div"
