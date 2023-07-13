@@ -66,7 +66,7 @@ const WarrantyForm = () => {
     serialNumber: string;
   }>({
     matchFrom: "any",
-    limit: 10,
+    limit: 0,
   });
 
   const skuFilterOptions = createFilterOptions<{ model: string }>({
