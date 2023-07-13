@@ -1,8 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import Radio from "@mui/material/Radio";
+
+import Grid from "@mui/material/Grid";
+import model from "./sku";
+
+import { AutocompleteInputChangeReason } from "@mui/material";
 
 import FormControl from "@mui/material/FormControl";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -17,11 +22,20 @@ import ListItemText from "@mui/material/ListItemText";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Controls from "./Controls";
 
+import TextField from "@mui/material/TextField";
+import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
+
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-const url = process.env.SUB_URL;
+import { log } from "console";
 
 const WarrantyForm = () => {
+  const [serialNumberData, setSerialNumberData] = useState<
+    { _id: string; serialNumber: string }[]
+  >([]);
+  const [registeredSerialNumber, setRegisteredSerialNumber] = useState<
+    string[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -46,6 +60,19 @@ const WarrantyForm = () => {
   const [isDisabled, setIsDisabled] = useState(false);
   const emailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const [stepFourError, setStepFourError] = useState(false);
+
+  const filterOptions = createFilterOptions<{
+    _id: string;
+    serialNumber: string;
+  }>({
+    matchFrom: "any",
+    limit: 10,
+  });
+
+  const skuFilterOptions = createFilterOptions<{ model: string }>({
+    matchFrom: "any",
+    limit: 10,
+  });
 
   interface ComType {
     installType: string;
@@ -108,6 +135,87 @@ const WarrantyForm = () => {
     items: [],
     agreedToTerms: false,
   });
+
+  const filterSerialNumbers = (sn: { items: { serialNumber: string }[] }[]) => {
+    let serialNumbers: string[] = [];
+    for (const item of sn) {
+      for (const subItem of item.items) {
+        serialNumbers.push(subItem.serialNumber);
+      }
+    }
+    console.log(serialNumbers);
+
+    return serialNumbers;
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const firstResponse = await fetch("https://airtek-warranty.onrender.com/warranties");
+        const WarrantyRegistered = await firstResponse.json();
+        const serialNumbers = filterSerialNumbers(WarrantyRegistered);
+
+        setRegisteredSerialNumber(serialNumbers);
+
+        const secondResponse = await fetch("https://airtek-warranty.onrender.com/serial");
+        const allSerialNumbers: { _id: string; serialNumber: string }[] =
+          await secondResponse.json();
+        const uniqueData = Array.from(
+          new Set(allSerialNumbers.map((item) => item.serialNumber))
+        )
+          .map((serialNumber) =>
+            allSerialNumbers.find((item) => item.serialNumber === serialNumber)
+          )
+          .filter(
+            (item): item is { _id: string; serialNumber: string } =>
+              item !== undefined
+          );
+
+        setSerialNumberData(uniqueData);
+      } catch (error) {
+        console.error("Error fetching serial number data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const modelOnChange = (
+    event: React.ChangeEvent<{}>,
+    value: string,
+    reason: AutocompleteInputChangeReason
+  ) => {
+    if (typeof value === "string") {
+      setNewItem((prevData) => ({
+        ...prevData,
+        model: value,
+      }));
+
+      if (value.trim() !== "") {
+        validateModel({ model: value });
+      }
+    }
+
+    setStepFourError(false);
+  };
+
+  const SerialNumberOnChange = (
+    event: React.ChangeEvent<{}>,
+    value: string | { _id: string; serialNumber: string },
+    reason: AutocompleteInputChangeReason
+  ) => {
+    if (typeof value === "string") {
+      setNewItem((prevData) => ({
+        ...prevData,
+        serialNumber: value,
+      }));
+      if (value.trim() !== "") {
+        // Validate only when the input is not empty
+        validateSerialNumber({ serialNumber: value });
+      }
+    }
+    setStepFourError(false);
+  };
 
   const validateType = (fieldValues: Partial<FormData> = formData) => {
     if ("installType" in fieldValues)
@@ -182,21 +290,63 @@ const WarrantyForm = () => {
       return Object.values(errors).every((x) => x == "");
   };
 
-  const validateItems = (fieldValues: Partial<NewItem> = newItem) => {
-    if ("model" in fieldValues)
-      errors.model = fieldValues.model ? "" : "This field is required.";
-    if ("serialNumber" in fieldValues)
-      errors.serialNumber = fieldValues.serialNumber
-        ? ""
-        : "This field is required.";
+  const modelStrings = model.map((item) => item.model.toLowerCase()); //same with serialNumber
 
-    setErrors({
-      ...errors,
-      model: errors.model,
-      serialNumber: errors.serialNumber,
-    });
-    if (fieldValues == newItem)
-      return Object.values(errors).every((x) => x == "");
+  const validateModel = (fieldValues: Partial<NewItem> = newItem) => {
+    const model = fieldValues.model ?? "";
+    const modelExists = modelStrings.some(
+      (item) => item === model.toLowerCase()
+    );
+
+    // Set the errors in the state
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      model: modelExists ? "" : "Invalid model.",
+    }));
+
+    // Return true or false based on the validation
+    if (fieldValues === newItem) {
+      if (!modelExists) {
+        return false; // Validation failed
+      }
+      return Object.values(errors).every((x) => x === "");
+    }
+  };
+
+  const serialNumberStrings = serialNumberData.map((item) =>
+    item.serialNumber.toLowerCase()
+  ); //same with serialNumber
+
+  const validateSerialNumberDuplication = () => {};
+
+  const validateSerialNumber = (fieldValues: Partial<NewItem> = newItem) => {
+    const serialNumber = fieldValues.serialNumber ?? "";
+    const serialNumberExists = serialNumberStrings.some(
+      (item) => item === serialNumber.toLowerCase()
+    );
+
+    const serialNumberDuplication = registeredSerialNumber.some(
+      (item) => item != serialNumber.toLowerCase()
+    );
+
+    console.log(serialNumberExists, serialNumberDuplication);
+
+    // Set the errors in the state
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      serialNumber:
+        serialNumberExists && serialNumberDuplication
+          ? ""
+          : "Invalid or Registered Serial Number.",
+    }));
+
+    // Return true or false based on the validation
+    if (fieldValues === newItem) {
+      if (!serialNumberExists) {
+        return false; // Validation failed
+      }
+      return Object.values(errors).every((x) => x === "");
+    }
   };
 
   const handleChange = (
@@ -218,24 +368,6 @@ const WarrantyForm = () => {
     }
   };
 
-  const itemsOnChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    validateChange: boolean | string = false
-  ) => {
-    validateChange = true;
-    const { name, value } = e.target;
-
-    setNewItem((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-
-    if (validateChange) {
-      validateItems({ [name]: value });
-      setStepFourError(false);
-    }
-  };
-
   const dateOnChange = (date: Dayjs | null) => {
     const dayjsDate = date ? dayjs(date) : null;
 
@@ -246,7 +378,20 @@ const WarrantyForm = () => {
   };
 
   const handleAddItem = () => {
-    if (!validateItems()) {
+    const serialNumberExists = formData.items.some(
+      (item) =>
+        item.serialNumber.toLowerCase() === newItem.serialNumber.toLowerCase()
+    );
+
+    if (serialNumberExists) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        serialNumber: "Serial number already exists.",
+      }));
+      return;
+    }
+
+    if (!validateModel() || !validateSerialNumber()) {
       return;
     }
 
@@ -262,12 +407,22 @@ const WarrantyForm = () => {
       items: [...prevData.items, { ...newItem, id: Date.now() }],
     }));
 
+    // Empty the input fields
     setNewItem({
       id: null,
       model: "",
       serialNumber: "",
       installationDate: dayjs("2023-05-17"),
     });
+
+    setStepFourError(false);
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      model: "",
+      serialNumber: "",
+      installationDate: "",
+    }));
   };
 
   const handleDeleteItem = (itemId: string) => {
@@ -296,12 +451,12 @@ const WarrantyForm = () => {
       .then(function (responseText) {
         setLoading(true);
         router.push("warranty/thank-you");
-        console.log(responseText);
+        // console.log(responseText);
         setIsDisabled(false);
       })
       .catch(function (error) {
         router.push("warranty/error");
-        console.error(error);
+        // console.error(error);
         setIsDisabled(false);
       });
   };
@@ -311,18 +466,18 @@ const WarrantyForm = () => {
 
     if (currentStep === 2 && formData.installType.length == 0) {
       validateType();
-      console.log(errors);
+      // console.log(errors);
       return;
     } else if (currentStep === 3 && !validate()) {
-      console.log(errors);
+      // console.log(errors);
       return;
     } else if (currentStep === 4 && formData.items.length == 0) {
       setStepFourError(true);
-      console.log(errors);
+      // console.log(errors);
       return;
     }
 
-    console.log(errors);
+    // console.log(errors);
     router.push(`/warranty?step=${currentStep + 1}`);
     window.scrollTo({
       top: 0,
@@ -374,7 +529,7 @@ const WarrantyForm = () => {
                 Gree owners. You can find a list of eligible products on our
                 website.
               </p>
-   
+
               <p>
                 To begin the registration process, please gather the following
                 information:
@@ -695,32 +850,68 @@ const WarrantyForm = () => {
         );
       case 4:
         return (
-          <div className="container">
-            <div className="form-content">
-              <p className="title">Tell Us About The Installation</p>
-              <div style={{ color: "#d32f2f" }}>
-                {stepFourError
-                  ? "Please provide the necessary details or information."
-                  : ""}
-              </div>
-              <Box
-                component="div"
-                sx={{
-                  "& .MuiTextField-root": { m: 1, width: "20ch" },
-                }}
-              >
-                <div>
-                  <Controls
+          <div className="warranty-container">
+            <div className="center-form">
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={12} alignItems="center">
+                  <p className="title">Tell Us About The Installation</p>
+                  <div style={{ color: "#d32f2f" }}>
+                    {stepFourError
+                      ? "Please provide the necessary details or information."
+                      : ""}
+                  </div>
+                </Grid>
+
+                <Grid item xs={12} md={3}>
+                  <Autocomplete
+                    freeSolo
+                    id="free-solo-2-demo"
+                    disableClearable
+                    filterOptions={skuFilterOptions}
+                    ListboxProps={{ style: { maxHeight: 150 } }}
+                    options={model}
+                    getOptionLabel={(option) =>
+                      typeof option === "string" ? option : option.model
+                    }
+                    onInputChange={modelOnChange}
+                    value={newItem.model}
+                    renderOption={(props, option) => {
+                      return (
+                        <li {...props} key={option.model}>
+                          {option.model}
+                        </li>
+                      );
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        type="text"
+                        label="Model Number"
+                        size="small"
+                        error={errors.model ? true : false}
+                        helperText={errors.model}
+                        name="model"
+                        required
+                        InputProps={{
+                          ...params.InputProps,
+                          type: "search",
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                {/* <Controls
                     type="text"
                     name="model"
                     label="Model"
                     size="small"
                     value={newItem.model}
-                    onChange={itemsOnChange}
+                    onChange={modelOnChange}
                     error={errors.model}
                     required
-                  />
-                  <Controls
+                  /> */}
+
+                {/* <Controls
                     type="text"
                     label="Serial Number"
                     name="serialNumber"
@@ -729,16 +920,55 @@ const WarrantyForm = () => {
                     onChange={itemsOnChange}
                     error={errors.serialNumber}
                     required
+                  /> */}
+                <Grid item xs={12} md={3}>
+                  <Autocomplete
+                    freeSolo
+                    id="free-solo-2-demo"
+                    disableClearable
+                    filterOptions={filterOptions}
+                    options={serialNumberData}
+                    getOptionLabel={(option) =>
+                      typeof option === "string" ? option : option.serialNumber
+                    }
+                    onInputChange={SerialNumberOnChange}
+                    value={newItem.serialNumber}
+                    renderOption={(props, option) => {
+                      return (
+                        <li {...props} key={option._id}>
+                          {option.serialNumber}
+                        </li>
+                      );
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        type="text"
+                        label="Serial Number"
+                        size="small"
+                        error={errors.serialNumber ? true : false}
+                        name="serialNumber"
+                        helperText={errors.serialNumber}
+                        required
+                        InputProps={{
+                          ...params.InputProps,
+                          type: "search",
+                        }}
+                      />
+                    )}
                   />
+                </Grid>
 
-                  {/* <DemoContainer components={["DatePicker", "DatePicker"]}> */}
+                <Grid item xs={12} md={3}>
                   <DatePicker
                     label="Installation Date"
                     slotProps={{ textField: { size: "small" } }}
                     value={newItem.installationDate}
                     onChange={dateOnChange}
                   />
-                  {/* </DemoContainer> */}
+                </Grid>
+
+                <Grid item xs={12} md={3}>
                   <button
                     type="button"
                     className="list-btn"
@@ -746,59 +976,70 @@ const WarrantyForm = () => {
                   >
                     Add Item
                   </button>
+                </Grid>
+                <Grid item xs={12} md={12} alignItems="center">
+                  {formData.items.length > 0 && (
+                    <div>
+                      {formData.items.map((item) => (
+                        <List
+                          dense
+                          sx={{ width: "100%", border: "solid 1px #e9e9e9" }}
+                          key={item.id}
+                        >
+                          <ListItem>
+                            <ListItemText primary={`Model: ${item.model}`} />
+                            <ListItemText
+                              primary={`Serial Number: ${item.serialNumber}`}
+                            />
+                            <ListItemText
+                              primary={`Installation Date: ${item.installationDate?.format(
+                                "MM/DD/YYYY"
+                              )}`}
+                            />
+                            <ListItemIcon>
+                              <DeleteIcon
+                                type="button"
+                                onClick={() => handleDeleteItem(item.id)}
+                              ></DeleteIcon>
+                            </ListItemIcon>
+                          </ListItem>
+                        </List>
+                      ))}
+                    </div>
+                  )}
+                </Grid>
+              </Grid>
+
+              <br />
+              <br />
+              <Grid item xs={12} md={12}>
+                <div className=".form-btn">
+                  <button
+                    type="button"
+                    className="pre-btn"
+                    onClick={handlePrevious}
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    className="next-btn"
+                    onClick={handleNext}
+                  >
+                    Next
+                  </button>
                 </div>
-              </Box>
-              {formData.items.length > 0 && (
-                <div>
-                  {formData.items.map((item) => (
-                    <List
-                      dense
-                      sx={{ width: "100%", border: "solid 1px #e9e9e9" }}
-                      key={item.id}
-                    >
-                      <ListItem>
-                        <ListItemText primary={`Model: ${item.model}`} />
-                        <ListItemText
-                          primary={`Serial Number: ${item.serialNumber}`}
-                        />
-                        <ListItemText
-                          primary={`Installation Date: ${item.installationDate?.format(
-                            "MM/DD/YYYY"
-                          )}`}
-                        />
-                        <ListItemIcon>
-                          <DeleteIcon
-                            type="button"
-                            onClick={() => handleDeleteItem(item.id)}
-                          ></DeleteIcon>
-                        </ListItemIcon>
-                      </ListItem>
-                    </List>
-                  ))}
-                </div>
-              )}
+              </Grid>
             </div>
-            <br />
-            <br />
-            <div className=".form-btn">
-              <button
-                type="button"
-                className="pre-btn"
-                onClick={handlePrevious}
-              >
-                Back
-              </button>
-              <button type="button" className="next-btn" onClick={handleNext}>
-                Next
-              </button>
-            </div>
+
+            {/* </Box> */}
           </div>
         );
       case 5:
         return (
           <div className="container">
             <div className="form-content">
-              <p className="title">Confirmation</p>
+              <p className="serialNumber">Confirmation</p>
               <p>
                 We offer a comprehensive warranty for their products, covering
                 failures resulting from defects in materials and workmanship
