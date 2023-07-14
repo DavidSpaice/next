@@ -325,11 +325,7 @@ const WarrantyForm = () => {
       (item) => item === serialNumber.toLowerCase()
     );
 
-    const serialNumberDuplication = registeredSerialNumber.some(
-      (item) => item != serialNumber.toLowerCase()
-    );
-
-    console.log(serialNumberExists, serialNumberDuplication);
+    const serialNumberDuplication = !registeredSerialNumber.includes(serialNumber);
 
     // Set the errors in the state
     setErrors((prevErrors) => ({
