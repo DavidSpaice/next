@@ -2,8 +2,8 @@ import React from "react";
 
 function page() {
   return (
-    <div className="container">
-      <div className="form-content">
+    <div className="flex flex-col h-screen items-center">
+      <div className="w-2/6">
         <p className="title">
           Thank you for registering your warranty with us.
         </p>
