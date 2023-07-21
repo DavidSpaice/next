@@ -639,7 +639,7 @@ const WarrantyClaimForm = () => {
               onChange={handleChange}
               required={false}
             />
-            <Controls
+            {/* <Controls
               error={errors.shipment}
               type="text"
               name="shipment"
@@ -648,7 +648,7 @@ const WarrantyClaimForm = () => {
               value={claimFormData.shipment}
               onChange={handleChange}
               required={false}
-            />
+            /> */}
           </div>
           <div>
             <p className="title">Owner Information</p>
