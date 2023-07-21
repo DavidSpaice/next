@@ -1,8 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .container {
   text-align: center;
   font-size: 14px;
   color: #313130;
   height: 100vh;
+  width: 50rem;
+  display: inline-block;
+  text-align: left;
 }
 
 .warranty-container {
@@ -26,9 +33,8 @@
 }
 
 .form-content {
-  display: inline-block;
-  text-align: left;
-  max-width: 50rem;
+
+  /* max-width: 50rem; */
 }
 
 .form-content > h2 {

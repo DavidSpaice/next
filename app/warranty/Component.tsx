@@ -151,13 +151,17 @@ const WarrantyForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const firstResponse = await fetch("https://airtek-warranty.onrender.com/warranties");
+        const firstResponse = await fetch(
+          "https://airtek-warranty.onrender.com/warranties"
+        );
         const WarrantyRegistered = await firstResponse.json();
         const serialNumbers = filterSerialNumbers(WarrantyRegistered);
 
         setRegisteredSerialNumber(serialNumbers);
 
-        const secondResponse = await fetch("https://airtek-warranty.onrender.com/serial");
+        const secondResponse = await fetch(
+          "https://airtek-warranty.onrender.com/serial"
+        );
         const allSerialNumbers: { _id: string; serialNumber: string }[] =
           await secondResponse.json();
         const uniqueData = Array.from(
@@ -317,15 +321,14 @@ const WarrantyForm = () => {
     item.serialNumber.toLowerCase()
   ); //same with serialNumber
 
-  const validateSerialNumberDuplication = () => {};
-
   const validateSerialNumber = (fieldValues: Partial<NewItem> = newItem) => {
     const serialNumber = fieldValues.serialNumber ?? "";
     const serialNumberExists = serialNumberStrings.some(
       (item) => item === serialNumber.toLowerCase()
     );
 
-    const serialNumberDuplication = !registeredSerialNumber.includes(serialNumber);
+    const serialNumberDuplication =
+      !registeredSerialNumber.includes(serialNumber);
 
     // Set the errors in the state
     setErrors((prevErrors) => ({
@@ -573,7 +576,7 @@ const WarrantyForm = () => {
         );
       case 2:
         return (
-          <div className="container">
+          <div>
             <div className="form-content">
               <p className="title">Tell Us About The Installation</p>
               <FormControl
@@ -659,7 +662,7 @@ const WarrantyForm = () => {
         );
       case 3:
         return (
-          <div className="container">
+          <div>
             <p className="title">Home Owner Information</p>
 
             <Box
@@ -1130,7 +1133,7 @@ const WarrantyForm = () => {
                   </li>
                   <li>
                     Damage as a result from failure to perform routine
-                    maintenance as specified in the operator’s manual is not
+                    maintenance as specified in the operator&apos;s manual is not
                     covered under this warranty.
                   </li>
                   <li>
@@ -1170,7 +1173,7 @@ const WarrantyForm = () => {
               </div>
               <br />
             </div>
-            <div className=".form-btn">
+            <div className="form-btn">
               <button
                 className="pre-btn"
                 type="button"
@@ -1190,7 +1193,7 @@ const WarrantyForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="flex flex-col h-screen items-center" onSubmit={handleSubmit}>
       {loading ? (
         <div className="loader-container">
           <style jsx>{`
