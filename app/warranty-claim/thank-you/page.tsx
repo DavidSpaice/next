@@ -30,8 +30,9 @@ function page() {
         <p>
           In the meantime, if you have any additional questions or require
           further assistance, please feel free to reach out to our customer
-          support team at <a href="tel:1-866-969-1931">1 (866) 969-1931</a> or
+          support team at <a href="tel:1-866-969-1931"> 1 (866) 969-1931 </a> or
           <a href="mailto:support@airtekontario.com">
+            {" "}
             support@airtekontario.com
           </a>
           .

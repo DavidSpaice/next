@@ -200,7 +200,7 @@ const WarrantyClaimForm = () => {
     serialNumber: string;
   }>({
     matchFrom: "any",
-    limit: 10,
+    limit: 0,
   });
 
   const handleChange = (
@@ -496,13 +496,16 @@ const WarrantyClaimForm = () => {
     }
 
     try {
-      const response = await fetch(`https://airtek-warranty.onrender.com/warranty-claim`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(claimFormData),
-      });
+      const response = await fetch(
+        `https://airtek-warranty.onrender.com/warranty-claim`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(claimFormData),
+        }
+      );
 
       if (response.ok) {
         const responseText = await response.text();
@@ -534,7 +537,7 @@ const WarrantyClaimForm = () => {
           }}
         >
           <div>
-            <p className="title">Contract Information</p>
+            <p className="title">Contractor Information</p>
             <Controls
               error={errors.contractor}
               type="text"
