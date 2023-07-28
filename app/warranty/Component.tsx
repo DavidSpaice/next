@@ -27,20 +27,34 @@ import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { log } from "console";
 
 const WarrantyForm = () => {
+  interface DealerId {
+    dealerId: string;
+  }
   const [serialNumberData, setSerialNumberData] = useState<
     { _id: string; serialNumber: string }[]
   >([]);
   const [registeredSerialNumber, setRegisteredSerialNumber] = useState<
     string[]
   >([]);
+  const [dealerData, setDealerData] = useState<
+    {
+      _id: string;
+      dealerName: string;
+      dealerEmail: string;
+      dealerPhone: number;
+      dealerAddress: string;
+    }[]
+  >([]);
+  const [dealerId, setDealerId] = useState("");
+
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [errors, setErrors] = useState<Temp>({
+  const [errors, setErrors] = useState<Error>({
     installType: "",
+    dealerId: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -91,7 +105,8 @@ const WarrantyForm = () => {
     dealerAddress: string;
   }
 
-  interface Temp extends ComType {
+  interface Error extends ComType {
+    dealerId: string;
     model: string;
     serialNumber: string;
   }
@@ -176,6 +191,13 @@ const WarrantyForm = () => {
           );
 
         setSerialNumberData(uniqueData);
+
+        const thirdResponse = await fetch(
+          "https://airtek-warranty.onrender.com/dealerData"
+        );
+        const resDealerData = await thirdResponse.json();
+
+        setDealerData(resDealerData);
       } catch (error) {
         console.error("Error fetching serial number data:", error);
       }
@@ -221,6 +243,16 @@ const WarrantyForm = () => {
     setStepFourError(false);
   };
 
+  const dealerIdOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+
+    setDealerId(value);
+
+    if (value.trim() !== "") {
+      validateDealerId(dealerId);
+    }
+  };
+
   const validateType = (fieldValues: Partial<FormData> = formData) => {
     if ("installType" in fieldValues)
       errors.installType = fieldValues.installType
@@ -230,6 +262,60 @@ const WarrantyForm = () => {
 
     return errors.installType ? true : false;
   };
+
+  const validateDealerId = (dealerId: string) => {
+    const dealerExists = dealerData.some((dealer) => dealer._id === dealerId);
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      dealerId: dealerExists ? "" : "Invalid Dealer Id.",
+    }));
+
+    if (dealerExists) {
+      const dealerDetails = dealerData.find(
+        (dealer) => dealer._id === dealerId
+      );
+
+      // Convert dealerPhone to string before setting it in the FormData
+      const dealerPhoneAsString = dealerDetails?.dealerPhone.toString() || "";
+
+      // Update the FormData with the dealer details
+      setFormData((prevData) => ({
+        ...prevData,
+        dealerName: dealerDetails?.dealerName || "",
+        dealerEmail: dealerDetails?.dealerEmail || "",
+        dealerPhone: dealerPhoneAsString,
+        dealerAddress: dealerDetails?.dealerAddress || "",
+      }));
+    }
+
+    return dealerExists;
+  };
+
+  useEffect(() => {
+    if (dealerId.trim() !== "") {
+      validateDealerId(dealerId);
+    }
+  }, [dealerId]);
+
+  // const validateDealerId = (
+  //   dealerId: string,
+  //   dealerData: {
+  //     _id: string;
+  //     dealerName: string;
+  //     dealerEmail: string;
+  //     dealerPhone: number;
+  //     dealerAddress: string;
+  //   }[]
+  // ) => {
+  //   const dealerExists = dealerData.some((dealer) => dealer._id === dealerId);
+
+  //   setErrors((prevErrors) => ({
+  //     ...prevErrors,
+  //     dealerId: dealerExists ? "" : "Invalid Dealer Id.",
+  //   }));
+  //   return dealerExists;
+  // };
 
   const validate = (fieldValues: Partial<FormData> = formData) => {
     if ("firstName" in fieldValues)
@@ -434,7 +520,7 @@ const WarrantyForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await fetch(`https://airtek-warranty.onrender.com/warranty-register`, {
+    await fetch(`http://localhost:5000/warranty-register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -673,6 +759,18 @@ const WarrantyForm = () => {
             >
               <div>
                 <Controls
+                  error={errors.dealerId}
+                  type="text"
+                  label="Dealer ID"
+                  size="small"
+                  name="dealerId"
+                  value={dealerId}
+                  onChange={dealerIdOnChange}
+                  required
+                />
+              </div>
+              <div>
+                <Controls
                   error={errors.firstName}
                   type="text"
                   label="First Name"
@@ -784,7 +882,7 @@ const WarrantyForm = () => {
                   required={false}
                 />
               </div>
-              <div>
+              {/* <div>
                 <Controls
                   error={errors.dealerName}
                   type="text"
@@ -829,7 +927,7 @@ const WarrantyForm = () => {
                   onChange={handleChange}
                   required
                 />
-              </div>
+              </div> */}
             </Box>
             <br />
             <br />
@@ -1133,8 +1231,8 @@ const WarrantyForm = () => {
                   </li>
                   <li>
                     Damage as a result from failure to perform routine
-                    maintenance as specified in the operator&apos;s manual is not
-                    covered under this warranty.
+                    maintenance as specified in the operator&apos;s manual is
+                    not covered under this warranty.
                   </li>
                   <li>
                     Proof of purchase from Airtek/Gree must be provided to claim
@@ -1193,7 +1291,10 @@ const WarrantyForm = () => {
   };
 
   return (
-    <form className="flex flex-col h-screen items-center" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col h-screen items-center"
+      onSubmit={handleSubmit}
+    >
       {loading ? (
         <div className="loader-container">
           <style jsx>{`

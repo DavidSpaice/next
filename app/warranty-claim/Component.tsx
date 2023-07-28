@@ -742,8 +742,9 @@ const WarrantyClaimForm = () => {
               required
             />
           </div>
+          <p className="title">Units Information</p>
         </Box>
-        <p className="title">Units Information</p>
+       
         {emptyUnitInfo ? (
           <p style={{ color: "#d32f2f" }}>Please enter Unit Information</p>
         ) : (
