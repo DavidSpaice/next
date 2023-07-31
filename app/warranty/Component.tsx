@@ -47,14 +47,13 @@ const WarrantyForm = () => {
       dealerAddress: string;
     }[]
   >([]);
-  const [dealerId, setDealerId] = useState("");
+  // const [dealerId, setDealerId] = useState("");
 
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const [errors, setErrors] = useState<Error>({
     installType: "",
-    dealerId: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -64,6 +63,7 @@ const WarrantyForm = () => {
     postalCode: "",
     country: "",
     phone: "",
+    dealerId: "",
     dealerName: "",
     dealerEmail: "",
     dealerPhone: "",
@@ -103,10 +103,11 @@ const WarrantyForm = () => {
     dealerEmail: string;
     dealerPhone: string;
     dealerAddress: string;
+    dealerId: string;
   }
 
   interface Error extends ComType {
-    dealerId: string;
+
     model: string;
     serialNumber: string;
   }
@@ -143,6 +144,7 @@ const WarrantyForm = () => {
     country: "",
     phone: "",
     extension: "",
+    dealerId: "",
     dealerName: "",
     dealerEmail: "",
     dealerPhone: "",
@@ -158,7 +160,6 @@ const WarrantyForm = () => {
         serialNumbers.push(subItem.serialNumber);
       }
     }
-    console.log(serialNumbers);
 
     return serialNumbers;
   };
@@ -243,16 +244,6 @@ const WarrantyForm = () => {
     setStepFourError(false);
   };
 
-  const dealerIdOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-
-    setDealerId(value);
-
-    if (value.trim() !== "") {
-      validateDealerId(dealerId);
-    }
-  };
-
   const validateType = (fieldValues: Partial<FormData> = formData) => {
     if ("installType" in fieldValues)
       errors.installType = fieldValues.installType
@@ -262,61 +253,6 @@ const WarrantyForm = () => {
 
     return errors.installType ? true : false;
   };
-
-  const validateDealerId = (dealerId: string) => {
-    const dealerExists = dealerData.some((dealer) => dealer._id.toLowerCase() === dealerId.toLowerCase());
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      dealerId: dealerExists ? "" : "Invalid Dealer Id.",
-    }));
-
-    if (dealerExists) {
-      const dealerDetails = dealerData.find(
-        (dealer) => dealer._id === dealerId
-      );
-
-      // Convert dealerPhone to string before setting it in the FormData
-      const dealerPhoneAsString = dealerDetails?.dealerPhone.toString() || "";
-
-      // Update the FormData with the dealer details
-      setFormData((prevData) => ({
-        ...prevData,
-        dealerName: dealerDetails?.dealerName || "",
-        dealerEmail: dealerDetails?.dealerEmail || "",
-        dealerPhone: dealerPhoneAsString,
-        dealerAddress: dealerDetails?.dealerAddress || "",
-      }));
-    }
-
-    return dealerExists;
-  };
-
-  useEffect(() => {
-    if (dealerId.trim() !== "") {
-      validateDealerId(dealerId);
-    }
-  }, [dealerId]);
-
-  // const validateDealerId = (
-  //   dealerId: string,
-  //   dealerData: {
-  //     _id: string;
-  //     dealerName: string;
-  //     dealerEmail: string;
-  //     dealerPhone: number;
-  //     dealerAddress: string;
-  //   }[]
-  // ) => {
-  //   const dealerExists = dealerData.some((dealer) => dealer._id === dealerId);
-
-  //   setErrors((prevErrors) => ({
-  //     ...prevErrors,
-  //     dealerId: dealerExists ? "" : "Invalid Dealer Id.",
-  //   }));
-  //   return dealerExists;
-  // };
-
   const validate = (fieldValues: Partial<FormData> = formData) => {
     if ("firstName" in fieldValues)
       errors.firstName = fieldValues.firstName ? "" : "This field is required.";
@@ -372,6 +308,45 @@ const WarrantyForm = () => {
           ? ""
           : "This field is required.";
 
+    // Check if dealerId is empty and update errors immediately
+    if ("dealerId" in fieldValues) {
+      if (typeof fieldValues.dealerId === "string" && fieldValues.dealerId.trim() === "") {
+        errors.dealerId = "Invalid Dealer Id.";
+        // Update the FormData with the dealer details
+        setFormData((prevData) => ({
+          ...prevData,
+          dealerName: "",
+          dealerEmail: "",
+          dealerPhone: "",
+          dealerAddress: "",
+        }));
+      } else if (typeof fieldValues.dealerId === "string") {
+        const dealerExists = dealerData.some(
+          (dealer) => dealer?._id && dealer?._id.toLowerCase() === fieldValues.dealerId?.toLowerCase()
+        );
+
+        if (dealerExists) {
+          const dealerDetails = dealerData.find(
+            (dealer) => dealer?._id && dealer?._id.toLowerCase() === fieldValues.dealerId?.toLowerCase()
+          );
+
+          // Convert dealerPhone to string before setting it in the FormData
+          const dealerPhoneAsString = dealerDetails?.dealerPhone?.toString() || "";
+
+          // Update the FormData with the dealer details
+          setFormData((prevData) => ({
+            ...prevData,
+            dealerName: dealerDetails?.dealerName || "",
+            dealerEmail: dealerDetails?.dealerEmail || "",
+            dealerPhone: dealerPhoneAsString,
+            dealerAddress: dealerDetails?.dealerAddress || "",
+          }));
+        }
+
+        errors.dealerId = dealerExists ? "" : "Invalid Dealer Id.";
+      }
+    }
+
     setErrors({
       ...errors,
     });
@@ -379,6 +354,10 @@ const WarrantyForm = () => {
     if (fieldValues == formData)
       return Object.values(errors).every((x) => x == "");
   };
+
+
+
+
 
   const modelStrings = model.map((item) => item.model.toLowerCase()); //same with serialNumber
 
@@ -520,7 +499,7 @@ const WarrantyForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await fetch(`http://localhost:5000/warranty-register`, {
+    await fetch(`https://airtek-warranty.onrender.com/warranty-register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -549,14 +528,17 @@ const WarrantyForm = () => {
   const handleNext = () => {
     const currentStep = Number(searchParams.get("step")) || 1;
 
-    if (currentStep === 2 && formData.installType.length == 0) {
+    if (currentStep === 2 && formData.installType.length === 0) {
       validateType();
       // console.log(errors);
       return;
-    } else if (currentStep === 3 && !validate()) {
-      // console.log(errors);
-      return;
-    } else if (currentStep === 4 && formData.items.length == 0) {
+    } else if (currentStep === 3) {
+      const isFormValid = validate();
+
+      if (!isFormValid) {
+        return;
+      }
+    } else if (currentStep === 4 && formData.items.length === 0) {
       setStepFourError(true);
       // console.log(errors);
       return;
@@ -764,8 +746,8 @@ const WarrantyForm = () => {
                   label="Dealer ID"
                   size="small"
                   name="dealerId"
-                  value={dealerId}
-                  onChange={dealerIdOnChange}
+                  value={formData.dealerId}
+                  onChange={handleChange}
                   required
                 />
               </div>
