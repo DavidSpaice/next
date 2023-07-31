@@ -264,7 +264,7 @@ const WarrantyForm = () => {
   };
 
   const validateDealerId = (dealerId: string) => {
-    const dealerExists = dealerData.some((dealer) => dealer._id === dealerId);
+    const dealerExists = dealerData.some((dealer) => dealer._id.toLowerCase() === dealerId.toLowerCase());
 
     setErrors((prevErrors) => ({
       ...prevErrors,
