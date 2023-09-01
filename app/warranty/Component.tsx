@@ -129,7 +129,7 @@ const WarrantyForm = () => {
     id: "",
     model: "",
     serialNumber: "",
-    installationDate: dayjs("2023-05-17"),
+    installationDate: dayjs(),
   });
 
   const [formData, setFormData] = useState<FormData>({
