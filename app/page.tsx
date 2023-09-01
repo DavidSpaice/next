@@ -17,7 +17,7 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col h-screen items-center">
-      <p className="font-semibold text-lg">Explore Our Warranty Services</p>
+      {/* <p className="font-semibold text-lg">Explore Our Warranty Services</p> */}
       <br />
       <div>
         <div className="font-semibold text-sm">
