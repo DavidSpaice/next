@@ -73,6 +73,7 @@ const WarrantyForm = () => {
   });
   const [isDisabled, setIsDisabled] = useState(false);
   const emailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  const phoneValidate = /^[0-9]{9,}$/;
   const [stepFourError, setStepFourError] = useState(false);
 
   const filterOptions = createFilterOptions<{
@@ -264,9 +265,9 @@ const WarrantyForm = () => {
         : "Email is not valid.";
     if ("phone" in fieldValues)
       errors.phone =
-        fieldValues.phone ?? "".length > 9
+      phoneValidate.test(fieldValues.phone ?? "")
           ? ""
-          : "Minimum 10 numbers required.";
+          : "Minimum 10 numbers required and number only.";
     if ("streetAddress" in fieldValues)
       errors.streetAddress =
         fieldValues.streetAddress ?? "".length != 0
