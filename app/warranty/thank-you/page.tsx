@@ -3,7 +3,7 @@ import React from "react";
 function page() {
   return (
     <div className="flex flex-col h-screen items-center">
-      <div className="w-2/6">
+      <div className="w-2/4">
         <p className="title">
           Thank you for registering your warranty with us.
         </p>
