@@ -1133,7 +1133,7 @@ const WarrantyForm = () => {
               <div className="list">
                 <ul>
                   <li>
-                    A warranty period of ten (10) years on compressor to the
+                    A warranty period of ten (10) years on compressor and all parts to the
                     original registered owner.
                   </li>
                   <li>
