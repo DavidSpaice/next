@@ -84,15 +84,15 @@ const WarrantyClaimForm = () => {
   const [part, setPart] = useState<Part>({
     id: "",
     defectivePart: "",
-    defectDate: dayjs("2023-05-17"),
-    replacDate: dayjs("2023-05-17"),
+    defectDate: dayjs(),
+    replacDate: dayjs(),
   });
 
   const [newItem, setNewItem] = useState<NewItem>({
     id: "",
     model: "",
     serialNumber: "",
-    installationDate: dayjs("2023-05-17"),
+    installationDate: dayjs(),
     invoice: "",
     parts: [part],
   });
@@ -146,8 +146,8 @@ const WarrantyClaimForm = () => {
     invoice: "",
     explanation: "",
     defectivePart: "",
-    defectDate: dayjs("2023-05-17"),
-    replacDate: dayjs("2023-05-17"),
+    defectDate: dayjs(),
+    replacDate: dayjs(),
   });
 
   const [loading, setLoading] = useState(false);
