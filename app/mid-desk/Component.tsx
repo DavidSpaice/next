@@ -75,20 +75,19 @@ function MidDesk() {
 
     return (
         <div className='flex flex-col justify-center items-center'>
-            <h1>Search Warranty</h1>
-            <div className="h-full flex flex-col justify-center items-center">
-            <form onSubmit={handleSearch} className="">
+            <h1 className='text-3xl font-semibold'>Search Warranty</h1>
+            <br />
+            <div>
                 <label>
                     Serial Number:
                     <input
-                        className=" border-gray-100 text-black py-1 outline-none"
                         type="text"
                         value={serialNumber}
                         onChange={(e) => setSerialNumber(e.target.value)}
+                        className='border border-[#182c87] py-1 outline-none'
                     />
                 </label>
-                <button type='submit' className="px-3 py-1 bg-[#182c87] text-white" >Search</button>
-                </form>
+                <button className='bg-[#182c87] px-3 py-1.5 text-white' onClick={handleSearch}>Search</button>
             </div>
             {error && <p>{error}</p>}
             {warrantyData && (
