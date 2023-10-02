@@ -265,7 +265,7 @@ const WarrantyForm = () => {
         : "Email is not valid.";
     if ("phone" in fieldValues)
       errors.phone =
-      phoneValidate.test(fieldValues.phone ?? "")
+        phoneValidate.test(fieldValues.phone ?? "")
           ? ""
           : "Minimum 10 numbers required and number only.";
     if ("streetAddress" in fieldValues)
@@ -500,7 +500,7 @@ const WarrantyForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await fetch(`https://airtek-warranty.onrender.com/warranty-register`, {
+    await fetch(`https://airtek-warranty.onrender.com/warranties/warranty-register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
