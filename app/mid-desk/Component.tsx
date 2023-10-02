@@ -92,23 +92,19 @@ function MidDesk() {
             {error && <p>{error}</p>}
             {warrantyData && (
                 <div>
-                    <h2>Warranty Information:</h2>
+                    <h2 className='text-xl font-semibold'>Warranty Information:</h2>
                     <br />
-                    <h2>Model Information:</h2>
-                    <p>Model: {filteredModel}</p> <p>Serial Number: {serialNumber}</p>
+                    <h2 className='text-lg font-semibold'>Model Information:</h2>
+                    <p><span className='text-lg font-semibold'>Model: </span>{filteredModel}</p> <p><span className='text-lg font-semibold'>Serial Number: </span>{serialNumber}</p>
                     <br />
-                    <h2>Owner Name:</h2>
-                    <p>{warrantyData.firstName} {warrantyData.lastName}</p>
-                    <h2>Owner Address:</h2>
-                    <p>{warrantyData.streetAddress}</p>
-                    <p>{warrantyData.city}, {warrantyData.stateProvince}</p>
-                    <p>{warrantyData.country}, {warrantyData.postalCode}</p>
-                    <h2>Owner Phone:</h2>
-                    <p>{warrantyData.phone}</p>
-                    <h2>Owner Email:</h2>
-                    <p>{warrantyData.email}</p>
+                  
+                    <p><span className='text-lg font-semibold'>Owner Name: </span>{warrantyData.firstName} {warrantyData.lastName}</p>                  
+                    <p> <span className='text-lg font-semibold'>Owner Address: </span>{warrantyData.streetAddress} {warrantyData.city}, {warrantyData.stateProvince} {warrantyData.country}, {warrantyData.postalCode}</p>
+                    <p>  <span className='text-lg font-semibold'>Owner Phone: </span>{warrantyData.phone}</p>
+                  
+                    <p>  <span className='text-lg font-semibold'>Owner Email: </span>{warrantyData.email}</p>
                     <br />
-                    <p>Dealer Information:</p>
+                    <span className='text-lg font-semibold'>Dealer Information: </span>
                     <p>{warrantyData.dealerName}</p>
                     <p>{warrantyData.dealerEmail}</p>
                     <p>{warrantyData.dealerPhone}</p>
