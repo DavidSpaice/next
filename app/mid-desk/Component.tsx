@@ -34,6 +34,7 @@ function MidDesk() {
 
     const [serialNumber, setSerialNumber] = useState('');
     const [warrantyData, setWarrantyData] = useState<WarrantyType>();
+    const [filteredModel, setFilteredModel] = useState<string | null>(null);
     const [error, setError] = useState("");
 
     const handleSearch = async () => {
@@ -55,6 +56,16 @@ function MidDesk() {
             const data = await response.json();
             setWarrantyData(data);
             setError("");
+
+            const matchingModel = data.items.find((item: NewItem) => item.serialNumber === serialNumber);
+
+            if (matchingModel) {
+                setFilteredModel(matchingModel.model);
+                setError("");
+            } else {
+                setError("Model not found for the provided serial number");
+                setFilteredModel(null); // Reset filtered model
+            }
         } catch (error) {
             console.error('Error searching for warranty:', error);
             setError('An error occurred while searching for warranty');
@@ -63,23 +74,29 @@ function MidDesk() {
 
 
     return (
-        <div>
+        <div className='flex flex-col justify-center items-center'>
             <h1>Search Warranty</h1>
-            <div>
+            <div className="h-full flex flex-col justify-center items-center">
+            <form onSubmit={handleSearch} className="">
                 <label>
                     Serial Number:
                     <input
+                        className=" border-gray-100 text-black py-1 outline-none"
                         type="text"
                         value={serialNumber}
                         onChange={(e) => setSerialNumber(e.target.value)}
                     />
                 </label>
-                <button onClick={handleSearch}>Search</button>
+                <button type='submit' className="px-3 py-1 bg-[#182c87] text-white" >Search</button>
+                </form>
             </div>
             {error && <p>{error}</p>}
             {warrantyData && (
                 <div>
                     <h2>Warranty Information:</h2>
+                    <br />
+                    <h2>Model Information:</h2>
+                    <p>Model: {filteredModel}</p> <p>Serial Number: {serialNumber}</p>
                     <br />
                     <h2>Owner Name:</h2>
                     <p>{warrantyData.firstName} {warrantyData.lastName}</p>
