@@ -87,7 +87,14 @@ const model = [
     {"model":"ACI-CCO36CP21"},
     {"model":"GAA12AE-D3NRNB2G"},
     {"model":"GWH12QC-D3DNB8D/I (WIFI)"},
-    {"model":"GWH18QD-D3DNB8G/I (WIFI)"}
+    {"model":"GWH18QD-D3DNB8G/I (WIFI)"},
+    {"model":"ACI-BCO24CP17"},
+    {"model":"ACI-AUO24SHP-M"},
+    {"model":"ACI-CCO36CP21"},
+    {"model":"ACI-AUO30SHP-M"},
+    {"model":"GWH09ATCXB-D3DNA3A/I"},
+    {"model":"GWH12ATCXB-D3DNA3C/I"},
+    {"model":"GWH18ATDXD-D3DNA3A/I"},
 ]
 
 export default model;
