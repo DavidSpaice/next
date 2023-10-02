@@ -33,7 +33,7 @@ function MidDesk() {
     }
 
     const [serialNumber, setSerialNumber] = useState('');
-    const [warrantyData, setWarrantyData] = useState<WarrantyType>();
+    const [warrantyData, setWarrantyData] = useState<WarrantyType | null>();
     const [filteredModel, setFilteredModel] = useState<string | null>(null);
     const [error, setError] = useState("");
 
@@ -50,6 +50,7 @@ function MidDesk() {
             if (!response.ok) {
                 console.log(serialNumber);
                 setError('Warranty not found');
+                setWarrantyData(null);
                 return;
             }
 
@@ -69,27 +70,28 @@ function MidDesk() {
         } catch (error) {
             console.error('Error searching for warranty:', error);
             setError('An error occurred while searching for warranty');
+            setWarrantyData(null);
         }
     };
 
 
     return (
-        <div className='flex flex-col justify-center items-center'>
+        <div className='w-screen text-center sm:text-left flex flex-col justify-center items-center'>
             <h1 className='text-3xl font-semibold'>Search Warranty</h1>
             <br />
             <div>
-                <label>
-                    Serial Number:
-                    <input
-                        type="text"
-                        value={serialNumber}
-                        onChange={(e) => setSerialNumber(e.target.value)}
-                        className='border border-[#182c87] py-1 outline-none'
-                    />
-                </label>
+                
+                <input
+                    type="text"
+                    value={serialNumber}
+                    onChange={(e) => setSerialNumber(e.target.value)}
+                    className='border border-[#182c87] py-1 outline-none'
+                    placeholder='Input Serial Number'
+                />
+
                 <button className='bg-[#182c87] px-3 py-1.5 text-white' onClick={handleSearch}>Search</button>
             </div>
-            {error && <p>{error}</p>}
+            {error && <p className='text-red-700'>{error}</p>}
             {warrantyData && (
                 <div>
                     <h2 className='text-xl font-semibold'>Warranty Information:</h2>
@@ -97,11 +99,11 @@ function MidDesk() {
                     <h2 className='text-lg font-semibold'>Model Information:</h2>
                     <p><span className='text-lg font-semibold'>Model: </span>{filteredModel}</p> <p><span className='text-lg font-semibold'>Serial Number: </span>{serialNumber}</p>
                     <br />
-                  
-                    <p><span className='text-lg font-semibold'>Owner Name: </span>{warrantyData.firstName} {warrantyData.lastName}</p>                  
+
+                    <p><span className='text-lg font-semibold'>Owner Name: </span>{warrantyData.firstName} {warrantyData.lastName}</p>
                     <p> <span className='text-lg font-semibold'>Owner Address: </span>{warrantyData.streetAddress} {warrantyData.city}, {warrantyData.stateProvince} {warrantyData.country}, {warrantyData.postalCode}</p>
                     <p>  <span className='text-lg font-semibold'>Owner Phone: </span>{warrantyData.phone}</p>
-                  
+
                     <p>  <span className='text-lg font-semibold'>Owner Email: </span>{warrantyData.email}</p>
                     <br />
                     <span className='text-lg font-semibold'>Dealer Information: </span>
