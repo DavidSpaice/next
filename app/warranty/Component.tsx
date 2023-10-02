@@ -477,7 +477,7 @@ const WarrantyForm = () => {
       id: null,
       model: "",
       serialNumber: "",
-      installationDate: dayjs("2023-05-17"),
+      installationDate: dayjs(),
     });
 
     setStepFourError(false);
