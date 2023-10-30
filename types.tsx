@@ -1,6 +1,6 @@
 import { Dayjs } from "dayjs";
 
-interface ComType {
+export interface ComType {
   installType: string;
   firstName: string;
   lastName: string;
@@ -17,7 +17,7 @@ interface ComType {
   dealerAddress: string;
 }
 
-interface NewItem {
+export interface NewItem {
   _id: any;
   model: string;
   serialNumber: string;

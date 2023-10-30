@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { Dayjs } from "dayjs";
+import Link from 'next/link';
 
 function MidDesk() {
 
@@ -48,7 +49,7 @@ function MidDesk() {
             });
 
             if (!response.ok) {
-                console.log(serialNumber);
+                // console.log(serialNumber);
                 setError('Warranty not found');
                 setWarrantyData(null);
                 return;
@@ -58,15 +59,16 @@ function MidDesk() {
             setWarrantyData(data);
             setError("");
 
-            const matchingModel = data.items.find((item: NewItem) => item.serialNumber === serialNumber);
+            const matchingItem = data.items.find((item: NewItem) => item.serialNumber.toLowerCase() === serialNumber.toLowerCase());
 
-            if (matchingModel) {
-                setFilteredModel(matchingModel.model);
+            if (matchingItem) {
+                setFilteredModel(matchingItem.model);
                 setError("");
             } else {
                 setError("Model not found for the provided serial number");
                 setFilteredModel(null); // Reset filtered model
             }
+
         } catch (error) {
             console.error('Error searching for warranty:', error);
             setError('An error occurred while searching for warranty');
@@ -80,7 +82,7 @@ function MidDesk() {
             <h1 className='text-3xl font-semibold'>Search Warranty</h1>
             <br />
             <div>
-                
+
                 <input
                     type="text"
                     value={serialNumber}
@@ -113,6 +115,11 @@ function MidDesk() {
                     <p>{warrantyData.dealerAddress}</p>
                 </div>
             )}
+
+            <div>
+                <Link href="/warranty-management" className='border bg-[#182887] px-2  hover:text-gray-300 text-white'>Back</Link>
+            </div>
+
         </div>
     );
 }
