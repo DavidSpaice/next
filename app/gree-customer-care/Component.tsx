@@ -124,12 +124,12 @@ function CustomerCare() {
             })
             .then(function (responseText) {
                 setLoading(true);
-                router.push("warranty/thank-you");
+                router.push("gree-customer-care/thank-you");
                 // console.log(responseText);
                 setIsDisabled(false);
             })
             .catch(function (error) {
-                router.push("warranty/error");
+                router.push("gree-customer-care/error");
                 // console.error(error);
                 setIsDisabled(false);
             });
