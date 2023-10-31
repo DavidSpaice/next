@@ -5,7 +5,7 @@ function page() {
     <div className="flex flex-col h-screen items-center">
       <div className="w-2/4">
         <p className="title">
-          Thank you for registering your warranty with us.
+          Thank you for Gree Prestige Partnership Program with us.
         </p>
         <p>
           Upon your submission to the Gree Prestige Partnership, we want to assure you that your request has been received and is currently being processed. Our dedicated team is diligently working to connect you with a trusted dealer who will reach out to you in the very near future.
