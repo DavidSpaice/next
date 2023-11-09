@@ -209,8 +209,8 @@ function CustomerCare() {
                             <h1>Contact a local dealer</h1>
                         </div>
                         <br />
-                        <div className='w-full h-96 flex flex-row justify-center items-center border-2 border-gray-200 rounded-lg shadow-md'>
-                            <div className='w-1/4 h-full flex flex-col pt-20 items-center rounded-s-lg bg-[#182778]'>
+                        <div className='w-full h-96 flex flex-row justify-center items-center border-2 border-gray-200 rounded-3xl shadow-md'>
+                            <div className='w-1/4 h-full flex flex-col pt-20 px-4 items-center rounded-s-3xl bg-[#182778]'>
                                 <div className='text-white text-center text-xl'>
                                     <h1>We&apos;re here to help</h1>
                                 </div>
@@ -342,7 +342,6 @@ function CustomerCare() {
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             )}
