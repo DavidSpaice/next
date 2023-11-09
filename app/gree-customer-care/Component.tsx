@@ -167,48 +167,56 @@ function CustomerCare() {
             ) : (
                 <div className='container'>
                     <div className='form-content'>
-                        <div>
-                            <h1 className="title">
+                        {/* <div>
+                            <h1 className="title text-xl">
                                 Gree Prestige Partnership Dealers!
                             </h1>
-                        </div>
+                        </div> */}
                         <br />
                         <div className=''>
-                            <div className='w-full'>
-                                <Box className='float-right rounded-lg shadow-2xl ml-4 mb-4' width={350} component="img" src="/customer_service.png" alt="Customer Care" />
-                                <div>
-                                    <h1 className="title">Parts Concession Program</h1>
-                                    <br />
-                                    <h2 className="title">1. Parts Concession</h2>
-                                    <p>One of the standout features of choosing Gree Prestige Partnership is our Parts Concession program, powered by Airtek. This program empowers our valued dealers to concession a Major Component Part within specific time periods, which we refer to as the &quot;Concession Period.&quot; Under this program, Airtek takes care of the Part, while our dealers are responsible for conceding 100% of the labor required for replacement.</p>
-                                    <br />
-                                    <h2 className="title">1.1. Eligible Major Components</h2>
-                                    <p>Our Concession program applies exclusively to the following major components: Compressor, Outdoor coil, Indoor coil, and Heat Exchanger - collectively known as &quot;Major Component Parts&quot; or simply &quot;Parts.&quot;</p>
-                                    <br />
-                                    <h2 className="title">1.2. Concession Periods</h2>
-                                    <p>The Concession Period is determined by the length of the registered limited warranty period. To give you an idea of how this works:</p>
-                                    <ul className='pl-4'>
-                                        <li className="title">For a 10-year registered limited warranty period, the Concession Period extends to 12 months beyond the warranty&apos;s expiration.</li>
+                            <img src="customer_service.png" alt="customer_service" />
+                            <br />
+                            <div>
+                                <h1 className="title">Parts Concession Program</h1>
+                                <br />
+                                <h2 className="title">1. Parts Concession</h2>
+                                <br />
+                                <p>One of the standout features of choosing Gree Prestige Partnership is our Parts Concession program, powered by Airtek. This program empowers our valued dealers to concession a Major Component Part within specific time periods, which we refer to as the &quot;Concession Period.&quot; Under this program, Airtek takes care of the Part, while our dealers are responsible for conceding 100% of the labor required for replacement.</p>
+                                <br />
+                                <h2 className="title">1.1. Eligible Major Components</h2>
+                                <br />
+                                <p>Our Concession program applies exclusively to the following major components: Compressor, Outdoor coil, and Indoor coil - collectively known as &quot;Major Component Parts&quot; or simply &quot;Parts.&quot;</p>
+                                <br />
+                                <h2 className="title">1.2. Concession Periods</h2>
+                                <br />
+                                <p>The Concession Period is determined by the length of the registered limited warranty period. To give you an idea of how this works:</p>
+                                <br />
+                                <ul className='pl-4'>
+                                    <li className="list-disc font-bold">For a 10-year registered limited warranty period, the Concession Period extends to 12 months beyond the warranty&apos;s expiration.</li>
 
-                                        <li className="title">With a 5-year registered limited warranty, the Concession Period is 18 months post-expiration.</li>
+                                    <li className="list-disc font-bold">With a 5-year registered limited warranty, the Concession Period is 18 months post-expiration.</li>
 
-                                        <li className="title">For a 1-year registered limited warranty, the Concession Period spans 24 months after the warranty&apos;s expiration.</li>
-                                    </ul>
-                                </div>
+                                    <li className="list-disc font-bold">For a 1-year registered limited warranty, the Concession Period spans 24 months after the warranty&apos;s expiration.</li>
+                                </ul>
+
                             </div>
                         </div>
-
                         <br />
-                        <p className="title">Contact a local dealer</p>
-
+                        <br />
+                        <br />
+                        <br />
+                        <div className="title text-xl">
+                            <h1>Contact a local dealer</h1>
+                        </div>
+                        <br />
                         <div className='w-full h-96 flex flex-row justify-center items-center border-2 border-gray-200 rounded-lg shadow-md'>
-                            <div className='w-1/4 h-full flex flex-col pt-12 items-center rounded-s-lg bg-[#182778]'>
+                            <div className='w-1/4 h-full flex flex-col pt-20 items-center rounded-s-lg bg-[#182778]'>
                                 <div className='text-white text-center text-xl'>
                                     <h1>We&apos;re here to help</h1>
                                 </div>
                                 <br />
 
-                                <div className='text-white text-center text-xs'>
+                                <div className='text-white text-center text-md'>
                                     <p>
                                         Contact Customer Care for product, warranty, and dealer inquiries.
                                     </p>

@@ -48,6 +48,9 @@ function MidDesk() {
                 body: JSON.stringify({ serialNumber }),
             });
 
+            console.log(response);
+            
+
             if (!response.ok) {
                 // console.log(serialNumber);
                 setError('Warranty not found');
@@ -56,6 +59,8 @@ function MidDesk() {
             }
 
             const data = await response.json();
+            console.log(data);
+            
             setWarrantyData(data);
             setError("");
 
