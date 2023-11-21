@@ -88,6 +88,11 @@ const model = [
     {"model":"GAA12AE-D3NRNB2G"},
     {"model":"GWH12QC-D3DNB8D/I (WIFI)"},
     {"model":"GWH18QD-D3DNB8G/I (WIFI)"},
+
+    {"model":"MAC-24HWDN1-MN0"},
+    {"model":"MAC-36HWDN1-MN0"},
+    {"model":"MOD30-24HFN1-MW"},
+    {"model":"MOD30U-30HFN1-MR0(X)"},
 ]
 
 export default model;
