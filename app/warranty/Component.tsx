@@ -1238,7 +1238,7 @@ const WarrantyForm = () => {
                 </ul>
               </div>
               <br />
-              <div>
+              <div className="text-right">
                 <label htmlFor="agreedToTerms">
                   <input
                     type="checkbox"
