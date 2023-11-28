@@ -1119,7 +1119,7 @@ const WarrantyForm = () => {
         );
       case 5:
         return (
-          <div className="w-full flex flex-col justify-center items-center">
+          <div className="w-2/4 flex flex-col justify-center items-center">
             <div className="form-content w-4/5">
               <p className="serialNumber">Confirmation</p>
               <p>
