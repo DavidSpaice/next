@@ -932,7 +932,7 @@ const WarrantyForm = () => {
         );
       case 4:
         return (
-          <div className="w-2/4">
+          <div className="w-full sm:w-2/4">
             <div className="w-full flex flex-col justify-center items-center">
               <Grid container className="w-full sm:w-4/5" spacing={3}>
                 <Grid item xs={12} md={12} alignItems="center">
