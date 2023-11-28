@@ -564,8 +564,8 @@ const WarrantyForm = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="container">
-            <div className="form-content">
+          <div className="w-full flex flex-col justify-center items-center">
+            <div className="form-content w-1/2">
               <p className="title">
                 Airtek/Gree represents more than just HVAC. It embodies a
                 commitment.
@@ -645,8 +645,8 @@ const WarrantyForm = () => {
         );
       case 2:
         return (
-          <div>
-            <div className="form-content">
+          <div className="flex flex-col justify-center items-center">
+            <div className="w-full form-content">
               <p className="title">Tell Us About The Installation</p>
               <FormControl
                 sx={{ m: 3, ".MuiFormControlLabel-label": { fontSize: 14 } }}
@@ -739,8 +739,10 @@ const WarrantyForm = () => {
               sx={{
                 "& .MuiTextField-root": { m: 1, width: "25ch" },
               }}
+              display="flex-col"
+              alignItems="center"
             >
-              <div>
+              <div className="w-full flex flex-col items-center justify-center  sm:flex-row">
                 <Controls
                   error={errors.dealerId}
                   type="text"
@@ -752,7 +754,7 @@ const WarrantyForm = () => {
                   required
                 />
               </div>
-              <div>
+              <div className="w-full flex flex-col items-center justify-center sm:flex-row">
                 <Controls
                   error={errors.firstName}
                   type="text"
@@ -775,7 +777,7 @@ const WarrantyForm = () => {
                   required
                 />
               </div>
-              <div>
+              <div className="w-full flex flex-col items-center justify-center sm:flex-row">
                 <Controls
                   error={errors.email}
                   required
@@ -797,7 +799,7 @@ const WarrantyForm = () => {
                   required
                 />
               </div>
-              <div>
+              <div className="w-full flex flex-col items-center justify-center sm:flex-row">
                 <Controls
                   error={errors.city}
                   type="text"
@@ -820,7 +822,7 @@ const WarrantyForm = () => {
                   required
                 />
               </div>
-              <div>
+              <div className="w-full flex flex-col items-center justify-center sm:flex-row">
                 <Controls
                   error={errors.postalCode}
                   type="text"
@@ -843,7 +845,7 @@ const WarrantyForm = () => {
                   required
                 />
               </div>
-              <div>
+              <div className="w-full flex flex-col items-center justify-center sm:flex-row">
                 <Controls
                   error={errors.phone}
                   type="text"
@@ -914,7 +916,7 @@ const WarrantyForm = () => {
             </Box>
             <br />
             <br />
-            <div className="form-btn">
+            <div className="w-full flex flex-row justify-center items-center">
               <button
                 type="button"
                 className="pre-btn"
@@ -930,9 +932,9 @@ const WarrantyForm = () => {
         );
       case 4:
         return (
-          <div className="warranty-container">
-            <div className="center-form">
-              <Grid container spacing={3}>
+          <div className="w-full">
+            <div className="w-full flex flex-col justify-center items-center">
+              <Grid container className="w-full sm:w-4/5" spacing={3}>
                 <Grid item xs={12} md={12} alignItems="center">
                   <p className="title">Tell Us About The Installation</p>
                   <div style={{ color: "#d32f2f" }}>
@@ -1039,7 +1041,7 @@ const WarrantyForm = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} md={3} className="flex flex-row justify-center items-center">
                   <DatePicker
                     label="Installation Date"
                     slotProps={{ textField: { size: "small" } }}
@@ -1048,7 +1050,7 @@ const WarrantyForm = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} md={3} className="flex flex-row justify-center items-center">
                   <button
                     type="button"
                     className="list-btn"
@@ -1093,7 +1095,7 @@ const WarrantyForm = () => {
               <br />
               <br />
               <Grid item xs={12} md={12}>
-                <div className=".form-btn">
+                <div className="w-full flex flex-row justify-center items-center">
                   <button
                     type="button"
                     className="pre-btn"
@@ -1117,8 +1119,8 @@ const WarrantyForm = () => {
         );
       case 5:
         return (
-          <div className="container">
-            <div className="form-content">
+          <div className="w-full flex flex-col justify-center items-center">
+            <div className="form-content w-4/5">
               <p className="serialNumber">Confirmation</p>
               <p>
                 We offer a comprehensive warranty for their products, covering
@@ -1238,7 +1240,7 @@ const WarrantyForm = () => {
                 </ul>
               </div>
               <br />
-              <div className="text-right">
+              <div>
                 <label htmlFor="agreedToTerms">
                   <input
                     type="checkbox"
