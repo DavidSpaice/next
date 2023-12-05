@@ -27,6 +27,11 @@ import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import {
+  NewItem,
+  FormData,
+  CustomError,
+} from '@/types';
 
 const WarrantyForm = () => {
   interface DealerId {
@@ -52,7 +57,7 @@ const WarrantyForm = () => {
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [errors, setErrors] = useState<Error>({
+  const [errors, setErrors] = useState<CustomError>({
     installType: "",
     firstName: "",
     lastName: "",
@@ -89,42 +94,42 @@ const WarrantyForm = () => {
     limit: 10,
   });
 
-  interface ComType {
-    installType: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    streetAddress: string;
-    city: string;
-    stateProvince: string;
-    postalCode: string;
-    country: string;
-    phone: string;
-    dealerName: string;
-    dealerEmail: string;
-    dealerPhone: string;
-    dealerAddress: string;
-    dealerId: string;
-  }
+  // interface ComType {
+  //   installType: string;
+  //   firstName: string;
+  //   lastName: string;
+  //   email: string;
+  //   streetAddress: string;
+  //   city: string;
+  //   stateProvince: string;
+  //   postalCode: string;
+  //   country: string;
+  //   phone: string;
+  //   dealerName: string;
+  //   dealerEmail: string;
+  //   dealerPhone: string;
+  //   dealerAddress: string;
+  //   dealerId: string;
+  // }
 
-  interface Error extends ComType {
+  // interface Error extends ComType {
 
-    model: string;
-    serialNumber: string;
-  }
+  //   model: string;
+  //   serialNumber: string;
+  // }
 
-  interface NewItem {
-    id: any;
-    model: string;
-    serialNumber: string;
-    installationDate: Dayjs | null;
-  }
+  // interface NewItem {
+  //   id: any;
+  //   model: string;
+  //   serialNumber: string;
+  //   installationDate: Dayjs | null;
+  // }
 
-  interface FormData extends ComType {
-    extension?: string;
-    items: NewItem[];
-    agreedToTerms: boolean;
-  }
+  // interface FormData extends ComType {
+  //   extension?: string;
+  //   items: NewItem[];
+  //   agreedToTerms: boolean;
+  // }
 
   const [newItem, setNewItem] = useState<NewItem>({
     id: "",
