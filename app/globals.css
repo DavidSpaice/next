@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-.container {
+/* .container {
   text-align: center;
   font-size: 14px;
   color: #313130;
@@ -10,16 +10,16 @@
   width: 50rem;
   display: inline-block;
   text-align: left;
-}
+} */
 
-.warranty-container {
+/* .warranty-container {
   text-align: center;
   width: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   width: auto;
-}
+} */
 
 .loader-container {
   height: 50vh;
@@ -45,11 +45,11 @@
   font-size: 14px;
 }
 
-.form-btn {
+/* .form-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-}
+} */
 
 .form-btn > span {
   padding: 11px 30px;
