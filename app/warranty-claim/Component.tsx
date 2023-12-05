@@ -20,6 +20,7 @@ import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import TextareaAutosize from "@mui/base/TextareaAutosize";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { Part, NewItem, claimFormDataType, errorType } from "@/types";
 
 const WarrantyClaimForm = () => {
   const router = useRouter();
@@ -29,60 +30,8 @@ const WarrantyClaimForm = () => {
     { _id: string; serialNumber: string }[]
   >([]);
 
-  interface comDataType {
-    contractor: string;
-    contactPerson: string;
-    email: string;
-    streetAddress: string;
-    city: string;
-    stateProvince: string;
-    postalCode: string;
-    phone: string;
-    shipment: string;
-    extension?: string;
-    owner: string;
-    ownerEmail: string;
-    ownerPhone: string;
-    ownerExtension: string;
-    ownerAddress: string;
-    ownerCity: string;
-    ownerProvince: string;
-    ownerPone: string;
-    ownerPostalCode: string;
-    explanation: string;
-  }
-
-  interface Part {
-    id: any;
-    defectivePart: string;
-    defectDate: Dayjs | null;
-    replacDate: Dayjs | null;
-  }
-
-  interface NewItem {
-    id: any;
-    model: string;
-    serialNumber: string;
-    installationDate: Dayjs | null;
-    invoice: string;
-    parts: Part[];
-  }
-
-  interface claimFormDataType extends comDataType {
-    items: NewItem[];
-  }
-
-  interface errorType extends comDataType {
-    model: string;
-    serialNumber: string;
-    invoice: string;
-    defectivePart: string;
-    defectDate: dayjs.Dayjs;
-    replacDate: dayjs.Dayjs;
-  }
-
   const [part, setPart] = useState<Part>({
-    id: "",
+    _id: "",
     defectivePart: "",
     defectDate: dayjs(),
     replacDate: dayjs(),
@@ -160,9 +109,9 @@ const WarrantyClaimForm = () => {
 
     inputArray.forEach((obj: FormData) => {
       const items = obj.items;
-      items.map(({ _id, serialNumber }) =>
+      items.forEach(({ id, serialNumber }) =>
         resultArray.push({
-          _id,
+          _id: id,
           serialNumber,
         })
       );
@@ -170,6 +119,7 @@ const WarrantyClaimForm = () => {
 
     return resultArray;
   };
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -744,7 +694,7 @@ const WarrantyClaimForm = () => {
           </div>
           <p className="title">Units Information</p>
         </Box>
-       
+
         {emptyUnitInfo ? (
           <p style={{ color: "#d32f2f" }}>Please enter Unit Information</p>
         ) : (
@@ -886,7 +836,7 @@ const WarrantyClaimForm = () => {
               name="invoice"
               label="Purchase Invoice no."
               size="small"
-              value={newItem.invoice}
+              value={newItem.invoice || ''}
               onChange={invoiceOnChange}
               required={false}
             />
@@ -920,11 +870,11 @@ const WarrantyClaimForm = () => {
                       "MM/DD/YYYY"
                     )}`}
                   />
-                  {item.parts.map((part) => (
+                  {item.parts?.map((part) => (
                     <List
                       dense
                       sx={{ width: "100%", border: "solid 1px #e9e9e9" }}
-                      key={part.id}
+                      key={part._id}
                     >
                       <ListItem>
                         <ListItemText
