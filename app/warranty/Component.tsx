@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import Radio from "@mui/material/Radio";
@@ -32,17 +32,15 @@ import {
   FormData,
   CustomError,
 } from '@/types';
+import { debounce } from "lodash";
+
 
 const WarrantyForm = () => {
-  interface DealerId {
-    dealerId: string;
-  }
-  const [serialNumberData, setSerialNumberData] = useState<
-    { _id: string; serialNumber: string }[]
-  >([]);
-  const [registeredSerialNumber, setRegisteredSerialNumber] = useState<
-    string[]
-  >([]);
+
+  // const [registeredSerialNumber, setRegisteredSerialNumber] = useState<
+  //   string[]
+  // >([]);
+
   const [dealerData, setDealerData] = useState<
     {
       _id: string;
@@ -52,7 +50,6 @@ const WarrantyForm = () => {
       dealerAddress: string;
     }[]
   >([]);
-  // const [dealerId, setDealerId] = useState("");
 
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
@@ -80,56 +77,10 @@ const WarrantyForm = () => {
   const emailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const phoneValidate = /^[0-9]{9,}$/;
   const [stepFourError, setStepFourError] = useState(false);
-
-  const filterOptions = createFilterOptions<{
-    _id: string;
-    serialNumber: string;
-  }>({
-    matchFrom: "any",
-    limit: 0,
-  });
-
   const skuFilterOptions = createFilterOptions<{ model: string }>({
     matchFrom: "any",
     limit: 10,
   });
-
-  // interface ComType {
-  //   installType: string;
-  //   firstName: string;
-  //   lastName: string;
-  //   email: string;
-  //   streetAddress: string;
-  //   city: string;
-  //   stateProvince: string;
-  //   postalCode: string;
-  //   country: string;
-  //   phone: string;
-  //   dealerName: string;
-  //   dealerEmail: string;
-  //   dealerPhone: string;
-  //   dealerAddress: string;
-  //   dealerId: string;
-  // }
-
-  // interface Error extends ComType {
-
-  //   model: string;
-  //   serialNumber: string;
-  // }
-
-  // interface NewItem {
-  //   id: any;
-  //   model: string;
-  //   serialNumber: string;
-  //   installationDate: Dayjs | null;
-  // }
-
-  // interface FormData extends ComType {
-  //   extension?: string;
-  //   items: NewItem[];
-  //   agreedToTerms: boolean;
-  // }
 
   const [newItem, setNewItem] = useState<NewItem>({
     id: "",
@@ -173,31 +124,13 @@ const WarrantyForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const firstResponse = await fetch(
-          "https://airtek-warranty.onrender.com/warranties"
-        );
-        const WarrantyRegistered = await firstResponse.json();
-        const serialNumbers = filterSerialNumbers(WarrantyRegistered);
+        // const firstResponse = await fetch(
+        //   "https://airtek-warranty.onrender.com/warranties"
+        // );
+        // const WarrantyRegistered = await firstResponse.json();
+        // const serialNumbers = filterSerialNumbers(WarrantyRegistered);
 
-        setRegisteredSerialNumber(serialNumbers);
-
-        const secondResponse = await fetch(
-          "https://airtek-warranty.onrender.com/serial"
-        );
-        const allSerialNumbers: { _id: string; serialNumber: string }[] =
-          await secondResponse.json();
-        const uniqueData = Array.from(
-          new Set(allSerialNumbers.map((item) => item.serialNumber))
-        )
-          .map((serialNumber) =>
-            allSerialNumbers.find((item) => item.serialNumber === serialNumber)
-          )
-          .filter(
-            (item): item is { _id: string; serialNumber: string } =>
-              item !== undefined
-          );
-
-        setSerialNumberData(uniqueData);
+        // setRegisteredSerialNumber(serialNumbers);
 
         const thirdResponse = await fetch(
           "https://airtek-warranty.onrender.com/dealerData"
@@ -232,22 +165,96 @@ const WarrantyForm = () => {
     setStepFourError(false);
   };
 
+  const validateSerialNumber = async (fieldValues: Partial<NewItem> = newItem) => {
+    const serialNumber = fieldValues.serialNumber ?? "";
+    // const serialNumberExists = serialNumberStrings.some(
+    //   (item) => item === serialNumber.toLowerCase()
+    // );
+
+    try {
+      const response = await fetch('http://localhost:8500/serial/checkSerialNumber', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ serialNumber }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        const serialNumberExists = result.exists;
+
+        // const serialNumberDuplication =
+        //   !registeredSerialNumber.includes(serialNumber);
+
+        // Set the errors in the state
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          serialNumber:
+            serialNumberExists
+              ? ""
+              : "Invalid or Registered Serial Number.",
+        }));
+
+        // Return true or false based on the validation
+        if (fieldValues === newItem) {
+          if (!serialNumberExists) {
+            return false; // Validation failed
+          }
+          return Object.values(errors).every((x) => x === "");
+        }
+      } else {
+        console.error('Server error:', response.status, response.statusText);
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          serialNumber: "Server error",
+        }));
+        // Handle server error if needed
+        return false;
+      }
+    } catch (error) {
+      console.error('Error checking serial number');
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        serialNumber: "Server busy checking later",
+      }));
+      // Handle error if needed
+      return false;
+    }
+  };
+
+  const debouncedSerialNumberOnChange = useMemo(
+    () => debounce(
+      (value) => {
+        if (value.trim() !== "") {
+          // Validate only when the input is not empty
+          validateSerialNumber({ serialNumber: value });
+        }
+      },
+      1000
+    ), []);
+
   const SerialNumberOnChange = (
     event: React.ChangeEvent<{}>,
     value: string | { _id: string; serialNumber: string },
-    reason: AutocompleteInputChangeReason
+    reason: any
   ) => {
     if (typeof value === "string") {
       setNewItem((prevData) => ({
         ...prevData,
         serialNumber: value,
       }));
-      if (value.trim() !== "") {
-        // Validate only when the input is not empty
-        validateSerialNumber({ serialNumber: value });
-      }
+
     }
+    debouncedSerialNumberOnChange(value);
+
     setStepFourError(false);
+  };
+
+  const adaptedSerialNumberOnChange = (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    SerialNumberOnChange(e, e.target.value, "input"); // You may need to adjust the third parameter based on your actual use case
   };
 
   const validateType = (fieldValues: Partial<FormData> = formData) => {
@@ -388,36 +395,12 @@ const WarrantyForm = () => {
     }
   };
 
-  const serialNumberStrings = serialNumberData.map((item) =>
-    item.serialNumber.toLowerCase()
-  ); //same with serialNumber
+  // const serialNumberStrings = serialNumberData.map((item) =>
+  //   item.serialNumber.toLowerCase()
+  // ); //same with serialNumber
 
-  const validateSerialNumber = (fieldValues: Partial<NewItem> = newItem) => {
-    const serialNumber = fieldValues.serialNumber ?? "";
-    const serialNumberExists = serialNumberStrings.some(
-      (item) => item === serialNumber.toLowerCase()
-    );
 
-    const serialNumberDuplication =
-      !registeredSerialNumber.includes(serialNumber);
 
-    // Set the errors in the state
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      serialNumber:
-        serialNumberExists && serialNumberDuplication
-          ? ""
-          : "Invalid or Registered Serial Number.",
-    }));
-
-    // Return true or false based on the validation
-    if (fieldValues === newItem) {
-      if (!serialNumberExists) {
-        return false; // Validation failed
-      }
-      return Object.values(errors).every((x) => x === "");
-    }
-  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -997,18 +980,20 @@ const WarrantyForm = () => {
                     error={errors.model}
                     required
                   /> */}
-
-                {/* <Controls
+                <Grid item xs={12} md={3} className="flex flex-row justify-center items-center">
+                  <Controls
                     type="text"
                     label="Serial Number"
                     name="serialNumber"
                     size="small"
                     value={newItem.serialNumber}
-                    onChange={itemsOnChange}
+                    onChange={adaptedSerialNumberOnChange}
                     error={errors.serialNumber}
                     required
-                  /> */}
-                <Grid item xs={12} md={3}>
+                  />
+                </Grid>
+
+                {/* <Grid item xs={12} md={3}>
                   <Autocomplete
                     freeSolo
                     id="free-solo-2-demo"
@@ -1044,7 +1029,7 @@ const WarrantyForm = () => {
                       />
                     )}
                   />
-                </Grid>
+                </Grid> */}
 
                 <Grid item xs={12} md={3} className="flex flex-row justify-center items-center">
                   <DatePicker
@@ -1120,7 +1105,7 @@ const WarrantyForm = () => {
             </div>
 
             {/* </Box> */}
-          </div>
+          </div >
         );
       case 5:
         return (
