@@ -11,7 +11,7 @@ interface Credit {
 
 const CustomerCredits = () => {
     const [credits, setCredits] = useState<Credit[]>([]);
-    const [amountToAdd, setAmountToAdd] = useState<string>('0.00');
+    const [amountToAddMap, setAmountToAddMap] = useState<{ [key: number]: string }>({});
     const [searchTerm, setSearchTerm] = useState<string>('');
 
     useEffect(() => {
@@ -30,7 +30,7 @@ const CustomerCredits = () => {
 
     const handleAddCredit = async (userId: number) => {
         try {
-            const parsedAmountToAdd = parseFloat(amountToAdd);
+            const parsedAmountToAdd = parseFloat(amountToAddMap[userId] || '0.00');
             if (isNaN(parsedAmountToAdd) || parsedAmountToAdd < 0) {
                 alert('Invalid amount input');
                 return;
@@ -49,7 +49,7 @@ const CustomerCredits = () => {
                 })
             );
 
-            await fetch('https://airtek-warranty.onrender.com/user-credits/add-credit', {
+            await fetch('http://localhost:8500/user-credits/add-credit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ const CustomerCredits = () => {
                 body: JSON.stringify({ userId, amountToAdd: parsedAmountToAdd }),
             });
 
-            setAmountToAdd('0.00');
+            setAmountToAddMap((prevAmountToAddMap) => ({ ...prevAmountToAddMap, [userId]: '0.00' }));
         } catch (error) {
             console.error('Error adding credit:', error);
             setCredits((prevCredits) => [...prevCredits]);
@@ -108,8 +108,8 @@ const CustomerCredits = () => {
                                 <input
                                     type="number"
                                     step="0.01"
-                                    value={amountToAdd}
-                                    onChange={(e) => setAmountToAdd(e.target.value)}
+                                    value={amountToAddMap[credit.userId] || '0.00'}
+                                    onChange={(e) => setAmountToAddMap((prevAmountToAddMap) => ({ ...prevAmountToAddMap, [credit.userId]: e.target.value }))}
                                     className="border"
                                 />
                                 <button className="bg-[#182887] hover:bg-[#96a0da] text-white font-bold text-xs py-2 px-4 rounded" onClick={() => handleAddCredit(credit.userId)}>
