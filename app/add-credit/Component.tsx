@@ -49,7 +49,7 @@ const CustomerCredits = () => {
                 })
             );
 
-            await fetch('http://localhost:8500/user-credits/add-credit', {
+            await fetch('https://airtek-warranty.onrender.com/user-credits/add-credit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
