@@ -88,8 +88,9 @@ export interface Part {
   replacDate: Dayjs | null;
 }
 
-export interface claimFormDataType extends comDataType {
+export interface claimFormDataType {
   items: NewItem[];
+  explanation: string;
 }
 
 export interface CustomError extends ComType {
@@ -97,13 +98,14 @@ export interface CustomError extends ComType {
   serialNumber: string;
 }
 
-export interface errorType extends comDataType {
+export interface errorType {
   model: string;
   serialNumber: string;
   invoice?: string; // Make the invoice property optional
   defectivePart: string;
   defectDate: Dayjs;
   replacDate: Dayjs;
+  explanation: string;
 }
 
 export interface InputProps {
