@@ -25,7 +25,6 @@ import { Part, NewItem, claimFormDataType, errorType } from "@/types";
 const WarrantyClaimForm = () => {
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(false);
-  const emailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const [registeredSerialNumber, setRegisteredSerialNumber] = useState<
     { _id: string; serialNumber: string }[]
   >([]);
