@@ -25,7 +25,6 @@ import { Part, NewItem, claimFormDataType, errorType } from "@/types";
 const WarrantyClaimForm = () => {
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(false);
-  const emailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const [registeredSerialNumber, setRegisteredSerialNumber] = useState<
     { _id: string; serialNumber: string }[]
   >([]);
@@ -47,49 +46,11 @@ const WarrantyClaimForm = () => {
   });
 
   const [claimFormData, setClaimFormData] = useState<claimFormDataType>({
-    contractor: "",
-    contactPerson: "",
-    email: "",
-    streetAddress: "",
-    city: "",
-    stateProvince: "",
-    postalCode: "",
-    phone: "",
-    ownerExtension: "",
-    shipment: "",
-    extension: "",
-    owner: "",
-    ownerEmail: "",
-    ownerPhone: "",
-    ownerAddress: "",
-    ownerCity: "",
-    ownerProvince: "",
-    ownerPone: "",
-    ownerPostalCode: "",
     items: [],
     explanation: "",
   });
 
   const [errors, setErrors] = useState<errorType>({
-    contractor: "",
-    contactPerson: "",
-    email: "",
-    streetAddress: "",
-    city: "",
-    stateProvince: "",
-    postalCode: "",
-    phone: "",
-    shipment: "",
-    extension: "",
-    owner: "",
-    ownerEmail: "",
-    ownerPhone: "",
-    ownerExtension: "",
-    ownerAddress: "",
-    ownerCity: "",
-    ownerProvince: "",
-    ownerPone: "",
-    ownerPostalCode: "",
     model: "",
     serialNumber: "",
     invoice: "",
@@ -152,24 +113,6 @@ const WarrantyClaimForm = () => {
     matchFrom: "any",
     limit: 0,
   });
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    validateChange: boolean | string = false
-  ) => {
-    validateChange = true;
-
-    const { name, value } = e.target;
-
-    setClaimFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-
-    if (validateChange) {
-      validate({ [name]: value });
-    }
-  };
 
   const modelOnChange = (
     event: React.ChangeEvent<{}>,
@@ -301,87 +244,6 @@ const WarrantyClaimForm = () => {
     }
   };
 
-  const validate = (
-    fieldValues: Partial<claimFormDataType> = claimFormData
-  ) => {
-    if ("firstName" in fieldValues)
-      errors.contractor = fieldValues.contractor
-        ? ""
-        : "This field is required.";
-    if ("lastName" in fieldValues)
-      errors.contactPerson = fieldValues.contactPerson
-        ? ""
-        : "This field is required.";
-    if ("email" in fieldValues)
-      errors.email = emailValidate.test(fieldValues.email ?? "")
-        ? ""
-        : "Email is not valid.";
-    if ("phone" in fieldValues)
-      errors.phone =
-        fieldValues.phone ?? "".length > 9
-          ? ""
-          : "Minimum 10 numbers required.";
-    if ("streetAddress" in fieldValues)
-      errors.streetAddress =
-        fieldValues.streetAddress ?? "".length != 0
-          ? ""
-          : "This field is required.";
-    if ("city" in fieldValues)
-      errors.city =
-        fieldValues.city ?? "".length != 0 ? "" : "This field is required.";
-    if ("stateProvince" in fieldValues)
-      errors.stateProvince =
-        fieldValues.stateProvince ?? "".length != 0
-          ? ""
-          : "This field is required.";
-    if ("postalCode" in fieldValues)
-      errors.postalCode =
-        fieldValues.postalCode ?? "".length != 0
-          ? ""
-          : "This field is required.";
-    if ("owner" in fieldValues)
-      errors.owner =
-        fieldValues.owner ?? "".length != 0 ? "" : "This field is required.";
-    if ("ownerEmail" in fieldValues)
-      errors.ownerEmail = emailValidate.test(fieldValues.ownerEmail ?? "")
-        ? ""
-        : "Email is not valid.";
-    if ("ownerPhone" in fieldValues)
-      errors.ownerPhone =
-        fieldValues.ownerPhone ?? "".length > 9
-          ? ""
-          : "Minimum 10 numbers required.";
-    if ("ownerAddress" in fieldValues)
-      errors.ownerAddress =
-        fieldValues.ownerAddress ?? "".length != 0
-          ? ""
-          : "This field is required.";
-    if ("ownerCity" in fieldValues)
-      errors.ownerCity =
-        fieldValues.ownerCity ?? "".length != 0
-          ? ""
-          : "This field is required.";
-    if ("ownerProvince" in fieldValues)
-      errors.ownerProvince =
-        fieldValues.ownerProvince ?? "".length != 0
-          ? ""
-          : "This field is required.";
-
-    if ("ownerPone" in fieldValues)
-      errors.ownerPone =
-        fieldValues.ownerPone ?? "".length > 9 ? "" : "This field is required.";
-
-    if ("ownerPostalCode" in fieldValues)
-      errors.ownerPostalCode =
-        fieldValues.ownerPostalCode ?? "".length != 0
-          ? ""
-          : "This field is required.";
-
-    setErrors({
-      ...errors,
-    });
-  };
-
   const modelStrings = model.map((item) => item.model.toLowerCase()); //same with serialNumber
 
   const validateModel = (fieldValues: Partial<NewItem> = newItem) => {
@@ -479,219 +341,12 @@ const WarrantyClaimForm = () => {
     return (
       <div className="flex flex-col h-screen items-center">
         <p className="title">Warranty Claim Request</p>
-
         <Box
           component="div"
           sx={{
             "& .MuiTextField-root": { m: 1, width: "25ch" },
           }}
         >
-          <div>
-            <p className="title">Contractor Information</p>
-            <Controls
-              error={errors.contractor}
-              type="text"
-              label="Contractor"
-              name="contractor"
-              size="small"
-              value={claimFormData.contractor}
-              onChange={handleChange}
-              required
-            />
-
-            <Controls
-              error={errors.contactPerson}
-              type="text"
-              label="Contact Person"
-              name="contactPerson"
-              size="small"
-              value={claimFormData.contactPerson}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <Controls
-              error={errors.email}
-              required
-              type="text"
-              name="email"
-              label="Email"
-              size="small"
-              value={claimFormData.email}
-              onChange={handleChange}
-            />
-
-            <Controls
-              error={errors.streetAddress}
-              type="text"
-              name="streetAddress"
-              label="Street Address"
-              size="small"
-              value={claimFormData.streetAddress}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <Controls
-              error={errors.city}
-              type="text"
-              name="city"
-              label="City"
-              size="small"
-              value={claimFormData.city}
-              onChange={handleChange}
-              required
-            />
-
-            <Controls
-              error={errors.stateProvince}
-              type="text"
-              name="stateProvince"
-              label="State / Province"
-              size="small"
-              value={claimFormData.stateProvince}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <Controls
-              error={errors.postalCode}
-              type="text"
-              name="postalCode"
-              label="Postal / Zip code"
-              size="small"
-              value={claimFormData.postalCode}
-              onChange={handleChange}
-              required
-            />
-
-            <Controls
-              error={errors.phone}
-              type="text"
-              name="phone"
-              label="Office Phone"
-              size="small"
-              value={claimFormData.phone}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <Controls
-              type="text"
-              name="extension"
-              label="Ext"
-              size="small"
-              value={claimFormData.extension || ""}
-              onChange={handleChange}
-              required={false}
-            />
-            {/* <Controls
-              error={errors.shipment}
-              type="text"
-              name="shipment"
-              label="Return shipped to"
-              size="small"
-              value={claimFormData.shipment}
-              onChange={handleChange}
-              required={false}
-            /> */}
-          </div>
-          <div>
-            <p className="title">Owner Information</p>
-            <Controls
-              error={errors.owner}
-              type="text"
-              name="owner"
-              label="Owner"
-              size="small"
-              value={claimFormData.owner}
-              onChange={handleChange}
-              required
-            />
-
-            <Controls
-              error={errors.ownerEmail}
-              type="email"
-              name="ownerEmail"
-              label="Owner Email"
-              size="small"
-              value={claimFormData.ownerEmail}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <Controls
-              error={errors.ownerPhone}
-              type="text"
-              name="ownerPhone"
-              label="Owner Phone"
-              size="small"
-              value={claimFormData.ownerPhone}
-              onChange={handleChange}
-              required
-            />
-
-            <Controls
-              type="text"
-              name="ownerExtension"
-              label="Ext"
-              size="small"
-              value={claimFormData.ownerExtension || ""}
-              onChange={handleChange}
-              required={false}
-            />
-          </div>
-          <div>
-            <Controls
-              error={errors.ownerAddress}
-              type="text"
-              name="ownerAddress"
-              label="Owner Address"
-              size="small"
-              value={claimFormData.ownerAddress}
-              onChange={handleChange}
-              required
-            />
-
-            <Controls
-              error={errors.ownerCity}
-              type="text"
-              name="ownerCity"
-              label="Owner City"
-              size="small"
-              value={claimFormData.ownerCity}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <Controls
-              error={errors.ownerProvince}
-              type="text"
-              name="ownerProvince"
-              label="Owner Province"
-              size="small"
-              value={claimFormData.ownerProvince}
-              onChange={handleChange}
-              required
-            />
-
-            <Controls
-              error={errors.ownerPostalCode}
-              type="text"
-              name="ownerPostalCode"
-              label="Owner PostalCode"
-              size="small"
-              value={claimFormData.ownerPostalCode}
-              onChange={handleChange}
-              required
-            />
-          </div>
           <p className="title">Units Information</p>
         </Box>
 
@@ -738,7 +393,7 @@ const WarrantyClaimForm = () => {
                 <TextField
                   {...params}
                   type="text"
-                  label="Model Number"
+                  label="Select a Model Number"
                   size="small"
                   error={errors.model ? true : false}
                   helperText={errors.model}
