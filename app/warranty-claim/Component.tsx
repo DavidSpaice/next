@@ -25,6 +25,7 @@ import { Part, NewItem, claimFormDataType, errorType } from "@/types";
 const WarrantyClaimForm = () => {
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(false);
+  const emailValidate = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   const [registeredSerialNumber, setRegisteredSerialNumber] = useState<
     { _id: string; serialNumber: string }[]
   >([]);
@@ -341,12 +342,14 @@ const WarrantyClaimForm = () => {
     return (
       <div className="flex flex-col h-screen items-center">
         <p className="title">Warranty Claim Request</p>
+
         <Box
           component="div"
           sx={{
             "& .MuiTextField-root": { m: 1, width: "25ch" },
           }}
         >
+
           <p className="title">Units Information</p>
         </Box>
 
@@ -393,7 +396,7 @@ const WarrantyClaimForm = () => {
                 <TextField
                   {...params}
                   type="text"
-                  label="Select a Model Number"
+                  label="Model Number"
                   size="small"
                   error={errors.model ? true : false}
                   helperText={errors.model}
