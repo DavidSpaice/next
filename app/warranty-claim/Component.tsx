@@ -1,8 +1,7 @@
 "use client";
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FormData } from "@/types";
 import model from "../warranty/sku";
 import Box from "@mui/material/Box";
 
@@ -25,12 +24,9 @@ import { Part, NewItem, claimFormDataType, errorType } from "@/types";
 const WarrantyClaimForm = () => {
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(false);
-  const [registeredSerialNumber, setRegisteredSerialNumber] = useState<
-    { _id: string; serialNumber: string }[]
-  >([]);
 
   const [part, setPart] = useState<Part>({
-    _id: "",
+    id: `${Date.now()}${Math.floor(Math.random() * 100000)}`,
     defectivePart: "",
     defectDate: dayjs(),
     replacDate: dayjs(),
@@ -63,55 +59,9 @@ const WarrantyClaimForm = () => {
   const [loading, setLoading] = useState(false);
   const [emptyUnitInfo, setEmptyUnitInfo] = useState(false);
 
-  const filterSerialNumbers = (
-    inputArray: FormData[]
-  ): { _id: string; serialNumber: string }[] => {
-    const resultArray: { _id: string; serialNumber: string }[] = [];
-
-    inputArray.forEach((obj: FormData) => {
-      const items = obj.items;
-      items.forEach(({ id, serialNumber }) =>
-        resultArray.push({
-          _id: id,
-          serialNumber,
-        })
-      );
-    });
-
-    return resultArray;
-  };
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const firstResponse = await fetch(
-          "https://airtek-warranty.onrender.com/warranties"
-        );
-        const WarrantyRegistered = await firstResponse.json();
-        const serialNumbers = filterSerialNumbers(WarrantyRegistered);
-        // console.log(serialNumbers);
-
-        setRegisteredSerialNumber(serialNumbers);
-      } catch (error) {
-        console.error("Error fetching serial number data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   const skuFilterOptions = createFilterOptions<{ model: string }>({
     matchFrom: "any",
     limit: 10,
-  });
-
-  const filterOptions = createFilterOptions<{
-    _id: string;
-    serialNumber: string;
-  }>({
-    matchFrom: "any",
-    limit: 0,
   });
 
   const modelOnChange = (
@@ -144,14 +94,14 @@ const WarrantyClaimForm = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { value } = event.target;
-    console.log(value);
 
     setPart((prevData) => ({
       ...prevData,
       defectivePart: value,
     }));
-
-    console.log(part);
+    if (value.trim() !== "") {
+      validateDefectivePart({ defectivePart: value });
+    }
   };
 
   const defectDateOnChange = (date: Dayjs | null) => {
@@ -174,20 +124,24 @@ const WarrantyClaimForm = () => {
 
   const invoiceOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
-
-    setNewItem((prevData) => ({
-      ...prevData,
-      invoice: value,
-    }));
+    if (value.trim() !== "") {
+      setNewItem((prevData) => ({
+        ...prevData,
+        invoice: value,
+      }));
+    }
   };
 
-  const handleAddItem = () => {
-    const serialNumberExists = claimFormData.items.some(
-      (item) =>
-        item.serialNumber.toLowerCase() === newItem.serialNumber.toLowerCase()
-    );
+  const handleAddItem = async () => {
 
-    if (!validateModel() || !validateSerialNumber()) {
+    const isModelValid = validateModel();
+    const isSerialNumberValid = await validateSerialNumber();
+    const isDefectivePart = validateDefectivePart();
+
+    console.log(isDefectivePart);
+
+
+    if (!isModelValid || !isSerialNumberValid || !isDefectivePart) {
       return;
     }
 
@@ -207,7 +161,7 @@ const WarrantyClaimForm = () => {
         {
           ...newItem,
           id: Date.now(),
-          parts: [part], // Add a new part array for the new item
+          parts: [part],
         },
       ],
     }));
@@ -221,28 +175,25 @@ const WarrantyClaimForm = () => {
   };
 
   const textAreaOnChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setClaimFormData((prevData) => ({
-      ...prevData,
-      explanation: event.target.value,
-    }));
-  };
-
-  const SerialNumberOnChange = (
-    event: React.ChangeEvent<{}>,
-    value: string | { _id: string; serialNumber: string },
-    reason: AutocompleteInputChangeReason
-  ) => {
-    if (typeof value === "string") {
-      setNewItem((prevData) => ({
+    if (event.target.value.trim() !== "") {
+      setClaimFormData((prevData) => ({
         ...prevData,
-        serialNumber: value,
+        explanation: event.target.value,
       }));
-      if (value.trim() !== "") {
-        // Validate only when the input is not empty
-        validateSerialNumber({ serialNumber: value });
-      }
     }
   };
+
+  const SerialNumberOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setNewItem((prevData) => ({
+      ...prevData,
+      serialNumber: value,
+    }));
+    if (value.trim() !== "") {
+      validateSerialNumber({ serialNumber: value });
+    }
+  };
+
 
   const modelStrings = model.map((item) => item.model.toLowerCase()); //same with serialNumber
 
@@ -267,28 +218,83 @@ const WarrantyClaimForm = () => {
     }
   };
 
-  const validateSerialNumber = (fieldValues: Partial<NewItem> = newItem) => {
+  const validateSerialNumber = async (fieldValues: Partial<NewItem> = newItem) => {
     const serialNumber = fieldValues.serialNumber ?? "";
-    const registeredSerialNumberOnly = registeredSerialNumber.map(
-      (item) => item.serialNumber
-    );
-    const serialNumberExists =
-      registeredSerialNumberOnly.includes(serialNumber);
+    if (!serialNumber) {
+      // Set error message if serial number is empty
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        serialNumber: "Serial number is required.",
+      }));
+      return false;
+    }
+    try {
+      const response = await fetch('https://airtek-warranty.onrender.com/check-serial-number', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ serialNumber }),
+      });
 
-    // Set the errors in the state
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      serialNumber: serialNumberExists ? "" : "Unregistered Serial Number.",
-    }));
+      if (response.ok) {
+        const result = await response.json();
+        const serialNumberExists = result.exists;
 
-    // Return true or false based on the validation
-    if (fieldValues === newItem) {
-      if (!serialNumberExists) {
-        return false; // Validation failed
+
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          serialNumber:
+            serialNumberExists
+              ? ""
+              : "Not a Registered Serial Number.",
+        }));
+
+        return serialNumberExists;
+      } else {
+        console.error('Server error:', response.status, response.statusText);
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          serialNumber: "Server error",
+        }));
+        // Handle server error if needed
+        return false;
       }
-      return serialNumberExists;
+    } catch (error) {
+      console.error('Error checking serial number');
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        serialNumber: "Server busy checking later",
+      }));
+      // Handle error if needed
+      return false;
     }
   };
+
+
+  const validateDefectivePart = (fieldValues: Partial<Part> = part) => {
+    const defectivePart = fieldValues.defectivePart ?? "";
+    if (!defectivePart) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        defectivePart: "Defective Part is required.",
+      }));
+      return false;
+    }
+    if (defectivePart.trim() === "") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        defectivePart: "Defective Part cannot be just whitespace.",
+      }));
+      return false;
+    }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      defectivePart: "",
+    }));
+    return true;
+  }
+
 
   const handleDeleteItem = (itemId: string) => {
     setClaimFormData((prevData) => ({
@@ -309,7 +315,7 @@ const WarrantyClaimForm = () => {
 
     try {
       const response = await fetch(
-        `https://airtek-warranty.onrender.com/warranty-claim`,
+        `https://airtek-warranty.onrender.com/warranty-claim/submit`,
         {
           method: "POST",
           headers: {
@@ -320,9 +326,8 @@ const WarrantyClaimForm = () => {
       );
 
       if (response.ok) {
-        const responseText = await response.text();
+        // const responseText = await response.text();
         setLoading(false);
-        console.log(claimFormData);
 
         router.push("warranty-claim/thank-you");
         // console.log(responseText);
@@ -333,6 +338,8 @@ const WarrantyClaimForm = () => {
     } catch (error) {
       router.push("warranty-claim/error");
       // console.error(error);
+      console.log(claimFormData);
+
       setIsDisabled(false);
     }
   };
@@ -353,7 +360,7 @@ const WarrantyClaimForm = () => {
         </Box>
 
         {emptyUnitInfo ? (
-          <p style={{ color: "#d32f2f" }}>Please enter Unit Information</p>
+          <p style={{ color: "#d32f2f" }}>Please add Unit Information to the list</p>
         ) : (
           ""
         )}
@@ -409,7 +416,7 @@ const WarrantyClaimForm = () => {
             />
             {/* </Grid>
           <Grid item xs={6} md={3}> */}
-            <Autocomplete
+            {/* <Autocomplete
               freeSolo
               id="free-solo-2-demo"
               disableClearable
@@ -442,6 +449,17 @@ const WarrantyClaimForm = () => {
                   }}
                 />
               )}
+            /> */}
+
+            <Controls
+              error={errors.serialNumber}
+              type="text"
+              label="Serial Number"
+              name="serialNumber"
+              size="small"
+              value={newItem.serialNumber}
+              onChange={SerialNumberOnChange}
+              required
             />
           </div>
           {/* </Grid>
@@ -498,10 +516,8 @@ const WarrantyClaimForm = () => {
               required={false}
             />
           </div>
-          {/* </Grid> */}
+          <div className="form-btn flex flex-row justify-center items-center">
 
-          {/* <Grid item xs={12} md={3}> */}
-          <div className="form-btn">
             <button type="button" className="list-btn" onClick={handleAddItem}>
               Add Item
             </button>
@@ -531,7 +547,7 @@ const WarrantyClaimForm = () => {
                     <List
                       dense
                       sx={{ width: "100%", border: "solid 1px #e9e9e9" }}
-                      key={part._id}
+                      key={part.id}
                     >
                       <ListItem>
                         <ListItemText
