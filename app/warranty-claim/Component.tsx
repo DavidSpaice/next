@@ -229,7 +229,7 @@ const WarrantyClaimForm = () => {
       return false;
     }
     try {
-      const response = await fetch('https://airtek-warranty.onrender.com/check-serial-number', {
+      const response = await fetch('https://airtek-warranty.onrender.com/warranty-claim/check-serial-number', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
