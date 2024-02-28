@@ -15,10 +15,14 @@ import FormHelperText from "@mui/material/FormHelperText";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
 
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  IconButton,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Controls from "./Controls";
 
@@ -36,10 +40,6 @@ import { debounce } from "lodash";
 
 
 const WarrantyForm = () => {
-
-  // const [registeredSerialNumber, setRegisteredSerialNumber] = useState<
-  //   string[]
-  // >([]);
 
   const [dealerData, setDealerData] = useState<
     {
@@ -109,17 +109,6 @@ const WarrantyForm = () => {
     items: [],
     agreedToTerms: false,
   });
-
-  const filterSerialNumbers = (sn: { items: { serialNumber: string }[] }[]) => {
-    let serialNumbers: string[] = [];
-    for (const item of sn) {
-      for (const subItem of item.items) {
-        serialNumbers.push(subItem.serialNumber);
-      }
-    }
-
-    return serialNumbers;
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -231,7 +220,7 @@ const WarrantyForm = () => {
           validateSerialNumber({ serialNumber: value });
         }
       },
-      1000
+      500
     ), []);
 
   const SerialNumberOnChange = (
@@ -367,10 +356,6 @@ const WarrantyForm = () => {
     if (fieldValues == formData)
       return Object.values(errors).every((x) => x == "");
   };
-
-
-
-
 
   const modelStrings = model.map((item) => item.model.toLowerCase()); //same with serialNumber
 
@@ -956,7 +941,7 @@ const WarrantyForm = () => {
                       <TextField
                         {...params}
                         type="text"
-                        label="Model Number"
+                        label="Select a Model Number"
                         size="small"
                         error={errors.model ? true : false}
                         helperText={errors.model}
@@ -1051,33 +1036,32 @@ const WarrantyForm = () => {
                 </Grid>
                 <Grid item xs={12} md={12} alignItems="center">
                   {formData.items.length > 0 && (
-                    <div>
-                      {formData.items.map((item) => (
-                        <List
-                          dense
-                          sx={{ width: "100%", border: "solid 1px #e9e9e9" }}
-                          key={item.id}
-                        >
-                          <ListItem>
-                            <ListItemText primary={`Model: ${item.model}`} />
-                            <ListItemText
-                              primary={`Serial Number: ${item.serialNumber}`}
-                            />
-                            <ListItemText
-                              primary={`Installation Date: ${item.installationDate?.format(
-                                "MM/DD/YYYY"
-                              )}`}
-                            />
-                            <ListItemIcon>
-                              <DeleteIcon
-                                type="button"
-                                onClick={() => handleDeleteItem(item.id)}
-                              ></DeleteIcon>
-                            </ListItemIcon>
-                          </ListItem>
-                        </List>
-                      ))}
-                    </div>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Model</TableCell>
+                          <TableCell>Serial Number</TableCell>
+                          <TableCell>Installation Date</TableCell>
+                          <TableCell>Action</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {formData.items.map((item) => (
+                          <TableRow key={item.id}>
+                            <TableCell>{item.model}</TableCell>
+                            <TableCell>{item.serialNumber}</TableCell>
+                            <TableCell>
+                              {item.installationDate?.format("MM/DD/YYYY")}
+                            </TableCell>
+                            <TableCell>
+                              <IconButton onClick={() => handleDeleteItem(item.id)}>
+                                <DeleteIcon />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
                   )}
                 </Grid>
               </Grid>
