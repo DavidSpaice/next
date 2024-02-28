@@ -1,4 +1,3 @@
-// types.tsx
 import React from "react";
 import { Dayjs } from "dayjs";
 
@@ -82,7 +81,7 @@ export interface comDataType {
 }
 
 export interface Part {
-  _id: any;
+  id?: any;
   defectivePart: string;
   defectDate: Dayjs | null;
   replacDate: Dayjs | null;
