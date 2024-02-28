@@ -11,8 +11,16 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Controls from "../warranty/Controls";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  IconButton,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import TextField from "@mui/material/TextField";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
@@ -523,9 +531,47 @@ const WarrantyClaimForm = () => {
             </button>
           </div>
         </Box>
-        {/* </Grid> */}
-        {/* <Grid item xs={12} md={12} alignItems="center"> */}
-        {claimFormData.items.length > 0 && (
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Model</TableCell>
+              <TableCell>Serial Number</TableCell>
+              <TableCell>Installation Date</TableCell>
+              <TableCell>Defective Part</TableCell>
+              <TableCell>Defect Date</TableCell>
+              <TableCell>Replace Date</TableCell>
+              <TableCell>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {claimFormData.items.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.model}</TableCell>
+                <TableCell>{item.serialNumber}</TableCell>
+                <TableCell>
+                  {item.installationDate?.format("MM/DD/YYYY")}
+                </TableCell>
+                {item.parts?.map((part, index) => (
+                  <React.Fragment key={`${item.id}-${index}`}>
+                    <TableCell>{part.defectivePart}</TableCell>
+                    <TableCell>
+                      {part.defectDate?.format("MM/DD/YYYY")}
+                    </TableCell>
+                    <TableCell>
+                      {part.replacDate?.format("MM/DD/YYYY")}
+                    </TableCell>
+                  </React.Fragment>
+                ))}
+                <TableCell>
+                  <IconButton onClick={() => handleDeleteItem(item.id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        {/* {claimFormData.items.length > 0 && (
           <div>
             {claimFormData.items.map((item) => (
               <List
@@ -577,7 +623,7 @@ const WarrantyClaimForm = () => {
               </List>
             ))}
           </div>
-        )}
+        )} */}
         {/* </Grid> */}
         {/* </Grid> */}
 
@@ -588,6 +634,7 @@ const WarrantyClaimForm = () => {
           }}
         >
           <div>
+            <br />
             <TextareaAutosize
               minRows={3}
               name="explanation"
