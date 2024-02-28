@@ -113,14 +113,6 @@ const WarrantyForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const firstResponse = await fetch(
-        //   "https://airtek-warranty.onrender.com/warranties"
-        // );
-        // const WarrantyRegistered = await firstResponse.json();
-        // const serialNumbers = filterSerialNumbers(WarrantyRegistered);
-
-        // setRegisteredSerialNumber(serialNumbers);
-
         const thirdResponse = await fetch(
           "https://airtek-warranty.onrender.com/dealerData"
         );
