@@ -151,6 +151,15 @@ const WarrantyForm = () => {
     // const serialNumberExists = serialNumberStrings.some(
     //   (item) => item === serialNumber.toLowerCase()
     // );
+    if (!serialNumber) {
+      // Set error message if serial number is empty
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        serialNumber: "Serial number is required.",
+      }));
+      return false;
+    }
+
 
     try {
       const response = await fetch('https://airtek-warranty.onrender.com/serial/checkSerialNumber', {
@@ -164,11 +173,6 @@ const WarrantyForm = () => {
       if (response.ok) {
         const result = await response.json();
         const serialNumberExists = result.exists;
-
-        // const serialNumberDuplication =
-        //   !registeredSerialNumber.includes(serialNumber);
-
-        // Set the errors in the state
         setErrors((prevErrors) => ({
           ...prevErrors,
           serialNumber:
@@ -190,7 +194,6 @@ const WarrantyForm = () => {
           ...prevErrors,
           serialNumber: "Server error",
         }));
-        // Handle server error if needed
         return false;
       }
     } catch (error) {
@@ -407,7 +410,7 @@ const WarrantyForm = () => {
     }));
   };
 
-  const handleAddItem = () => {
+  const handleAddItem = async () => {
     const serialNumberExists = formData.items.some(
       (item) =>
         item.serialNumber.toLowerCase() === newItem.serialNumber.toLowerCase()
@@ -421,7 +424,10 @@ const WarrantyForm = () => {
       return;
     }
 
-    if (!validateModel() || !validateSerialNumber()) {
+    const isModelValid = validateModel();
+    const isSerialNumberValid = await validateSerialNumber();
+
+    if (!isModelValid || !isSerialNumberValid) {
       return;
     }
 
