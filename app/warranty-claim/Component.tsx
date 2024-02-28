@@ -402,7 +402,7 @@ const WarrantyClaimForm = () => {
                 <TextField
                   {...params}
                   type="text"
-                  label="Model Number"
+                  label="Select a Model Number"
                   size="small"
                   error={errors.model ? true : false}
                   helperText={errors.model}
