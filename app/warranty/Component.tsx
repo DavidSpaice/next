@@ -238,7 +238,7 @@ const WarrantyForm = () => {
   const adaptedSerialNumberOnChange = (
     e: ChangeEvent<HTMLInputElement>
   ) => {
-    SerialNumberOnChange(e, e.target.value, "input"); // You may need to adjust the third parameter based on your actual use case
+    SerialNumberOnChange(e, e.target.value, "input");
   };
 
   const validateType = (fieldValues: Partial<FormData> = formData) => {
@@ -352,7 +352,7 @@ const WarrantyForm = () => {
       return Object.values(errors).every((x) => x == "");
   };
 
-  const modelStrings = model.map((item) => item.model.toLowerCase()); //same with serialNumber
+  const modelStrings = model.map((item) => item.model.toLowerCase());
 
   const validateModel = (fieldValues: Partial<NewItem> = newItem) => {
     const model = fieldValues.model ?? "";
@@ -374,13 +374,6 @@ const WarrantyForm = () => {
       return Object.values(errors).every((x) => x === "");
     }
   };
-
-  // const serialNumberStrings = serialNumberData.map((item) =>
-  //   item.serialNumber.toLowerCase()
-  // ); //same with serialNumber
-
-
-
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -908,6 +901,7 @@ const WarrantyForm = () => {
               <Grid container className="w-full sm:w-4/5" spacing={3}>
                 <Grid item xs={12} md={12} alignItems="center">
                   <p className="title">Tell Us About The Installation</p>
+                  <p>If your coils are Aspen, No need to register online; simply bring them to our warehouse.</p>
                   <div style={{ color: "#d32f2f" }}>
                     {stepFourError
                       ? "Please provide the necessary details or information."
