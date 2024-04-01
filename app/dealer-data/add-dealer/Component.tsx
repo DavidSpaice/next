@@ -46,7 +46,7 @@ export default function AddDealerData() {
                     location: ''
                 });
             } else {
-                if (response.status === 500) {
+                if (response.status === 400) {
                     alert('Dealer ID existing. Please use a different ID.');
                 } else {
                     const errorText = await response.text();
