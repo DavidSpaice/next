@@ -117,7 +117,7 @@ const WarrantyForm = () => {
     const fetchData = async () => {
       try {
         const thirdResponse = await fetch(
-          "https://airtek-warranty.onrender.com//dealerData"
+          "https://airtek-warranty.onrender.com/dealerData"
         );
         const resDealerData = await thirdResponse.json();
 
@@ -165,7 +165,7 @@ const WarrantyForm = () => {
 
 
     try {
-      const response = await fetch('https://airtek-warranty.onrender.com//serial/checkSerialNumber', {
+      const response = await fetch('https://airtek-warranty.onrender.com/serial/checkSerialNumber', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -469,7 +469,7 @@ const WarrantyForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await fetch(`https://airtek-warranty.onrender.com//warranties/warranty-register`, {
+    await fetch(`https://airtek-warranty.onrender.com/warranties/warranty-register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
