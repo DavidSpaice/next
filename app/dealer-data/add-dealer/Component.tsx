@@ -10,13 +10,15 @@ export default function AddDealerData() {
         dealerEmail: '',
         dealerPhone: '',
         dealerAddress: '',
+        location: ''
     });
 
     const handleChange = (e: { target: { name: any; value: any; }; }) => {
         const { name, value } = e.target;
+        const trimmedValue = value.trim();
         setFormData((prevData) => ({
             ...prevData,
-            [name]: value,
+            [name]: trimmedValue,
         }));
     };
 
@@ -41,6 +43,7 @@ export default function AddDealerData() {
                     dealerEmail: '',
                     dealerPhone: '',
                     dealerAddress: '',
+                    location: ''
                 });
             } else {
                 alert('Error adding dealer data. Please try again.');
@@ -108,8 +111,26 @@ export default function AddDealerData() {
                         required
                     />
                 </div>
+                <br />
+                <div>
+                    <label>Company Location:</label>
+                    <select
+                        name="location"
+                        value={formData.location}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Select a location</option>
+                        <option value="Manitoba">Manitoba</option>
+                        <option value="Toronto">Toronto</option>
+                        <option value="Halifax">Halifax</option>
+                        <option value="Calgary">Calgary</option>
+                        <option value="Vancouver">Vancouver</option>
+                    </select>
+                </div>
+                <br />
                 <div className='w-full flex flex-row justify-center items-center'>
-                <button type="submit" className='border bg-[#182887] px-2 text-white hover:text-gray-300'>Add Dealer Data</button>
+                    <button type="submit" className='border bg-[#182887] px-2 text-white hover:text-gray-300'>Add Dealer Data</button>
 
                 </div>
             </form>

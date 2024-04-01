@@ -16,6 +16,7 @@ export interface DealerData {
   dealerEmail: string;
   dealerPhone: number;
   dealerAddress: string;
+  location: string;
 }
 
 export interface ComType {
@@ -49,6 +50,7 @@ export interface FormData extends ComType {
   extension?: string;
   items: NewItem[];
   agreedToTerms: boolean;
+  location: string;
 }
 
 export interface WarrantyType extends ComType {
@@ -95,6 +97,7 @@ export interface claimFormDataType {
 export interface CustomError extends ComType {
   model: string;
   serialNumber: string;
+  location: string;
 }
 
 export interface errorType {
