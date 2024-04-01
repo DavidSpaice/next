@@ -46,11 +46,17 @@ export default function AddDealerData() {
                     location: ''
                 });
             } else {
-                alert('Error adding dealer data. Please try again.');
+                if (response.status === 500) {
+                    alert('Dealer ID existing. Please use a different ID.');
+                } else {
+                    const errorText = await response.text();
+                    console.error('Error adding dealer data:', errorText);
+                    alert('Error adding dealer data. Please try again.');
+                }
             }
         } catch (error) {
-            console.error('Error adding dealer data:', error);
-            alert('Error adding dealer data. Please try again.');
+            console.error('Network error or issue preventing request:', error);
+            alert('Network error or issue preventing request. Please try again.');
         }
     };
 
