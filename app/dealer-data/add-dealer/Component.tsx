@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 export default function AddDealerData() {
     const [formData, setFormData] = useState({
-        _id: '', // Include the _id field
+        _id: '',
         dealerName: '',
         dealerEmail: '',
         dealerPhone: '',
@@ -36,9 +36,9 @@ export default function AddDealerData() {
 
             if (response.ok) {
                 alert('Dealer Data added successfully!');
-                // Reset the form
+
                 setFormData({
-                    _id: '', // Reset _id field
+                    _id: '',
                     dealerName: '',
                     dealerEmail: '',
                     dealerPhone: '',
@@ -110,7 +110,7 @@ export default function AddDealerData() {
                 <br />
                 <div>
                     <label>Dealer Address:</label>
-                    <textarea
+                    <input
                         name="dealerAddress"
                         value={formData.dealerAddress}
                         onChange={handleChange}
