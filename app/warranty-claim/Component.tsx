@@ -79,8 +79,8 @@ const WarrantyClaimForm = () => {
     items: [],
     explanation: "",
   });
-  const [image, setImage] = useState<string | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [errors, setErrors] = useState<errorType>({
     model: "",
     serialNumber: "",
@@ -102,8 +102,25 @@ const WarrantyClaimForm = () => {
 
     const imageUrl = data.info.secure_url;
     console.log("Uploaded Image URL:", imageUrl);
-    setImage(imageUrl);
-    setImagePreview(imageUrl);
+
+    setImageUrls((prevUrls) => {
+      // Prevent adding more than three images
+      if (prevUrls.length < 3) {
+        return [...prevUrls, imageUrl];
+      } else {
+        console.log("Maximum of three images can be uploaded.");
+        return prevUrls;
+      }
+    });
+
+    // For image previews, assuming you want to display previews of all uploaded images
+    setImagePreviews((prevPreviews) => {
+      if (prevPreviews.length < 3) {
+        return [...prevPreviews, imageUrl];
+      } else {
+        return prevPreviews;
+      }
+    });
   };
 
 
@@ -365,7 +382,7 @@ const WarrantyClaimForm = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (!image) {
+    if (imageUrls.length === 0) {
       alert('Please upload an image.');
       setLoading(false);
       return;
@@ -387,7 +404,7 @@ const WarrantyClaimForm = () => {
           },
           body: JSON.stringify({
             ...claimFormData,
-            image
+            imageUrls
           }),
         }
       );
@@ -549,13 +566,32 @@ const WarrantyClaimForm = () => {
           >
             {({ open }) => {
               return (
-                <button className="list-btn" onClick={() => open()}>
+                <button
+                  className="list-btn"
+                  onClick={() => {
+                    if (imageUrls.length < 3) {
+                      open();
+                    } else {
+                      alert("You can only upload up to three images.");
+                    }
+                  }}
+                  disabled={imageUrls.length >= 3}
+                >
                   Upload an Image
                 </button>
               );
             }}
           </CldUploadWidget>
         </Box>
+
+        <Box>
+          <div className="flex felx-row justify-center items-center">
+            {imagePreviews.map((url, index) => (
+              <img key={index} src={url} alt={`Preview ${index + 1}`} style={{ width: 100, height: 100, marginRight: 10 }} />
+            ))}
+          </div>
+        </Box>
+
 
         {/* <Box component="div" sx={{ "& .MuiTextField-root": { m: 1, width: "25ch" } }}>
                     <div className="flex flex-col justify-center items-center">
