@@ -1,37 +1,9 @@
 "use client"
 import React, { useState } from 'react';
-import { Dayjs } from "dayjs";
 import Link from 'next/link';
+import { NewItem, WarrantyType } from "@/types";
 
 function MidDesk() {
-
-    interface NewItem {
-        id: any;
-        model: string;
-        serialNumber: string;
-        installationDate: Dayjs | null;
-    }
-
-    interface WarrantyType {
-        installType: string;
-        firstName: string;
-        lastName: string;
-        email: string;
-        streetAddress: string;
-        city: string;
-        stateProvince: string;
-        postalCode: string;
-        country: string;
-        phone: string;
-        dealerName: string;
-        dealerEmail: string;
-        dealerPhone: string;
-        dealerAddress: string;
-        dealerId: string;
-        extension?: string;
-        items: NewItem[];
-        agreedToTerms: boolean;
-    }
 
     const [serialNumber, setSerialNumber] = useState('');
     const [warrantyData, setWarrantyData] = useState<WarrantyType | null>();
@@ -49,7 +21,7 @@ function MidDesk() {
             });
 
             console.log(response);
-            
+
 
             if (!response.ok) {
                 // console.log(serialNumber);
@@ -60,7 +32,7 @@ function MidDesk() {
 
             const data = await response.json();
             console.log(data);
-            
+
             setWarrantyData(data);
             setError("");
 
