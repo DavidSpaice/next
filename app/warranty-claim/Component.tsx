@@ -3,14 +3,8 @@ import React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import model from "../warranty/sku";
-import Box from "@mui/material/Box";
-
+import { Button, Box, Card, CardMedia } from '@mui/material';
 import { AutocompleteInputChangeReason } from "@mui/material";
-
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import Controls from "../warranty/Controls";
 import {
   Table,
@@ -27,7 +21,39 @@ import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import TextareaAutosize from "@mui/base/TextareaAutosize";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { CldUploadWidget } from 'next-cloudinary';
 import { Part, NewItem, claimFormDataType, errorType } from "@/types";
+
+interface CloudinaryUploadInfo {
+  id: string;
+  batchId: string;
+  asset_id: string;
+  public_id: string;
+  version: number;
+  version_id: string;
+  signature: string;
+  width: number;
+  height: number;
+  format: string;
+  resource_type: string;
+  created_at: string;
+  tags: string[];
+  bytes: number;
+  type: string;
+  etag: string;
+  placeholder: boolean;
+  url: string;
+  secure_url: string;
+  folder: string;
+  original_filename: string;
+  path: string;
+  thumbnail_url: string;
+}
+
+interface CloudinaryUploadEvent {
+  event?: string;
+  info: CloudinaryUploadInfo;
+}
 
 const WarrantyClaimForm = () => {
   const router = useRouter();
@@ -53,7 +79,8 @@ const WarrantyClaimForm = () => {
     items: [],
     explanation: "",
   });
-
+  const [image, setImage] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<errorType>({
     model: "",
     serialNumber: "",
@@ -63,14 +90,37 @@ const WarrantyClaimForm = () => {
     defectDate: dayjs(),
     replacDate: dayjs(),
   });
-
   const [loading, setLoading] = useState(false);
   const [emptyUnitInfo, setEmptyUnitInfo] = useState(false);
-
   const skuFilterOptions = createFilterOptions<{ model: string }>({
     matchFrom: "any",
     limit: 10,
   });
+
+  const handleImageUploadSuccess = (data: CloudinaryUploadEvent) => {
+    console.log(data);
+
+    const imageUrl = data.info.secure_url;
+    console.log("Uploaded Image URL:", imageUrl);
+    setImage(imageUrl);
+    setImagePreview(imageUrl);
+  };
+
+
+  // const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+  //     const file = event.target.files ? event.target.files[0] : null;
+  //     if (file && file.type.startsWith("image")) {
+  //         setImage(file);
+  //         const reader = new FileReader();
+  //         reader.onloadend = () => {
+  //             setImagePreview(reader.result as string);
+  //         };
+  //         reader.readAsDataURL(file);
+  //     } else {
+  //         setImage(null);
+  //         setImagePreview(null);
+  //     }
+  // };
 
   const modelOnChange = (
     event: React.ChangeEvent<{}>,
@@ -315,6 +365,12 @@ const WarrantyClaimForm = () => {
     e.preventDefault();
     setLoading(true);
 
+    if (!image) {
+      alert('Please upload an image.');
+      setLoading(false);
+      return;
+    }
+
     if (claimFormData.items.length === 0) {
       setLoading(false);
       setEmptyUnitInfo(true);
@@ -329,7 +385,10 @@ const WarrantyClaimForm = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(claimFormData),
+          body: JSON.stringify({
+            ...claimFormData,
+            image
+          }),
         }
       );
 
@@ -344,10 +403,9 @@ const WarrantyClaimForm = () => {
         throw new Error("Error: " + response.status);
       }
     } catch (error) {
+      console.error('Error during form submission:', error);
+      setLoading(false);
       router.push("warranty-claim/error");
-      // console.error(error);
-      console.log(claimFormData);
-
       setIsDisabled(false);
     }
   };
@@ -377,7 +435,7 @@ const WarrantyClaimForm = () => {
         <Box
           component="div"
           sx={{
-            "& .MuiTextField-root": { m: 1, width: "25ch" },
+            "& .MuiTextField-root": { m: 1, width: "25ch", height: "4ch" },
           }}
         >
           <div
@@ -472,13 +530,60 @@ const WarrantyClaimForm = () => {
           </div>
           {/* </Grid>
           <Grid item xs={12} md={3}> */}
+
+
           <DatePicker
             label="Installation Date"
             slotProps={{ textField: { size: "small" } }}
             value={newItem.installationDate}
             onChange={dateOnChange}
           />
+
+
+
         </Box>
+
+        <Box>
+          <CldUploadWidget uploadPreset="h74rzzu1"
+            onSuccess={(data: any) => handleImageUploadSuccess(data)}
+          >
+            {({ open }) => {
+              return (
+                <button className="list-btn" onClick={() => open()}>
+                  Upload an Image
+                </button>
+              );
+            }}
+          </CldUploadWidget>
+        </Box>
+
+        {/* <Box component="div" sx={{ "& .MuiTextField-root": { m: 1, width: "25ch" } }}>
+                    <div className="flex flex-col justify-center items-center">
+                        <input
+                            accept="image/*"
+                            type="file"
+                            id="image-upload"
+                            style={{ display: 'none' }}
+                            onChange={handleImageChange}
+                        />
+                        <label htmlFor="image-upload">
+                            <Button className="list-btn hover:bg-[#2d3770] hover:text-gray-300" variant="contained" component="span">
+                                Upload Image
+                            </Button>
+                        </label>
+                        {imagePreview && (
+                            <Card sx={{ maxWidth: 345, mt: 2 }}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    image={imagePreview}
+                                    alt="Preview"
+                                />
+                            </Card>
+                        )}
+                    </div>
+                </Box> */}
+
         <p className="title">Returned Part Information</p>
         <Box
           component="div"
@@ -526,7 +631,7 @@ const WarrantyClaimForm = () => {
           </div>
           <div className="form-btn flex flex-row justify-center items-center">
 
-            <button type="button" className="list-btn" onClick={handleAddItem}>
+            <button type="button" className="list-btn hover:text-gray-300" onClick={handleAddItem}>
               Add Item
             </button>
           </div>
@@ -654,7 +759,7 @@ const WarrantyClaimForm = () => {
           </div>
         </Box>
         <div className="form-btn">
-          <button type="submit" className="next-btn" disabled={isDisabled}>
+          <button type="submit" className="next-btn hover:text-gray-300" disabled={isDisabled}>
             Submit
           </button>
         </div>
