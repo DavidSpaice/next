@@ -559,9 +559,10 @@ const WarrantyClaimForm = () => {
 
 
         </Box>
-        <p className="title">Upload 3 Images, Including Serial Number</p>
+        <p className="title">Max 3 Images, Including Serial Number</p>
         <Box>
           <CldUploadWidget uploadPreset="h74rzzu1"
+            options={{ maxFiles: 3, }}
             onSuccess={(data: any) => handleImageUploadSuccess(data)}
           >
             {({ open }) => {
