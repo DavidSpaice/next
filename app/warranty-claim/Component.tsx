@@ -322,7 +322,7 @@ const WarrantyClaimForm = () => {
           serialNumber:
             serialNumberExists
               ? ""
-              : "Not a Registered Serial Number.",
+              : "Not a Registered or a Claimed Serial Number.",
         }));
 
         return serialNumberExists;
