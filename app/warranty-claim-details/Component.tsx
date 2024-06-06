@@ -26,7 +26,7 @@ const ClaimTable: React.FC = () => {
     useEffect(() => {
         const fetchDealerInfo = async () => {
             try {
-                const response = await fetch('http://localhost:8500/claim/claim-info');
+                const response = await fetch('https://airtek-warranty.onrender.com/claim/claim-info');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
