@@ -2,12 +2,20 @@
 
 import React, { useEffect, useState } from 'react';
 
+interface PartInfo {
+    defectivePart: string;
+    defectDate: string;
+    replacDate: string;
+}
+
 interface DealerInfo {
     serialNumber: string;
     dealerName: string;
     dealerEmail: string;
     dealerPhone: string;
     dealerAddress: string;
+    explanation: string;
+    parts: PartInfo[];
 }
 
 const ClaimTable: React.FC = () => {
@@ -35,7 +43,8 @@ const ClaimTable: React.FC = () => {
     }, []);
 
     const filteredDealerInfo = dealerInfo.filter(dealer =>
-        dealer.serialNumber.toLowerCase().includes(searchTerm.toLowerCase())
+        dealer.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        dealer.dealerName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     if (loading) {
@@ -47,11 +56,14 @@ const ClaimTable: React.FC = () => {
             <h1>Claim Information</h1>
             <input
                 type="text"
-                placeholder="Search by Serial Number"
+                placeholder="Search by Serial Number or Dealer Name"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ marginBottom: '20px', padding: '10px', width: '100%' }}
             />
+            <div style={{ marginBottom: '20px' }}>
+                <strong>Total Results: {filteredDealerInfo.length}</strong>
+            </div>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                     <tr>
@@ -60,6 +72,8 @@ const ClaimTable: React.FC = () => {
                         <th style={tableHeaderStyle}>Dealer Email</th>
                         <th style={tableHeaderStyle}>Dealer Phone</th>
                         <th style={tableHeaderStyle}>Dealer Address</th>
+                        <th style={tableHeaderStyle}>Explanation</th>
+                        <th style={tableHeaderStyle}>Defective Parts</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,6 +84,27 @@ const ClaimTable: React.FC = () => {
                             <td style={tableCellStyle}>{dealer.dealerEmail}</td>
                             <td style={tableCellStyle}>{dealer.dealerPhone}</td>
                             <td style={tableCellStyle}>{dealer.dealerAddress}</td>
+                            <td style={tableCellStyle}>{dealer.explanation}</td>
+                            <td style={tableCellStyle}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <thead>
+                                        <tr>
+                                            <th style={tableHeaderStyle}>Defective Part</th>
+                                            <th style={tableHeaderStyle}>Defect Date</th>
+                                            <th style={tableHeaderStyle}>Replacement Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {dealer.parts.map((part, partIndex) => (
+                                            <tr key={partIndex}>
+                                                <td style={tableCellStyle}>{part.defectivePart}</td>
+                                                <td style={tableCellStyle}>{part.defectDate}</td>
+                                                <td style={tableCellStyle}>{part.replacDate}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -91,4 +126,3 @@ const tableCellStyle: React.CSSProperties = {
 };
 
 export default ClaimTable;
-
