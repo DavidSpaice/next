@@ -123,22 +123,6 @@ const WarrantyClaimForm = () => {
     });
   };
 
-
-  // const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-  //     const file = event.target.files ? event.target.files[0] : null;
-  //     if (file && file.type.startsWith("image")) {
-  //         setImage(file);
-  //         const reader = new FileReader();
-  //         reader.onloadend = () => {
-  //             setImagePreview(reader.result as string);
-  //         };
-  //         reader.readAsDataURL(file);
-  //     } else {
-  //         setImage(null);
-  //         setImagePreview(null);
-  //     }
-  // };
-
   const modelOnChange = (
     event: React.ChangeEvent<{}>,
     value: string,
