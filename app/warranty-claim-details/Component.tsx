@@ -3,12 +3,14 @@
 import React, { useEffect, useState } from 'react';
 
 interface PartInfo {
+    _id: string;
     defectivePart: string;
     defectDate: string;
     replacDate: string;
 }
 
 interface DealerInfo {
+    _id: string;
     serialNumber: string;
     dealerName: string;
     dealerEmail: string;
@@ -16,6 +18,8 @@ interface DealerInfo {
     dealerAddress: string;
     explanation: string;
     parts: PartInfo[];
+    replacementStatus: string;
+    creditIssueStatus: string;
 }
 
 const ClaimTable: React.FC = () => {
@@ -41,6 +45,54 @@ const ClaimTable: React.FC = () => {
 
         fetchDealerInfo();
     }, []);
+
+    const handleStatusChange = async (combinedId: string, statusType: string, newStatus: string) => {
+        const [claimId, itemId] = combinedId.split('-');
+        try {
+            const response = await fetch('https://airtek-warranty.onrender.com/claim/update-status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    claimId,
+                    itemId,
+                    statusType,
+                    newStatus,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Update the status in the state
+            setDealerInfo((prevDealerInfo) =>
+                prevDealerInfo.map((dealer) => {
+                    if (dealer._id === combinedId) {
+                        const updatedParts = dealer.parts.map((part) => {
+                            if (part._id === itemId) {
+                                return {
+                                    ...part,
+                                    [statusType]: newStatus,
+                                };
+                            }
+                            return part;
+                        });
+
+                        return {
+                            ...dealer,
+                            parts: updatedParts,
+                            [statusType]: newStatus,
+                        };
+                    }
+                    return dealer;
+                })
+            );
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
+    };
 
     const filteredDealerInfo = dealerInfo.filter(dealer =>
         dealer.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -74,6 +126,8 @@ const ClaimTable: React.FC = () => {
                         <th style={tableHeaderStyle}>Dealer Address</th>
                         <th style={tableHeaderStyle}>Explanation</th>
                         <th style={tableHeaderStyle}>Defective Parts</th>
+                        <th style={tableHeaderStyle}>Replacement Status</th>
+                        <th style={tableHeaderStyle}>Credit Issue Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -104,6 +158,24 @@ const ClaimTable: React.FC = () => {
                                         ))}
                                     </tbody>
                                 </table>
+                            </td>
+                            <td style={tableCellStyle}>
+                                <select
+                                    value={dealer.replacementStatus}
+                                    onChange={(e) => handleStatusChange(dealer._id, 'replacementStatus', e.target.value)}
+                                >
+                                    <option value="Received">Received</option>
+                                    <option value="Not Received">Not Received</option>
+                                </select>
+                            </td>
+                            <td style={tableCellStyle}>
+                                <select
+                                    value={dealer.creditIssueStatus}
+                                    onChange={(e) => handleStatusChange(dealer._id, 'creditIssueStatus', e.target.value)}
+                                >
+                                    <option value="Issued">Issued</option>
+                                    <option value="Not Issued">Not Issued</option>
+                                </select>
                             </td>
                         </tr>
                     ))}
