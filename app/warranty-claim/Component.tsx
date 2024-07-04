@@ -428,7 +428,7 @@ const WarrantyClaimForm = () => {
         </Box>
 
         {emptyUnitInfo ? (
-          <p style={{ color: "#d32f2f" }}>Please add Unit Information to the list</p>
+          <p style={{ color: "#d32f2f" }}>Please click the "Add Item" button to add to the list</p>
         ) : (
           ""
         )}
