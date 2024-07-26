@@ -136,10 +136,10 @@ const WarrantyClaimForm = () => {
     return (
       <FormControl component="fieldset">
         <FormLabel component="legend">
-          Does the defective part form the drain panel?
+          Is the drain panel part defective?
         </FormLabel>
         <RadioGroup
-          className="flex flex-col sm:flex-row justify-center items-center"
+          className="flex flex-col md:flex-row justify-center items-center"
           aria-label="drain-panel-condition"
           name="drain-panel-condition"
           value={drainPanelCondition}
@@ -489,7 +489,7 @@ const WarrantyClaimForm = () => {
           sx={{ "& .MuiTextField-root": { m: 1, width: "25ch" } }}
         >
           <p className="title">Units Information</p>
-          <div className="flex flex-col sm:flex-row justify-center items-center">
+          <div className="flex flex-col md:flex-row justify-center items-center">
             {emptyUnitInfo && (
               <p style={{ color: "#d32f2f" }}>
                 Please click the &quot;Add Item&quot; button to add to the list
@@ -601,7 +601,7 @@ const WarrantyClaimForm = () => {
         >
           {renderDrainPanelCondition()}
 
-          <div className="flex flex-col sm:flex-row justify-center items-center">
+          <div className="flex flex-col md:flex-row justify-center items-center">
             <Grid item xs={12} sm={6}>
               {renderDefectivePartInput()}
             </Grid>
