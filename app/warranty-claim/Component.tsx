@@ -139,7 +139,7 @@ const WarrantyClaimForm = () => {
           Is the drain panel part defective?
         </FormLabel>
         <RadioGroup
-          className="flex flex-col md:flex-row justify-center items-center"
+          row
           aria-label="drain-panel-condition"
           name="drain-panel-condition"
           value={drainPanelCondition}
@@ -600,9 +600,13 @@ const WarrantyClaimForm = () => {
           sx={{ "& .MuiTextField-root": { m: 1, width: "25ch" } }}
         >
           {renderDrainPanelCondition()}
-
-          <div>
-            <Grid item xs={12} sm={12}>
+          <Grid
+            container
+            spacing={2}
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Grid item xs={12} sm={6}>
               {renderDefectivePartInput()}
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -613,6 +617,7 @@ const WarrantyClaimForm = () => {
                 onChange={defectDateOnChange}
               />
             </Grid>
+
             <Grid item xs={12} sm={6}>
               <DatePicker
                 label="Replac. Date"
@@ -633,7 +638,8 @@ const WarrantyClaimForm = () => {
                 required={false}
               />
             </Grid>
-          </div>
+          </Grid>
+
           <div className="form-btn flex flex-row justify-center items-center">
             <button
               className="list-btn"
