@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -9,6 +10,7 @@ import {
   TableRow,
   Paper,
   TextField,
+  Button,
 } from "@mui/material";
 
 interface Dealer {
@@ -24,11 +26,12 @@ interface Dealer {
 const Dealers: React.FC = () => {
   const [dealers, setDealers] = useState<Dealer[]>([]);
   const [search, setSearch] = useState("");
+  const router = useRouter(); // Use the useNavigation hook for router
 
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(
-        "https://airtek-warranty.onrender.com/dealerData"
+        "https://airtek-warranty.onrender.com/dealerData/"
       );
       const data: Dealer[] = await response.json();
       setDealers(data);
@@ -41,19 +44,34 @@ const Dealers: React.FC = () => {
     setSearch(event.target.value);
   };
 
+  const handleAddDealer = () => {
+    router.push("https://next-nine-pied.vercel.app/dealer-data/add-dealer"); // Use navigate method to redirect
+  };
+
   return (
     <div>
-      <TextField
-        label="Search Dealer by Name"
-        variant="outlined"
-        value={search}
-        onChange={handleSearchChange}
-        style={{ margin: 20 }}
-      />
+      <div className="w-full flex flex-row justify-around items-center">
+        <TextField
+          label="Search Dealer by Name"
+          variant="outlined"
+          value={search}
+          onChange={handleSearchChange}
+          style={{ marginBottom: 20, width: "50%" }}
+        />
+        <Button
+          variant="contained"
+          className="list-btn"
+          onClick={handleAddDealer}
+          style={{ marginBottom: 20 }}
+        >
+          Add New Dealer
+        </Button>
+      </div>
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
           <TableHead style={{ backgroundColor: "rgb(37, 48, 110)" }}>
             <TableRow>
+              <TableCell style={{ color: "white" }}>Dealer ID</TableCell>
               <TableCell style={{ color: "white" }}>Dealer Name</TableCell>
               <TableCell style={{ color: "white" }}>Email</TableCell>
               <TableCell style={{ color: "white" }}>Phone</TableCell>
@@ -69,8 +87,9 @@ const Dealers: React.FC = () => {
               .map((dealer) => (
                 <TableRow key={dealer._id}>
                   <TableCell component="th" scope="row">
-                    {dealer.dealerName}
+                    {dealer._id}
                   </TableCell>
+                  <TableCell>{dealer.dealerName}</TableCell>
                   <TableCell>{dealer.dealerEmail}</TableCell>
                   <TableCell>{dealer.dealerPhone}</TableCell>
                   <TableCell>{dealer.dealerAddress}</TableCell>
