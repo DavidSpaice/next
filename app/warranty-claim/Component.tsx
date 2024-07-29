@@ -594,15 +594,15 @@ const WarrantyClaimForm = () => {
           </div>
         </Box>
 
-        <p className="title">Returned Part Information</p>
+        <p className="title mt-2 mb-2">Returned Part Information</p>
         <Box
           component="div"
           sx={{ "& .MuiTextField-root": { m: 1, width: "25ch" } }}
         >
           {renderDrainPanelCondition()}
 
-          <div className="flex flex-col md:flex-row justify-center items-center">
-            <Grid item xs={12} sm={6}>
+          <div>
+            <Grid item xs={12} sm={12}>
               {renderDefectivePartInput()}
             </Grid>
             <Grid item xs={12} sm={6}>
