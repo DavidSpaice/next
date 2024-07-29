@@ -49,7 +49,7 @@ const Dealers: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="m-10">
       <div className="w-full flex flex-row justify-around items-center">
         <TextField
           label="Search Dealer by Name"
