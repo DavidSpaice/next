@@ -29,8 +29,15 @@ export default function AddDealerData() {
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
-    // Combine the address fields into a single dealerAddress string
-    const dealerAddress = `${formData.street}, ${formData.city}, ${formData.province}, ${formData.postcode}`;
+    // Combine the address fields into a single dealerAddress string, ignoring empty fields
+    const dealerAddress = [
+      formData.street,
+      formData.city,
+      formData.province,
+      formData.postcode,
+    ]
+      .filter((field) => field) // Only keep non-empty fields
+      .join(", ");
 
     // Update formData with the combined dealerAddress
     const dataToSubmit = { ...formData, dealerAddress };
@@ -132,7 +139,6 @@ export default function AddDealerData() {
             name="street"
             value={formData.street}
             onChange={handleChange}
-            required
           />
         </div>
         <br />
@@ -143,7 +149,6 @@ export default function AddDealerData() {
             name="city"
             value={formData.city}
             onChange={handleChange}
-            required
           />
         </div>
         <br />
@@ -154,7 +159,6 @@ export default function AddDealerData() {
             name="province"
             value={formData.province}
             onChange={handleChange}
-            required
           />
         </div>
         <br />
@@ -165,7 +169,6 @@ export default function AddDealerData() {
             name="postcode"
             value={formData.postcode}
             onChange={handleChange}
-            required
           />
         </div>
         <br />
