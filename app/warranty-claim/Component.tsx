@@ -139,7 +139,6 @@ const WarrantyClaimForm = () => {
           Is the drain panel part defective?
         </FormLabel>
         <RadioGroup
-          row
           aria-label="drain-panel-condition"
           name="drain-panel-condition"
           value={drainPanelCondition}
@@ -599,17 +598,43 @@ const WarrantyClaimForm = () => {
           component="div"
           sx={{ "& .MuiTextField-root": { m: 1, width: "25ch" } }}
         >
-          {renderDrainPanelCondition()}
-          <Grid
-            container
-            spacing={2}
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Grid item xs={12} sm={6}>
+          <Grid container spacing={2}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {renderDrainPanelCondition()}
+            </Grid>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               {renderDefectivePartInput()}
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <DatePicker
                 label="Defect Date"
                 slotProps={{ textField: { size: "small" } }}
@@ -617,8 +642,16 @@ const WarrantyClaimForm = () => {
                 onChange={defectDateOnChange}
               />
             </Grid>
-
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <DatePicker
                 label="Replac. Date"
                 slotProps={{ textField: { size: "small" } }}
@@ -626,7 +659,16 @@ const WarrantyClaimForm = () => {
                 onChange={replacDateOnChange}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Controls
                 error={errors.invoice}
                 type="text"
@@ -650,6 +692,7 @@ const WarrantyClaimForm = () => {
             </button>
           </div>
         </Box>
+
         <Table>
           <TableHead>
             <TableRow>
