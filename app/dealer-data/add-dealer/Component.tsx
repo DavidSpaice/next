@@ -201,7 +201,7 @@ export default function AddDealerData() {
 
       <div>
         <Link
-          href="/dealer-data"
+          href="/dealer-data/dealer-info"
           className="border bg-[#182887] px-2 text-white hover:text-gray-300"
         >
           Back
