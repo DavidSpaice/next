@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import model from "../warranty/sku";
 import { AutocompleteInputChangeReason } from "@mui/material";
 import {
-  Button,
   Box,
   Grid,
   Radio,
@@ -30,6 +29,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { CldUploadWidget } from "next-cloudinary";
 import { Part, NewItem, claimFormDataType, errorType } from "@/types";
 import Controls from "../warranty/Controls";
+import { Input } from "@mui/icons-material";
 
 interface CloudinaryUploadInfo {
   id: string;
@@ -107,7 +107,11 @@ const WarrantyClaimForm = () => {
     limit: 10,
   });
 
-  const drainPanelConditionChange = (
+  useEffect(() => {
+    checkDrainPanelClaim();
+  }, [part.defectivePart, newItem.serialNumber]);
+
+  const drainPanelConditionChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const condition = event.target.value;
@@ -115,7 +119,7 @@ const WarrantyClaimForm = () => {
 
     let defectivePartValue = "";
     if (condition === "leaking") {
-      defectivePartValue = "Drain Panel Leaking";
+      defectivePartValue = "Drain Panel Leaking Check";
     } else if (condition === "replacement") {
       defectivePartValue = "Drain Panel Replacement";
     }
@@ -124,6 +128,10 @@ const WarrantyClaimForm = () => {
       ...prevData,
       defectivePart: defectivePartValue,
     }));
+
+    if (condition === "leaking" || condition === "replacement") {
+      await checkDrainPanelClaim();
+    }
   };
 
   useEffect(() => {
@@ -133,6 +141,8 @@ const WarrantyClaimForm = () => {
   }, [drainPanelCondition]);
 
   const renderDrainPanelCondition = () => {
+    const isDisabled = !newItem.serialNumber; // Disable if no serial number is entered
+
     return (
       <FormControl component="fieldset">
         <FormLabel component="legend">
@@ -146,16 +156,28 @@ const WarrantyClaimForm = () => {
         >
           <FormControlLabel
             value="leaking"
-            control={<Radio />}
+            control={<Radio disabled={isDisabled} />}
             label="Drain Panel Leaking Check"
+            disabled={isDisabled}
           />
           <FormControlLabel
             value="replacement"
-            control={<Radio />}
+            control={<Radio disabled={isDisabled} />}
             label="Drain Panel Replacement"
+            disabled={isDisabled}
           />
-          <FormControlLabel value="other" control={<Radio />} label="Other" />
+          <FormControlLabel
+            value="other"
+            control={<Radio disabled={isDisabled} />}
+            label="Other"
+            disabled={isDisabled}
+          />
         </RadioGroup>
+        {/* {isDisabled && (
+          <p style={{ color: "red" }}>
+            Please enter the serial number to select a condition.
+          </p>
+        )} */}
       </FormControl>
     );
   };
@@ -177,11 +199,16 @@ const WarrantyClaimForm = () => {
       );
     } else {
       return (
-        <TextField
-          disabled
+        <Controls
+          type="text"
+          name="defectivePart"
           label="Defective Part"
-          size="small"
           value={part.defectivePart}
+          size="small"
+          required={false} // Since it's disabled, 'required' may not be necessary
+          disabled={true}
+          error={errors.defectivePart} // This will show the error message even when disabled
+          onChange={() => {}} // No action on change since it's disabled
         />
       );
     }
@@ -274,6 +301,11 @@ const WarrantyClaimForm = () => {
     const isSerialNumberValid = await validateSerialNumber();
     const isDefectivePart = validateDefectivePart();
 
+    if (part.defectivePart.includes("Drain Panel") && errors.defectivePart) {
+      alert("Please resolve the drain panel issue before adding this item.");
+      return;
+    }
+
     if (!isModelValid || !isSerialNumberValid || !isDefectivePart) {
       return;
     }
@@ -285,6 +317,9 @@ const WarrantyClaimForm = () => {
       model: "",
       serialNumber: "",
       installationDate: "",
+      defectivePart: part.defectivePart.includes("Drain Panel")
+        ? errors.defectivePart
+        : "",
     }));
 
     setClaimFormData((prevData) => ({
@@ -402,27 +437,83 @@ const WarrantyClaimForm = () => {
     }
   };
 
+  const checkDrainPanelClaim = async () => {
+    if (
+      !["Drain Panel Leaking Check", "Drain Panel Replacement"].includes(
+        part.defectivePart
+      ) ||
+      !newItem.serialNumber
+    ) {
+      console.log("No need to check or missing serial number.");
+      return; // Return early if conditions aren't met
+    }
+
+    setIsDisabled(true); // Disable form to prevent multiple submissions during check
+    try {
+      const response = await fetch(
+        "https://airtek-warranty.onrender.com/warranty-claim/check-drain-panel-claim",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            serialNumber: newItem.serialNumber,
+            defectivePart: part.defectivePart,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (!data.canClaim) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          defectivePart:
+            "Drain Panel claim has already been made for this serial number.",
+        }));
+      } else {
+        setErrors((prevErrors) => ({ ...prevErrors, defectivePart: "" }));
+      }
+    } catch (error) {
+      console.error("Error checking drain panel claim", error);
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        defectivePart: "Network error, please try again later",
+      }));
+    } finally {
+      setIsDisabled(false); // Re-enable form after the check is complete
+    }
+  };
   const validateDefectivePart = (fieldValues: Partial<Part> = part) => {
     const defectivePart = fieldValues.defectivePart ?? "";
+    let isValid = true;
+
     if (!defectivePart) {
       setErrors((prevErrors) => ({
         ...prevErrors,
         defectivePart: "Defective Part is required.",
       }));
-      return false;
-    }
-    if (defectivePart.trim() === "") {
+      isValid = false;
+    } else if (defectivePart.trim() === "") {
       setErrors((prevErrors) => ({
         ...prevErrors,
         defectivePart: "Defective Part cannot be just whitespace.",
       }));
-      return false;
+      isValid = false;
     }
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      defectivePart: "",
-    }));
-    return true;
+
+    // Only clear the error if the current validation is valid and it's not about the drain panel
+    if (
+      isValid &&
+      !["Drain Panel Leaking Check", "Drain Panel Replacement"].includes(
+        defectivePart
+      )
+    ) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        defectivePart: "",
+      }));
+    }
+
+    return isValid;
   };
 
   const handleDeleteItem = (itemId: string) => {

@@ -8,6 +8,7 @@ interface InputProps {
   value: string;
   size: "small" | "medium";
   required: boolean;
+  disabled?: boolean;
   error?: string | null;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   inputRef?: React.RefObject<HTMLInputElement>;
