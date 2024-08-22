@@ -6,6 +6,8 @@ import Radio from "@mui/material/Radio";
 
 import Grid from "@mui/material/Grid";
 import model from "./sku";
+import city from "./cities";
+import province from "./provinces";
 
 import { AutocompleteInputChangeReason } from "@mui/material";
 
@@ -31,16 +33,10 @@ import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import {
-  NewItem,
-  FormData,
-  CustomError,
-} from '@/types';
+import { NewItem, FormData, CustomError } from "@/types";
 import { debounce } from "lodash";
 
-
 const WarrantyForm = () => {
-
   const [dealerData, setDealerData] = useState<
     {
       _id: string;
@@ -84,6 +80,16 @@ const WarrantyForm = () => {
     limit: 10,
   });
 
+  const cityFilterOptions = createFilterOptions<{ city: string }>({
+    matchFrom: "any",
+    limit: 10,
+  });
+
+  const provinceFilterOptions = createFilterOptions<{ province: string }>({
+    matchFrom: "any",
+    limit: 13,
+  });
+
   const [newItem, setNewItem] = useState<NewItem>({
     id: "",
     model: "",
@@ -100,7 +106,7 @@ const WarrantyForm = () => {
     city: "",
     stateProvince: "",
     postalCode: "",
-    country: "",
+    country: "Canada",
     phone: "",
     extension: "",
     dealerId: "",
@@ -149,7 +155,9 @@ const WarrantyForm = () => {
     setStepFourError(false);
   };
 
-  const validateSerialNumber = async (fieldValues: Partial<NewItem> = newItem) => {
+  const validateSerialNumber = async (
+    fieldValues: Partial<NewItem> = newItem
+  ) => {
     const serialNumber = fieldValues.serialNumber ?? "";
     // const serialNumberExists = serialNumberStrings.some(
     //   (item) => item === serialNumber.toLowerCase()
@@ -163,25 +171,26 @@ const WarrantyForm = () => {
       return false;
     }
 
-
     try {
-      const response = await fetch('https://airtek-warranty.onrender.com/serial/checkSerialNumber', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ serialNumber }),
-      });
+      const response = await fetch(
+        "https://airtek-warranty.onrender.com/serial/checkSerialNumber",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ serialNumber }),
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
         const serialNumberExists = result.exists;
         setErrors((prevErrors) => ({
           ...prevErrors,
-          serialNumber:
-            serialNumberExists
-              ? ""
-              : "Invalid or Registered Serial Number.",
+          serialNumber: serialNumberExists
+            ? ""
+            : "Invalid or Registered Serial Number.",
         }));
 
         // Return true or false based on the validation
@@ -192,7 +201,7 @@ const WarrantyForm = () => {
           return Object.values(errors).every((x) => x === "");
         }
       } else {
-        console.error('Server error:', response.status, response.statusText);
+        console.error("Server error:", response.status, response.statusText);
         setErrors((prevErrors) => ({
           ...prevErrors,
           serialNumber: "Server error",
@@ -200,7 +209,7 @@ const WarrantyForm = () => {
         return false;
       }
     } catch (error) {
-      console.error('Error checking serial number');
+      console.error("Error checking serial number");
       setErrors((prevErrors) => ({
         ...prevErrors,
         serialNumber: "Server busy checking later",
@@ -211,15 +220,15 @@ const WarrantyForm = () => {
   };
 
   const debouncedSerialNumberOnChange = useMemo(
-    () => debounce(
-      (value) => {
+    () =>
+      debounce((value) => {
         if (value.trim() !== "") {
           // Validate only when the input is not empty
           validateSerialNumber({ serialNumber: value });
         }
-      },
-      500
-    ), []);
+      }, 500),
+    []
+  );
 
   const SerialNumberOnChange = (
     event: React.ChangeEvent<{}>,
@@ -231,16 +240,13 @@ const WarrantyForm = () => {
         ...prevData,
         serialNumber: value,
       }));
-
     }
     debouncedSerialNumberOnChange(value);
 
     setStepFourError(false);
   };
 
-  const adaptedSerialNumberOnChange = (
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
+  const adaptedSerialNumberOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     SerialNumberOnChange(e, e.target.value, "input");
   };
 
@@ -263,10 +269,9 @@ const WarrantyForm = () => {
         ? ""
         : "Email is not valid.";
     if ("phone" in fieldValues)
-      errors.phone =
-        phoneValidate.test(fieldValues.phone ?? "")
-          ? ""
-          : "Minimum 10 numbers required and number only.";
+      errors.phone = phoneValidate.test(fieldValues.phone ?? "")
+        ? ""
+        : "Minimum 10 numbers required and number only.";
     if ("streetAddress" in fieldValues)
       errors.streetAddress =
         fieldValues.streetAddress ?? "".length != 0
@@ -310,7 +315,10 @@ const WarrantyForm = () => {
 
     // Check if dealerId is empty and update errors immediately
     if ("dealerId" in fieldValues) {
-      if (typeof fieldValues.dealerId === "string" && fieldValues.dealerId.trim() === "") {
+      if (
+        typeof fieldValues.dealerId === "string" &&
+        fieldValues.dealerId.trim() === ""
+      ) {
         errors.dealerId = "Invalid Dealer Id.";
         // Update the FormData with the dealer details
         setFormData((prevData) => ({
@@ -323,16 +331,21 @@ const WarrantyForm = () => {
         }));
       } else if (typeof fieldValues.dealerId === "string") {
         const dealerExists = dealerData.some(
-          (dealer) => dealer?._id && dealer?._id.toLowerCase() === fieldValues.dealerId?.toLowerCase()
+          (dealer) =>
+            dealer?._id &&
+            dealer?._id.toLowerCase() === fieldValues.dealerId?.toLowerCase()
         );
 
         if (dealerExists) {
           const dealerDetails = dealerData.find(
-            (dealer) => dealer?._id && dealer?._id.toLowerCase() === fieldValues.dealerId?.toLowerCase()
+            (dealer) =>
+              dealer?._id &&
+              dealer?._id.toLowerCase() === fieldValues.dealerId?.toLowerCase()
           );
 
           // Convert dealerPhone to string before setting it in the FormData
-          const dealerPhoneAsString = dealerDetails?.dealerPhone?.toString() || "";
+          const dealerPhoneAsString =
+            dealerDetails?.dealerPhone?.toString() || "";
 
           // Update the FormData with the dealer details
           setFormData((prevData) => ({
@@ -341,7 +354,7 @@ const WarrantyForm = () => {
             dealerEmail: dealerDetails?.dealerEmail || "",
             dealerPhone: dealerPhoneAsString,
             dealerAddress: dealerDetails?.dealerAddress || "",
-            location: dealerDetails?.location || ""
+            location: dealerDetails?.location || "",
           }));
         }
 
@@ -381,22 +394,34 @@ const WarrantyForm = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    validateChange: boolean | string = false
+    event:
+      | React.SyntheticEvent<Element, Event>
+      | React.ChangeEvent<HTMLInputElement>,
+    value?: string,
+    reason?: AutocompleteInputChangeReason
   ) => {
-    validateChange = true;
+    let name: string;
+    let inputValue: string;
 
-    const { name, value } = e.target;
+    if (value !== undefined && reason) {
+      // This means it's being called from Autocomplete
+      name = (event.target as HTMLInputElement).name;
+      inputValue = value;
+    } else {
+      // This is a standard input change
+      const inputEvent = event as React.ChangeEvent<HTMLInputElement>;
+      name = inputEvent.target.name;
+      inputValue = inputEvent.target.value;
+    }
 
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: inputValue,
     }));
 
-    if (validateChange) {
-      validateType({ [name]: value });
-      validate({ [name]: value });
-    }
+    // Assume validation is always needed
+    validateType({ [name]: inputValue });
+    validate({ [name]: inputValue });
   };
 
   const dateOnChange = (date: Dayjs | null) => {
@@ -469,13 +494,16 @@ const WarrantyForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await fetch(`https://airtek-warranty.onrender.com/warranties/warranty-register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
+    await fetch(
+      `https://airtek-warranty.onrender.com/warranties/warranty-register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    )
       .then(function (response) {
         if (response.ok) {
           return response.text();
@@ -769,28 +797,71 @@ const WarrantyForm = () => {
                 />
               </div>
               <div className="w-full flex flex-col items-center justify-center sm:flex-row">
-                <Controls
-                  error={errors.city}
-                  type="text"
-                  name="city"
-                  label="City"
-                  size="small"
+                <Autocomplete
+                  freeSolo
+                  disableClearable
+                  filterOptions={cityFilterOptions}
+                  options={city}
+                  getOptionLabel={(option) =>
+                    typeof option === "string" ? option : option.city
+                  }
                   value={formData.city}
-                  onChange={handleChange}
-                  required
+                  onChange={(event, newValue) => {
+                    const value = newValue
+                      ? typeof newValue === "string"
+                        ? newValue
+                        : newValue.city
+                      : "";
+                    handleChange({
+                      target: { name: "city", value: value },
+                    } as React.ChangeEvent<HTMLInputElement>);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="City"
+                      size="small"
+                      error={!!errors.city}
+                      helperText={errors.city}
+                      name="city"
+                      required
+                    />
+                  )}
                 />
 
-                <Controls
-                  error={errors.stateProvince}
-                  type="text"
-                  name="stateProvince"
-                  label="State / Province"
-                  size="small"
+                <Autocomplete
+                  freeSolo
+                  disableClearable
+                  filterOptions={provinceFilterOptions}
+                  options={province}
+                  getOptionLabel={(option) =>
+                    typeof option === "string" ? option : option.province
+                  }
                   value={formData.stateProvince}
-                  onChange={handleChange}
-                  required
+                  onChange={(event, newValue) => {
+                    const value = newValue
+                      ? typeof newValue === "string"
+                        ? newValue
+                        : newValue.province
+                      : "";
+                    handleChange({
+                      target: { name: "stateProvince", value: value },
+                    } as React.ChangeEvent<HTMLInputElement>);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Province"
+                      size="small"
+                      error={!!errors.stateProvince}
+                      helperText={errors.stateProvince}
+                      name="stateProvince"
+                      required
+                    />
+                  )}
                 />
               </div>
+
               <div className="w-full flex flex-col items-center justify-center sm:flex-row">
                 <Controls
                   error={errors.postalCode}
@@ -836,52 +907,6 @@ const WarrantyForm = () => {
                   required={false}
                 />
               </div>
-              {/* <div>
-                <Controls
-                  error={errors.dealerName}
-                  type="text"
-                  name="dealerName"
-                  label="Dealer Name"
-                  size="small"
-                  value={formData.dealerName}
-                  onChange={handleChange}
-                  required
-                />
-
-                <Controls
-                  error={errors.dealerEmail}
-                  type="email"
-                  name="dealerEmail"
-                  label="Dealer Email"
-                  size="small"
-                  value={formData.dealerEmail}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <Controls
-                  error={errors.dealerPhone}
-                  type="text"
-                  name="dealerPhone"
-                  label="Dealer Phone"
-                  size="small"
-                  value={formData.dealerPhone}
-                  onChange={handleChange}
-                  required
-                />
-
-                <Controls
-                  error={errors.dealerAddress}
-                  type="text"
-                  name="dealerAddress"
-                  label="Dealer Address"
-                  size="small"
-                  value={formData.dealerAddress}
-                  onChange={handleChange}
-                  required
-                />
-              </div> */}
             </Box>
             <br />
             <br />
@@ -906,7 +931,10 @@ const WarrantyForm = () => {
               <Grid container className="w-full sm:w-4/5" spacing={3}>
                 <Grid item xs={12} md={12} alignItems="center">
                   <p className="title">Tell Us About The Installation</p>
-                  <p>If your coils are Aspen, No need to register online; simply bring them to our warehouse.</p>
+                  <p>
+                    If your coils are Aspen, No need to register online; simply
+                    bring them to our warehouse.
+                  </p>
                   <div style={{ color: "#d32f2f" }}>
                     {stepFourError
                       ? "Please provide the necessary details or information."
@@ -952,17 +980,13 @@ const WarrantyForm = () => {
                     )}
                   />
                 </Grid>
-                {/* <Controls
-                    type="text"
-                    name="model"
-                    label="Model"
-                    size="small"
-                    value={newItem.model}
-                    onChange={modelOnChange}
-                    error={errors.model}
-                    required
-                  /> */}
-                <Grid item xs={12} md={3} className="flex flex-row justify-center items-center">
+
+                <Grid
+                  item
+                  xs={12}
+                  md={3}
+                  className="flex flex-row justify-center items-center"
+                >
                   <Controls
                     type="text"
                     label="Serial Number"
@@ -975,45 +999,12 @@ const WarrantyForm = () => {
                   />
                 </Grid>
 
-                {/* <Grid item xs={12} md={3}>
-                  <Autocomplete
-                    freeSolo
-                    id="free-solo-2-demo"
-                    disableClearable
-                    filterOptions={filterOptions}
-                    options={serialNumberData}
-                    getOptionLabel={(option) =>
-                      typeof option === "string" ? option : option.serialNumber
-                    }
-                    onInputChange={SerialNumberOnChange}
-                    value={newItem.serialNumber}
-                    renderOption={(props, option) => {
-                      return (
-                        <li {...props} key={option._id}>
-                          {option.serialNumber}
-                        </li>
-                      );
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        type="text"
-                        label="Serial Number"
-                        size="small"
-                        error={errors.serialNumber ? true : false}
-                        name="serialNumber"
-                        helperText={errors.serialNumber}
-                        required
-                        InputProps={{
-                          ...params.InputProps,
-                          type: "search",
-                        }}
-                      />
-                    )}
-                  />
-                </Grid> */}
-
-                <Grid item xs={12} md={3} className="flex flex-row justify-center items-center">
+                <Grid
+                  item
+                  xs={12}
+                  md={3}
+                  className="flex flex-row justify-center items-center"
+                >
                   <DatePicker
                     label="Installation Date"
                     slotProps={{ textField: { size: "small" } }}
@@ -1022,7 +1013,12 @@ const WarrantyForm = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} md={3} className="flex flex-row justify-center items-center">
+                <Grid
+                  item
+                  xs={12}
+                  md={3}
+                  className="flex flex-row justify-center items-center"
+                >
                   <button
                     type="button"
                     className="list-btn"
@@ -1051,7 +1047,9 @@ const WarrantyForm = () => {
                               {item.installationDate?.format("MM/DD/YYYY")}
                             </TableCell>
                             <TableCell>
-                              <IconButton onClick={() => handleDeleteItem(item.id)}>
+                              <IconButton
+                                onClick={() => handleDeleteItem(item.id)}
+                              >
                                 <DeleteIcon />
                               </IconButton>
                             </TableCell>
@@ -1086,7 +1084,7 @@ const WarrantyForm = () => {
             </div>
 
             {/* </Box> */}
-          </div >
+          </div>
         );
       case 5:
         return (
@@ -1106,8 +1104,8 @@ const WarrantyForm = () => {
               <div className="list">
                 <ul>
                   <li>
-                    A warranty period of ten (10) years on compressor and all parts to the
-                    original registered owner.
+                    A warranty period of ten (10) years on compressor and all
+                    parts to the original registered owner.
                   </li>
                   <li>
                     A warranty period of five (5) years on compressor & all
