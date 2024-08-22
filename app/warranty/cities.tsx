@@ -6,6 +6,7 @@ const cities = [
   { city: "Vancouver" },
   { city: "Scarborough" },
   { city: "Thornhill" },
+  { city: "North York" },
   { city: "Calgary" },
   { city: "Edmonton" },
   { city: "Ottawa" },
