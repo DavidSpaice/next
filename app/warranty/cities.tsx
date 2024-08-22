@@ -4,6 +4,8 @@ const cities = [
   { city: "Halifax" },
   { city: "Montreal" },
   { city: "Vancouver" },
+  { city: "Scarborough" },
+  { city: "Thornhill" },
   { city: "Calgary" },
   { city: "Edmonton" },
   { city: "Ottawa" },
