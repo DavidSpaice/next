@@ -10,6 +10,8 @@ const cities = [
   { city: "Calgary" },
   { city: "Edmonton" },
   { city: "Ottawa" },
+  { city: "Woodbridge" },
+  { city: "Ajax" },
   { city: "Mississauga" },
   { city: "Brampton" },
   { city: "Hamilton" },
