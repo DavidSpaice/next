@@ -44,7 +44,7 @@ const BlogsPage = () => {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <h1 className="font-bold text-2xl mb-4">Blogs</h1>
+      <h1 className="font-bold text-2xl mb-4">Soreno Blogs</h1>
       <div className="w-full flex flex-row justify-end items-center mr-6 mb-6">
         <Button onClick={handleAddNewBlog}>Add New Blog</Button>
       </div>
