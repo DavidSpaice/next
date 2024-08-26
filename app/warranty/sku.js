@@ -89,11 +89,15 @@ const model = [
   { model: "GAA12AE-D3NRNB2G" },
   { model: "GWH12QC-D3DNB8D/I (WIFI)" },
   { model: "GWH18QD-D3DNB8G/I (WIFI)" },
-
+  { model: "GMV-V36WL/C-T(U)" },
+  { model: "GMV-72WM/B-F(U)" },
   { model: "MAC-24HWDN1-MN0" },
   { model: "MAC-36HWDN1-MN0" },
   { model: "MOD30-24HFN1-MW" },
   { model: "MOD30U-30HFN1-MR0(X)" },
+  { model: "GWH07ATA-D3DNA1A/I(WIFI)" },
+  { model: "GWH30QFXH-D3DNB2A/O" },
+  { model: "GWH30QFXH-D3DNB2A/I(WIFI)" },
 ];
 
 export default model;
