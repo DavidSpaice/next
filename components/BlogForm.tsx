@@ -1,10 +1,12 @@
 "use client";
-import { CldUploadWidget } from "next-cloudinary";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Box, Button, TextField } from "@mui/material";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import Grid from "@mui/material/Grid";
+import { CldUploadWidget } from "next-cloudinary";
+import "react-quill/dist/quill.snow.css";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 interface BlogData {
   title: string;
@@ -132,7 +134,7 @@ const BlogForm = ({ blog }: { blog?: BlogData }) => {
                     alert("Only one image can be uploaded.");
                   }
                 }}
-                disabled={Boolean(formData.image)} // Use formData here, not BlogData
+                disabled={Boolean(formData.image)}
               >
                 Upload Image
               </Button>
