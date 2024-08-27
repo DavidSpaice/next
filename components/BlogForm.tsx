@@ -21,6 +21,7 @@ const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 interface BlogData {
   _id?: string;
   title: string;
+  thumbnail: string;
   image: string;
   content: string;
 }
@@ -37,11 +38,21 @@ const BlogForm = ({ blog }: { blog?: BlogData }) => {
   const [formData, setFormData] = useState<BlogData>({
     _id: blog?._id || "",
     title: blog?.title || "",
+    thumbnail: blog?.thumbnail || "",
     image: blog?.image || "",
     content: blog?.content || "",
   });
+  const [thumbnailDeleteOpen, setThumbnailDeleteOpen] = useState(false);
   const [imageDeleteOpen, setImageDeleteOpen] = useState(false);
   const [blogDeleteOpen, setBlogDeleteOpen] = useState(false);
+
+  const handleThumbnailUploadSuccess = (data: CloudinaryUploadEvent) => {
+    const newThumbnailUrl = data.info.secure_url;
+    setFormData((prevData) => ({
+      ...prevData,
+      thumbnail: newThumbnailUrl,
+    }));
+  };
 
   const handleImageUploadSuccess = (data: CloudinaryUploadEvent) => {
     const newImageUrl = data.info.secure_url;
@@ -49,6 +60,22 @@ const BlogForm = ({ blog }: { blog?: BlogData }) => {
       ...prevData,
       image: newImageUrl,
     }));
+  };
+
+  const handleThumbnailDelete = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      thumbnail: "",
+    }));
+    setThumbnailDeleteOpen(false);
+  };
+
+  const handleImageDelete = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      image: "",
+    }));
+    setImageDeleteOpen(false);
   };
 
   const handleSubmit = async () => {
@@ -79,14 +106,6 @@ const BlogForm = ({ blog }: { blog?: BlogData }) => {
       console.error("Failed to save the blog:", error);
       alert("Failed to save the blog");
     }
-  };
-
-  const handleImageDelete = () => {
-    setFormData((prevData) => ({
-      ...prevData,
-      image: "",
-    }));
-    setImageDeleteOpen(false);
   };
 
   const handleDelete = async () => {
@@ -135,6 +154,48 @@ const BlogForm = ({ blog }: { blog?: BlogData }) => {
             onChange={(content) => setFormData({ ...formData, content })}
             style={{ marginBottom: 50, height: 500 }}
           />
+        </Grid>
+        {formData.thumbnail && (
+          <Grid item xs={12} container justifyContent="center">
+            <img
+              src={formData.thumbnail}
+              style={{ width: "50%", maxHeight: "200px", marginBottom: "20px" }}
+              alt="Thumbnail"
+            />
+          </Grid>
+        )}
+        <Grid item xs={12} container justifyContent="center">
+          <CldUploadWidget
+            uploadPreset="h74rzzu1"
+            onSuccess={(data: any) => handleThumbnailUploadSuccess(data)}
+          >
+            {({ open }) => (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  if (!formData.thumbnail) {
+                    open();
+                  } else {
+                    alert("Only one thumbnail can be uploaded.");
+                  }
+                }}
+                disabled={Boolean(formData.thumbnail)} // Disable if image exists
+                sx={{ mr: 2 }}
+              >
+                Upload Thumbnail
+              </Button>
+            )}
+          </CldUploadWidget>
+          {formData.thumbnail && (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => setThumbnailDeleteOpen(true)}
+            >
+              Delete Thumbnail
+            </Button>
+          )}
         </Grid>
         {formData.image && (
           <Grid item xs={12} container justifyContent="center">
@@ -206,7 +267,25 @@ const BlogForm = ({ blog }: { blog?: BlogData }) => {
         </Grid>
       </Grid>
 
-      {/* Delete Image Confirmation Dialog */}
+      {/* Dialogs for Image, Thumbnail, and Blog Deletion */}
+      <Dialog
+        open={thumbnailDeleteOpen}
+        onClose={() => setThumbnailDeleteOpen(false)}
+      >
+        <DialogTitle>Delete Thumbnail</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this thumbnail? This action cannot
+            be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setThumbnailDeleteOpen(false)}>Cancel</Button>
+          <Button onClick={handleThumbnailDelete} color="secondary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Dialog open={imageDeleteOpen} onClose={() => setImageDeleteOpen(false)}>
         <DialogTitle>Delete Image</DialogTitle>
         <DialogContent>
@@ -222,8 +301,6 @@ const BlogForm = ({ blog }: { blog?: BlogData }) => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      {/* Delete Blog Confirmation Dialog */}
       <Dialog open={blogDeleteOpen} onClose={() => setBlogDeleteOpen(false)}>
         <DialogTitle>Delete Blog</DialogTitle>
         <DialogContent>
