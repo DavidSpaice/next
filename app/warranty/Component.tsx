@@ -819,7 +819,7 @@ const WarrantyForm = () => {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="City"
+                      label="Search or Input City"
                       size="small"
                       error={!!errors.city}
                       helperText={errors.city}
