@@ -806,15 +806,25 @@ const WarrantyForm = () => {
                     typeof option === "string" ? option : option.city
                   }
                   value={formData.city}
+                  onInputChange={(event, newInputValue, reason) => {
+                    // This handles the input change directly, regardless of selection
+                    if (reason === "input") {
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        city: newInputValue,
+                      }));
+                    }
+                  }}
                   onChange={(event, newValue) => {
-                    const value = newValue
-                      ? typeof newValue === "string"
+                    // This handles the final selection or clear event
+                    const value =
+                      typeof newValue === "string"
                         ? newValue
-                        : newValue.city
-                      : "";
-                    handleChange({
-                      target: { name: "city", value: value },
-                    } as React.ChangeEvent<HTMLInputElement>);
+                        : newValue?.city || "";
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      city: value,
+                    }));
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -838,15 +848,25 @@ const WarrantyForm = () => {
                     typeof option === "string" ? option : option.province
                   }
                   value={formData.stateProvince}
+                  onInputChange={(event, newInputValue, reason) => {
+                    // This handles the input change directly, regardless of selection
+                    if (reason === "input") {
+                      setFormData((prevData) => ({
+                        ...prevData,
+                        stateProvince: newInputValue,
+                      }));
+                    }
+                  }}
                   onChange={(event, newValue) => {
-                    const value = newValue
-                      ? typeof newValue === "string"
+                    // This handles the final selection or clear event
+                    const value =
+                      typeof newValue === "string"
                         ? newValue
-                        : newValue.province
-                      : "";
-                    handleChange({
-                      target: { name: "stateProvince", value: value },
-                    } as React.ChangeEvent<HTMLInputElement>);
+                        : newValue?.province || "";
+                    setFormData((prevData) => ({
+                      ...prevData,
+                      stateProvince: value,
+                    }));
                   }}
                   renderInput={(params) => (
                     <TextField
