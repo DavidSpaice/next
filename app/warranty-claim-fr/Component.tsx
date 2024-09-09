@@ -564,7 +564,7 @@ const WarrantyClaimForm = () => {
 
       if (response.ok) {
         setLoading(false);
-        router.push("warranty-claim/merci");
+        router.push("warranty-claim-fr/thank-you");
         setIsDisabled(false);
       } else {
         throw new Error("Erreur: " + response.status);
@@ -572,7 +572,7 @@ const WarrantyClaimForm = () => {
     } catch (error) {
       console.error("Erreur lors de la soumission du formulaire:", error);
       setLoading(false);
-      router.push("warranty-claim/erreur");
+      router.push("warranty-claim-fr/error");
       setIsDisabled(false);
     }
   };
