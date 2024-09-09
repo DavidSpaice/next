@@ -557,6 +557,7 @@ const WarrantyClaimForm = () => {
           body: JSON.stringify({
             ...claimFormData,
             imageUrls,
+            language: "french",
           }),
         }
       );
