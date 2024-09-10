@@ -676,7 +676,7 @@ const WarrantyForm = () => {
                   onChange={handleChange}
                 >
                   <FormControlLabel
-                    value="Existing Home"
+                    value="Maison existante"
                     control={
                       <Radio
                         sx={{
@@ -689,7 +689,7 @@ const WarrantyForm = () => {
                     label="Maison existante"
                   />
                   <FormControlLabel
-                    value="Newly Constructed Home"
+                    value="Maison nouvellement construite"
                     control={
                       <Radio
                         sx={{
@@ -702,7 +702,7 @@ const WarrantyForm = () => {
                     label="Maison nouvellement construite"
                   />
                   <FormControlLabel
-                    value="Commercial Existing and New Construction"
+                    value="Construction commerciale existante et nouvelle"
                     control={
                       <Radio
                         sx={{
