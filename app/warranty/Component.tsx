@@ -962,7 +962,7 @@ const WarrantyForm = () => {
                   </div>
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} md={4}>
                   <Autocomplete
                     freeSolo
                     id="free-solo-2-demo"
@@ -1004,7 +1004,7 @@ const WarrantyForm = () => {
                 <Grid
                   item
                   xs={12}
-                  md={3}
+                  md={4}
                   className="flex flex-row justify-center items-center"
                 >
                   <Controls
@@ -1022,7 +1022,7 @@ const WarrantyForm = () => {
                 <Grid
                   item
                   xs={12}
-                  md={3}
+                  md={2}
                   className="flex flex-row justify-center items-center"
                 >
                   <DatePicker
@@ -1036,7 +1036,7 @@ const WarrantyForm = () => {
                 <Grid
                   item
                   xs={12}
-                  md={3}
+                  md={2}
                   className="flex flex-row justify-center items-center"
                 >
                   <button
