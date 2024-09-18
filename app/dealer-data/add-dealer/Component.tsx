@@ -184,6 +184,7 @@ export default function AddDealerData() {
             <option value="Manitoba">Manitoba</option>
             <option value="Ontario">Ontario</option>
             <option value="Nova Scotia">Nova Scotia</option>
+            <option value="Vancouver">Quebec</option>
             <option value="Calgary">Calgary</option>
             <option value="Vancouver">Vancouver</option>
           </select>
