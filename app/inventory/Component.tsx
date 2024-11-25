@@ -94,8 +94,6 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onInventoryUpdate }) => {
       }
     );
     if (res.ok) {
-      alert("Inventory updated successfully");
-      // Optionally reset the form
       setFormData({
         itemId: "",
         action: "",
@@ -155,8 +153,6 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onInventoryUpdate }) => {
         }
       );
       if (res.ok) {
-        alert("Last transaction has been reset successfully");
-        // Notify parent to refresh inventory list
         onInventoryUpdate();
       } else {
         const data = await res.json();
