@@ -120,3 +120,33 @@ export interface InputProps {
   error?: string | null;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
+// types.ts
+export interface Item {
+  _id: string;
+  name: string;
+}
+
+export interface Location {
+  _id: string;
+  name: string;
+}
+
+export interface InventoryItem {
+  _id: string;
+  itemId: Item;
+  locationId: Location;
+  quantity: number;
+}
+
+export interface Transaction {
+  _id: string;
+  itemId: Item;
+  action: string;
+  quantity: number;
+  fromLocation?: Location;
+  toLocation?: Location;
+  timestamp: string;
+  deviceInfo?: string;
+  isReset: boolean;
+}
