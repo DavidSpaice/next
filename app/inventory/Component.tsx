@@ -38,6 +38,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onInventoryUpdate }) => {
   const [serverError, setServerError] = useState("");
   const [resetInProgress, setResetInProgress] = useState(false);
   const [openConfirmReset, setOpenConfirmReset] = useState(false);
+  const [openConfirmSubmit, setOpenConfirmSubmit] = useState(false);
 
   useEffect(() => {
     // Fetch items and locations from the API
@@ -61,20 +62,27 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onInventoryUpdate }) => {
     fetchLocations();
   }, []);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setServerError(""); // Reset server error
-
-    // Validate quantity before submission
+    // Validate quantity before opening confirmation dialog
     const numericQuantity = parseInt(formData.quantity, 10);
     if (isNaN(numericQuantity) || numericQuantity <= 0) {
       setErrors((prevErrors) => ({
         ...prevErrors,
         quantity: "Quantity must be a positive number",
       }));
-      return; // Prevent form submission
+      return; // Do not proceed
     }
+
+    // Additional form validations can be added here if needed
+
+    setOpenConfirmSubmit(true); // Open confirmation dialog
+  };
+
+  const handleConfirmSubmit = async () => {
+    setOpenConfirmSubmit(false); // Close confirmation dialog
+    setServerError(""); // Reset server error
 
     // Proceed with submission
     const res = await fetch(
@@ -102,6 +110,10 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onInventoryUpdate }) => {
       const data = await res.json();
       setServerError(data.error || "Error updating inventory");
     }
+  };
+
+  const handleCloseConfirmSubmit = () => {
+    setOpenConfirmSubmit(false);
   };
 
   const handleChange = (
@@ -313,7 +325,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onInventoryUpdate }) => {
         </Grid>
       </Grid>
 
-      {/* Confirmation Dialog */}
+      {/* Confirmation Dialog for Reset */}
       <Dialog
         open={openConfirmReset}
         onClose={handleCloseConfirmReset}
@@ -331,6 +343,31 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onInventoryUpdate }) => {
             Cancel
           </Button>
           <Button onClick={handleConfirmReset} color="secondary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Confirmation Dialog for Submit */}
+      <Dialog
+        open={openConfirmSubmit}
+        onClose={handleCloseConfirmSubmit}
+        aria-labelledby="confirm-submit-dialog-title"
+      >
+        <DialogTitle id="confirm-submit-dialog-title">
+          Confirm Inventory Update
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to update the inventory with the entered
+            details?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmSubmit} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmSubmit} color="secondary">
             Confirm
           </Button>
         </DialogActions>
