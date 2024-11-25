@@ -47,7 +47,7 @@ const InventoryList: React.FC<InventoryListProps> = ({ refreshTrigger }) => {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://localhost:8500/inventory?page=${
+        `https://airtek-warranty.onrender.com/inventory?page=${
           page + 1
         }&limit=${rowsPerPage}&itemSearch=${encodeURIComponent(
           itemSearch
