@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import InventoryForm from "@/app/inventory/Component";
-import InventoryList from "./InventoryList";
+import InventoryForm from "./components/InventoryForm";
+import InventoryList from "./components/InventoryList";
+import AddNewItemWithQuantityForm from "./components/AddNewItemForm";
 import { Container, Typography, Grid, Paper } from "@mui/material";
 
 const Home: React.FC = () => {
@@ -10,6 +11,12 @@ const Home: React.FC = () => {
   // Function to trigger refresh
   const handleInventoryUpdate = () => {
     setRefreshInventory((prev) => prev + 1);
+  };
+
+  const handleItemAdded = () => {
+    // You can perform additional actions here if needed
+    // For now, we'll trigger the inventory refresh
+    handleInventoryUpdate();
   };
 
   return (
@@ -33,7 +40,19 @@ const Home: React.FC = () => {
             <Typography variant="h5" component="h2" gutterBottom>
               Update Inventory
             </Typography>
-            <InventoryForm onInventoryUpdate={handleInventoryUpdate} />
+            <InventoryForm
+              onInventoryUpdate={handleInventoryUpdate}
+              refreshTrigger={refreshInventory}
+            />
+          </Paper>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Paper elevation={3} style={{ padding: "16px" }}>
+            <Typography variant="h5" component="h2" gutterBottom>
+              Add New Items
+            </Typography>
+            <AddNewItemWithQuantityForm onItemAdded={handleItemAdded} />
           </Paper>
         </Grid>
       </Grid>

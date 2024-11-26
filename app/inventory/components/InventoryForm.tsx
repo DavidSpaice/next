@@ -16,15 +16,20 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Typography,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { Item, Location } from "@/types";
 
 interface InventoryFormProps {
   onInventoryUpdate: () => void;
+  refreshTrigger: number;
 }
 
-const InventoryForm: React.FC<InventoryFormProps> = ({ onInventoryUpdate }) => {
+const InventoryForm: React.FC<InventoryFormProps> = ({
+  onInventoryUpdate,
+  refreshTrigger,
+}) => {
   const [items, setItems] = useState<Item[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [formData, setFormData] = useState({
@@ -43,24 +48,32 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onInventoryUpdate }) => {
   useEffect(() => {
     // Fetch items and locations from the API
     const fetchItems = async () => {
-      const res = await fetch(
-        "https://airtek-warranty.onrender.com/inventory/items"
-      );
+      const res = await fetch("http://localhost:8500/inventory/items");
       const data = await res.json();
       setItems(data);
     };
 
     const fetchLocations = async () => {
-      const res = await fetch(
-        "https://airtek-warranty.onrender.com/inventory/locations"
-      );
+      const res = await fetch("http://localhost:8500/inventory/locations");
       const data = await res.json();
       setLocations(data);
     };
 
     fetchItems();
     fetchLocations();
-  }, []);
+  }, [refreshTrigger]);
+
+  // Helper function to get item name by ID
+  const getItemName = (itemId: string) => {
+    const item = items.find((item) => item._id === itemId);
+    return item ? item.name : "";
+  };
+
+  // Helper function to get location name by ID
+  const getLocationName = (locationId: string) => {
+    const location = locations.find((loc) => loc._id === locationId);
+    return location ? location.name : "";
+  };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -355,9 +368,37 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onInventoryUpdate }) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to update the inventory with the entered
-            details?
+            Please confirm the following details before updating the inventory:
           </DialogContentText>
+          <Box mt={2}>
+            <Typography variant="body1">
+              <strong>Item:</strong> {getItemName(formData.itemId)}
+            </Typography>
+            <Typography variant="body1">
+              <strong>Action:</strong> {formData.action}
+            </Typography>
+            <Typography variant="body1">
+              <strong>Quantity:</strong> {formData.quantity}
+            </Typography>
+            {(formData.action === "in" || formData.action === "out") && (
+              <Typography variant="body1">
+                <strong>Location:</strong>{" "}
+                {getLocationName(formData.toLocation)}
+              </Typography>
+            )}
+            {formData.action === "transfer" && (
+              <>
+                <Typography variant="body1">
+                  <strong>From Location:</strong>{" "}
+                  {getLocationName(formData.fromLocation)}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>To Location:</strong>{" "}
+                  {getLocationName(formData.toLocation)}
+                </Typography>
+              </>
+            )}
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseConfirmSubmit} color="primary">
