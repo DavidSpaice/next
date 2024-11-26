@@ -155,13 +155,24 @@ const InventoryList: React.FC<InventoryListProps> = ({ refreshTrigger }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {inventory.map((inv) => (
-                    <TableRow key={`${inv.itemId._id}-${inv.locationId._id}`}>
-                      <TableCell>{inv.itemId.name}</TableCell>
-                      <TableCell>{inv.locationId.name}</TableCell>
-                      <TableCell>{inv.quantity}</TableCell>
-                    </TableRow>
-                  ))}
+                  {inventory.map((inv) => {
+                    const itemName = inv.itemId
+                      ? inv.itemId.name
+                      : "Unknown Item";
+                    const locationName = inv.locationId
+                      ? inv.locationId.name
+                      : "Unknown Location";
+                    const key = `${inv.itemId?._id || inv._id}-${
+                      inv.locationId?._id || inv._id
+                    }`;
+                    return (
+                      <TableRow key={key}>
+                        <TableCell>{itemName}</TableCell>
+                        <TableCell>{locationName}</TableCell>
+                        <TableCell>{inv.quantity}</TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </TableContainer>

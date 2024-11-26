@@ -47,14 +47,14 @@ const Home: React.FC = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Paper elevation={3} style={{ padding: "16px" }}>
             <Typography variant="h5" component="h2" gutterBottom>
               Add New Items
             </Typography>
             <AddNewItemWithQuantityForm onItemAdded={handleItemAdded} />
           </Paper>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Container>
   );
