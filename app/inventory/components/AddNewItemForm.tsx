@@ -50,7 +50,7 @@ const AddNewItemWithQuantityForm: React.FC<AddNewItemWithQuantityFormProps> = ({
     // Fetch existing locations from the backend
     const fetchLocations = async () => {
       try {
-        const res = await fetch("http://localhost:8500/inventory/locations");
+        const res = await fetch("https://airtek-warranty.onrender.com/inventory/locations");
         const data = await res.json();
         setLocations(data);
       } catch (error) {
@@ -135,7 +135,7 @@ const AddNewItemWithQuantityForm: React.FC<AddNewItemWithQuantityFormProps> = ({
 
     // Proceed with submission
     try {
-      const res = await fetch("http://localhost:8500/inventory/add-item", {
+      const res = await fetch("https://airtek-warranty.onrender.com/inventory/add-item", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -172,7 +172,7 @@ const AddNewItemWithQuantityForm: React.FC<AddNewItemWithQuantityFormProps> = ({
     if (newLocationName.trim() === "") return;
 
     try {
-      const res = await fetch("http://localhost:8500/inventory/locations", {
+      const res = await fetch("https://airtek-warranty.onrender.com/inventory/locations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newLocationName.trim() }),
