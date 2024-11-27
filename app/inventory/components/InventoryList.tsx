@@ -54,10 +54,12 @@ const InventoryList: React.FC<InventoryListProps> = ({ refreshTrigger }) => {
         )}&locationSearch=${encodeURIComponent(locationSearch)}`
       );
       const data = await res.json();
-      setInventory(data.data);
-      setTotal(data.total);
+      setInventory(data.data || []); // Ensure inventory is an array
+      setTotal(data.total || 0);
     } catch (error) {
       console.error("Error fetching inventory:", error);
+      setInventory([]); // On error, set inventory to empty array
+      setTotal(0);
     }
     setLoading(false);
   };
@@ -155,24 +157,32 @@ const InventoryList: React.FC<InventoryListProps> = ({ refreshTrigger }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {inventory.map((inv) => {
-                    const itemName = inv.itemId
-                      ? inv.itemId.name
-                      : "Unknown Item";
-                    const locationName = inv.locationId
-                      ? inv.locationId.name
-                      : "Unknown Location";
-                    const key = `${inv.itemId?._id || inv._id}-${
-                      inv.locationId?._id || inv._id
-                    }`;
-                    return (
-                      <TableRow key={key}>
-                        <TableCell>{itemName}</TableCell>
-                        <TableCell>{locationName}</TableCell>
-                        <TableCell>{inv.quantity}</TableCell>
-                      </TableRow>
-                    );
-                  })}
+                  {inventory.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={3} align="center">
+                        No inventory data available.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    inventory.map((inv) => {
+                      const itemName = inv.itemId
+                        ? inv.itemId.name
+                        : "Unknown Item";
+                      const locationName = inv.locationId
+                        ? inv.locationId.name
+                        : "Unknown Location";
+                      const key = `${inv.itemId?._id || inv._id}-${
+                        inv.locationId?._id || inv._id
+                      }`;
+                      return (
+                        <TableRow key={key}>
+                          <TableCell>{itemName}</TableCell>
+                          <TableCell>{locationName}</TableCell>
+                          <TableCell>{inv.quantity}</TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>

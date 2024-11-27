@@ -48,13 +48,17 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
   useEffect(() => {
     // Fetch items and locations from the API
     const fetchItems = async () => {
-      const res = await fetch("https://airtek-warranty.onrender.com/inventory/items");
+      const res = await fetch(
+        "https://airtek-warranty.onrender.com/inventory/items"
+      );
       const data = await res.json();
       setItems(data);
     };
 
     const fetchLocations = async () => {
-      const res = await fetch("https://airtek-warranty.onrender.com/inventory/locations");
+      const res = await fetch(
+        "https://airtek-warranty.onrender.com/inventory/locations"
+      );
       const data = await res.json();
       setLocations(data);
     };
@@ -382,7 +386,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
             </Typography>
             {(formData.action === "in" || formData.action === "out") && (
               <Typography variant="body1">
-                <strong>Location:</strong>{" "}
+                <strong>Location:</strong>
                 {getLocationName(formData.toLocation)}
               </Typography>
             )}
