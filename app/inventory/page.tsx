@@ -4,6 +4,7 @@ import InventoryForm from "./components/InventoryForm";
 import InventoryList from "./components/InventoryList";
 import AddNewItemWithQuantityForm from "./components/AddNewItemForm";
 import { Container, Typography, Grid, Paper } from "@mui/material";
+import TransactionLogs from "./TransactionLogs";
 
 const Home: React.FC = () => {
   const [refreshInventory, setRefreshInventory] = useState(0);
@@ -14,8 +15,6 @@ const Home: React.FC = () => {
   };
 
   const handleItemAdded = () => {
-    // You can perform additional actions here if needed
-    // For now, we'll trigger the inventory refresh
     handleInventoryUpdate();
   };
 
@@ -55,6 +54,16 @@ const Home: React.FC = () => {
             <AddNewItemWithQuantityForm onItemAdded={handleItemAdded} />
           </Paper>
         </Grid> */}
+{/* 
+        <Grid item xs={12}>
+          <Paper elevation={3} style={{ padding: "16px" }}>
+            <Typography variant="h5" component="h2" gutterBottom>
+              Transaction Logs
+            </Typography>
+            <TransactionLogs />
+          </Paper>
+        </Grid> */}
+
       </Grid>
     </Container>
   );
