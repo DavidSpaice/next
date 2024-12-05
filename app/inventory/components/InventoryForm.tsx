@@ -166,11 +166,15 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
   const handleResetLastTransaction = async () => {
     setResetInProgress(true);
     setServerError(""); // Reset server error
+    const userName = session?.user?.name || "Unknown User";
+
     try {
       const res = await fetch(
         "https://airtek-warranty.onrender.com/inventory/transaction/reset",
         {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userName }),
         }
       );
       if (res.ok) {
