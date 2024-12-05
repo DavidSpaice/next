@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useSession } from "next-auth/react";
 import {
   Button,
   TextField,
@@ -30,6 +31,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
   onInventoryUpdate,
   refreshTrigger,
 }) => {
+  const { data: session } = useSession();
   const [items, setItems] = useState<Item[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [formData, setFormData] = useState({
@@ -101,13 +103,15 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
     setOpenConfirmSubmit(false); // Close confirmation dialog
     setServerError(""); // Reset server error
 
+    const userName = session?.user?.name || "Unknown User";
+
     // Proceed with submission
     const res = await fetch(
       "https://airtek-warranty.onrender.com/inventory/transaction",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, userName }),
       }
     );
     if (res.ok) {

@@ -1,13 +1,18 @@
 "use client";
+
 import React, { useState } from "react";
 import InventoryForm from "./components/InventoryForm";
 import InventoryList from "./components/InventoryList";
 import AddNewItemWithQuantityForm from "./components/AddNewItemForm";
-import { Container, Typography, Grid, Paper } from "@mui/material";
+import { Container, Typography, Grid, Paper, Button, Box } from "@mui/material";
 import TransactionLogs from "./TransactionLogs";
+import { useSession, signOut } from "next-auth/react";
+import withAuth from "./components/withAuth";
 
 const Home: React.FC = () => {
   const [refreshInventory, setRefreshInventory] = useState(0);
+
+  const { data: session } = useSession();
 
   // Function to trigger refresh
   const handleInventoryUpdate = () => {
@@ -20,11 +25,21 @@ const Home: React.FC = () => {
 
   return (
     <Container maxWidth="lg" style={{ marginTop: "32px" }}>
-      <Typography variant="h3" component="h1" gutterBottom align="center">
-        Inventory Management System
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="h3" component="h1" gutterBottom>
+          Inventory Management System
+        </Typography>
+        <Button variant="outlined" color="secondary" onClick={() => signOut()}>
+          Sign Out
+        </Button>
+      </Box>
+
+      <Typography variant="h6" gutterBottom>
+        Welcome, {session?.user?.name} ({session?.user?.role})
       </Typography>
 
       <Grid container spacing={4}>
+        {/* Current Inventory - Visible to all */}
         <Grid item xs={12}>
           <Paper elevation={3} style={{ padding: "16px" }}>
             <Typography variant="h5" component="h2" gutterBottom>
@@ -34,39 +49,47 @@ const Home: React.FC = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12}>
-          <Paper elevation={3} style={{ padding: "16px" }}>
-            <Typography variant="h5" component="h2" gutterBottom>
-              Update Inventory
-            </Typography>
-            <InventoryForm
-              onInventoryUpdate={handleInventoryUpdate}
-              refreshTrigger={refreshInventory}
-            />
-          </Paper>
-        </Grid>
+        {/* Update Inventory - Visible to admin */}
+        {(session?.user?.role === "user" ||
+          session?.user?.role === "admin") && (
+          <Grid item xs={12}>
+            <Paper elevation={3} style={{ padding: "16px" }}>
+              <Typography variant="h5" component="h2" gutterBottom>
+                Update Inventory
+              </Typography>
+              <InventoryForm
+                onInventoryUpdate={handleInventoryUpdate}
+                refreshTrigger={refreshInventory}
+              />
+            </Paper>
+          </Grid>
+        )}
 
-        {/* <Grid item xs={12}>
-          <Paper elevation={3} style={{ padding: "16px" }}>
-            <Typography variant="h5" component="h2" gutterBottom>
-              Add New Items
-            </Typography>
-            <AddNewItemWithQuantityForm onItemAdded={handleItemAdded} />
-          </Paper>
-        </Grid> */}
-{/* 
-        <Grid item xs={12}>
-          <Paper elevation={3} style={{ padding: "16px" }}>
-            <Typography variant="h5" component="h2" gutterBottom>
-              Transaction Logs
-            </Typography>
-            <TransactionLogs />
-          </Paper>
-        </Grid> */}
+        {/* Add New Items and Transaction Logs - Visible to normal users */}
+        {session?.user?.role === "admin" && (
+          <>
+            <Grid item xs={12}>
+              <Paper elevation={3} style={{ padding: "16px" }}>
+                <Typography variant="h5" component="h2" gutterBottom>
+                  Add New Items
+                </Typography>
+                <AddNewItemWithQuantityForm onItemAdded={handleItemAdded} />
+              </Paper>
+            </Grid>
 
+            <Grid item xs={12}>
+              <Paper elevation={3} style={{ padding: "16px" }}>
+                <Typography variant="h5" component="h2" gutterBottom>
+                  Transaction Logs
+                </Typography>
+                <TransactionLogs />
+              </Paper>
+            </Grid>
+          </>
+        )}
       </Grid>
     </Container>
   );
 };
 
-export default Home;
+export default withAuth(Home);
