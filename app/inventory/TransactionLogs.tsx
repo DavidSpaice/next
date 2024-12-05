@@ -72,6 +72,7 @@ const TransactionLogs: React.FC = () => {
                 <TableCell>Quantity</TableCell>
                 <TableCell>From Location</TableCell>
                 <TableCell>To Location</TableCell>
+                <TableCell>Users</TableCell>
                 <TableCell>Reset Status</TableCell>
               </TableRow>
             </TableHead>
