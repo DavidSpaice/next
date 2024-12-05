@@ -1,0 +1,94 @@
+import NextAuth, { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: "admin" | "user";
+}
+
+const users: User[] = [
+  {
+    id: "1",
+    name: "Admin User",
+    email: "admin@example.com",
+    password: "adminpass",
+    role: "admin",
+  },
+  {
+    id: "2",
+    name: "Staff User",
+    email: "user@example.com",
+    password: "userpass",
+    role: "user",
+  },
+  {
+    id: "3",
+    name: "Stanley",
+    email: "stanley@example.com",
+    password: "userpass",
+    role: "user",
+  },
+];
+
+const authOptions: NextAuthOptions = {
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "email@example.com",
+        },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials) return null;
+
+        // Find user from "database"
+        const user = users.find(
+          (u) =>
+            u.email === credentials.email && u.password === credentials.password
+        );
+
+        if (user) {
+          // Return user object with properties expected by NextAuth
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role, // "admin" | "user"
+          };
+        } else {
+          return null;
+        }
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role; // Ensure token.role is "admin" | "user"
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.role = token.role as "admin" | "user";
+        session.user.id = token.id;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/auth/signin",
+  },
+};
+
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST, authOptions };

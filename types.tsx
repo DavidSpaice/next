@@ -149,4 +149,5 @@ export interface Transaction {
   timestamp: string;
   deviceInfo?: string;
   isReset: boolean;
+  userName?: string;
 }
