@@ -12,7 +12,7 @@ interface User {
 const users: User[] = [
   {
     id: "1",
-    name: "Admin User",
+    name: "Saagar",
     email: "admin@example.com",
     password: "adminpass",
     role: "admin",
@@ -37,6 +37,13 @@ const users: User[] = [
     email: "muskan@example.com",
     password: "userpass",
     role: "user",
+  },
+  {
+    id: "5",
+    name: "Cary",
+    email: "caryhe0804@gmail.com",
+    password: "carypass2024",
+    role: "admin",
   },
 ];
 
