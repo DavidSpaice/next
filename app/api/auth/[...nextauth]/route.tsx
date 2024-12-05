@@ -34,6 +34,7 @@ const users: User[] = [
 ];
 
 const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET, // Add this line
   providers: [
     CredentialsProvider({
       name: "Credentials",
