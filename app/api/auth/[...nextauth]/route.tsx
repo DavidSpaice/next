@@ -6,7 +6,7 @@ interface User {
   name: string;
   email: string;
   password: string;
-  role: "admin" | "user";
+  role: "admin" | "user" | "super";
 }
 
 const users: User[] = [
@@ -43,14 +43,14 @@ const users: User[] = [
     name: "Cary",
     email: "caryhe0804@gmail.com",
     password: "carypass2024",
-    role: "admin",
+    role: "super",
   },
   {
     id: "6",
     name: "IT",
     email: "it@example.com",
     password: "adminpass2024",
-    role: "admin",
+    role: "super",
   },
 ];
 
@@ -100,7 +100,7 @@ const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.role = token.role as "admin" | "user";
+        session.user.role = token.role as "admin" | "user" | "super";
         session.user.id = token.id;
       }
       return session;

@@ -51,7 +51,8 @@ const Home: React.FC = () => {
 
         {/* Update Inventory - Visible to admin */}
         {(session?.user?.role === "user" ||
-          session?.user?.role === "admin") && (
+          session?.user?.role === "admin" ||
+          session?.user.role == "super") && (
           <Grid item xs={12}>
             <Paper elevation={3} style={{ padding: "16px" }}>
               <Typography variant="h5" component="h2" gutterBottom>
@@ -66,26 +67,26 @@ const Home: React.FC = () => {
         )}
 
         {/* Add New Items and Transaction Logs - Visible to normal users */}
-        {session?.user?.role === "admin" && (
-          <>
-            <Grid item xs={12}>
-              <Paper elevation={3} style={{ padding: "16px" }}>
-                <Typography variant="h5" component="h2" gutterBottom>
-                  Add New Items
-                </Typography>
-                <AddNewItemWithQuantityForm onItemAdded={handleItemAdded} />
-              </Paper>
-            </Grid>
+        {session?.user.role == "super" && (
+          <Grid item xs={12}>
+            <Paper elevation={3} style={{ padding: "16px" }}>
+              <Typography variant="h5" component="h2" gutterBottom>
+                Add New Items
+              </Typography>
+              <AddNewItemWithQuantityForm onItemAdded={handleItemAdded} />
+            </Paper>
+          </Grid>
+        )}
 
-            <Grid item xs={12}>
-              <Paper elevation={3} style={{ padding: "16px" }}>
-                <Typography variant="h5" component="h2" gutterBottom>
-                  Transaction Logs
-                </Typography>
-                <TransactionLogs />
-              </Paper>
-            </Grid>
-          </>
+        {(session?.user?.role === "admin" || session?.user.role == "super") && (
+          <Grid item xs={12}>
+            <Paper elevation={3} style={{ padding: "16px" }}>
+              <Typography variant="h5" component="h2" gutterBottom>
+                Transaction Logs
+              </Typography>
+              <TransactionLogs />
+            </Paper>
+          </Grid>
         )}
       </Grid>
     </Container>
