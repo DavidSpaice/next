@@ -50,7 +50,9 @@ const AddNewItemWithQuantityForm: React.FC<AddNewItemWithQuantityFormProps> = ({
     // Fetch existing locations from the backend
     const fetchLocations = async () => {
       try {
-        const res = await fetch("https://airtek-warranty.onrender.com/inventory/locations");
+        const res = await fetch(
+          "https://airtek-warranty.onrender.com/inventory/locations"
+        );
         const data = await res.json();
         setLocations(data);
       } catch (error) {
@@ -135,11 +137,14 @@ const AddNewItemWithQuantityForm: React.FC<AddNewItemWithQuantityFormProps> = ({
 
     // Proceed with submission
     try {
-      const res = await fetch("https://airtek-warranty.onrender.com/inventory/add-item", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        "https://airtek-warranty.onrender.com/inventory/add-item",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (res.ok) {
         setSuccessMessage("Item added successfully");
@@ -172,11 +177,14 @@ const AddNewItemWithQuantityForm: React.FC<AddNewItemWithQuantityFormProps> = ({
     if (newLocationName.trim() === "") return;
 
     try {
-      const res = await fetch("https://airtek-warranty.onrender.com/inventory/locations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newLocationName.trim() }),
-      });
+      const res = await fetch(
+        "https://airtek-warranty.onrender.com/inventory/locations",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: newLocationName.trim() }),
+        }
+      );
       if (res.ok) {
         const newLocation = await res.json();
         setLocations([...locations, newLocation]);
@@ -261,7 +269,13 @@ const AddNewItemWithQuantityForm: React.FC<AddNewItemWithQuantityFormProps> = ({
             onChange={handleChange}
             fullWidth
             required
-            inputProps={{ min: 0, step: 1 }}
+            inputProps={{
+              min: 1,
+              onWheel: (e) => {
+                const inputElement = e.currentTarget as HTMLInputElement;
+                inputElement.blur();
+              },
+            }}
             error={!!errors.quantity}
             helperText={errors.quantity}
           />
