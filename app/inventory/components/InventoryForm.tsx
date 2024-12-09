@@ -318,7 +318,13 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
             onChange={handleChange}
             fullWidth
             required
-            inputProps={{ min: 1 }}
+            inputProps={{
+              min: 1,
+              onWheel: (e) => {
+                const inputElement = e.currentTarget as HTMLInputElement;
+                inputElement.blur();
+              },
+            }}
             error={!!errors.quantity}
             helperText={errors.quantity}
           />
