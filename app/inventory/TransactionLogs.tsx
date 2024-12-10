@@ -17,8 +17,6 @@ import {
 } from "@mui/material";
 import { Transaction } from "@/types";
 
-const DEBOUNCE_DELAY = 500;
-
 const TransactionLogs: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [page, setPage] = useState(0);
@@ -32,25 +30,32 @@ const TransactionLogs: React.FC = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  // Fetch function
-  const fetchTransactions = async () => {
+  // Fetch function that accepts all search parameters
+  const fetchTransactions = async (
+    currentPage: number,
+    currentRowsPerPage: number,
+    currentItemSearch: string,
+    currentUserSearch: string,
+    currentStartDate: string,
+    currentEndDate: string
+  ) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      params.set("page", (page + 1).toString());
-      params.set("limit", rowsPerPage.toString());
+      params.set("page", (currentPage + 1).toString());
+      params.set("limit", currentRowsPerPage.toString());
 
-      if (itemSearch.trim() !== "") {
-        params.set("itemSearch", itemSearch.trim());
+      if (currentItemSearch.trim() !== "") {
+        params.set("itemSearch", currentItemSearch.trim());
       }
-      if (userSearch.trim() !== "") {
-        params.set("userSearch", userSearch.trim());
+      if (currentUserSearch.trim() !== "") {
+        params.set("userSearch", currentUserSearch.trim());
       }
-      if (startDate.trim() !== "") {
-        params.set("startDate", startDate.trim());
+      if (currentStartDate.trim() !== "") {
+        params.set("startDate", currentStartDate.trim());
       }
-      if (endDate.trim() !== "") {
-        params.set("endDate", endDate.trim());
+      if (currentEndDate.trim() !== "") {
+        params.set("endDate", currentEndDate.trim());
       }
 
       const res = await fetch(
@@ -65,44 +70,84 @@ const TransactionLogs: React.FC = () => {
     setLoading(false);
   };
 
-  // useEffect for fetching data
+  // Initial load (component mount): fetch default results with no filters
   useEffect(() => {
-    // We'll debounce the fetch when searching by item, user, date range
-    // but immediate fetch for page/rowsPerPage is okay
-    // Actually, since we rely on these states too, we apply debounce universally for simplicity.
-
-    const handler = setTimeout(() => {
-      fetchTransactions();
-    }, DEBOUNCE_DELAY);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [page, rowsPerPage, itemSearch, userSearch, startDate, endDate]);
+    fetchTransactions(
+      page,
+      rowsPerPage,
+      itemSearch,
+      userSearch,
+      startDate,
+      endDate
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
+    // Fetch with the current search state
+    fetchTransactions(
+      newPage,
+      rowsPerPage,
+      itemSearch,
+      userSearch,
+      startDate,
+      endDate
+    );
   };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+    // Fetch with updated rowsPerPage and reset to page 0
+    fetchTransactions(
+      0,
+      newRowsPerPage,
+      itemSearch,
+      userSearch,
+      startDate,
+      endDate
+    );
   };
 
   const handleSearch = () => {
-    // Just reset page to 0 and let useEffect handle refetch with debounce
+    // When user clicks search, reset to page 0 and fetch with current states
     setPage(0);
+    fetchTransactions(
+      0,
+      rowsPerPage,
+      itemSearch,
+      userSearch,
+      startDate,
+      endDate
+    );
   };
 
   const handleReset = () => {
-    // Clear all search fields and reset pagination
-    setItemSearch("");
-    setUserSearch("");
-    setStartDate("");
-    setEndDate("");
+    // Clear all search fields
+    const clearedItemSearch = "";
+    const clearedUserSearch = "";
+    const clearedStartDate = "";
+    const clearedEndDate = "";
+
+    setItemSearch(clearedItemSearch);
+    setUserSearch(clearedUserSearch);
+    setStartDate(clearedStartDate);
+    setEndDate(clearedEndDate);
+
+    // Reset to first page and fetch default results with no filters
     setPage(0);
+    fetchTransactions(
+      0,
+      rowsPerPage,
+      clearedItemSearch,
+      clearedUserSearch,
+      clearedStartDate,
+      clearedEndDate
+    );
   };
 
   return (
@@ -115,10 +160,7 @@ const TransactionLogs: React.FC = () => {
               label="Item Name"
               fullWidth
               value={itemSearch}
-              onChange={(e) => {
-                setItemSearch(e.target.value);
-                // no fetch call here, debounce will handle it
-              }}
+              onChange={(e) => setItemSearch(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -126,10 +168,7 @@ const TransactionLogs: React.FC = () => {
               label="User Name"
               fullWidth
               value={userSearch}
-              onChange={(e) => {
-                setUserSearch(e.target.value);
-                // debounce will handle fetching
-              }}
+              onChange={(e) => setUserSearch(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -139,10 +178,7 @@ const TransactionLogs: React.FC = () => {
               fullWidth
               InputLabelProps={{ shrink: true }}
               value={startDate}
-              onChange={(e) => {
-                setStartDate(e.target.value);
-                // debounce will handle fetching
-              }}
+              onChange={(e) => setStartDate(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -152,10 +188,7 @@ const TransactionLogs: React.FC = () => {
               fullWidth
               InputLabelProps={{ shrink: true }}
               value={endDate}
-              onChange={(e) => {
-                setEndDate(e.target.value);
-                // debounce will handle fetching
-              }}
+              onChange={(e) => setEndDate(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={1}>
