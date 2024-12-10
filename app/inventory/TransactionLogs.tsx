@@ -30,43 +30,42 @@ const TransactionLogs: React.FC = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  // We'll refetch whenever page or rowsPerPage changes
+  // Whenever page, rowsPerPage, or any search-related state changes, fetch the transactions
   useEffect(() => {
+    const fetchTransactions = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        params.set("page", (page + 1).toString());
+        params.set("limit", rowsPerPage.toString());
+
+        if (itemSearch.trim() !== "") {
+          params.set("itemSearch", itemSearch.trim());
+        }
+        if (userSearch.trim() !== "") {
+          params.set("userSearch", userSearch.trim());
+        }
+        if (startDate.trim() !== "") {
+          params.set("startDate", startDate.trim());
+        }
+        if (endDate.trim() !== "") {
+          params.set("endDate", endDate.trim());
+        }
+
+        const res = await fetch(
+          `https://airtek-warranty.onrender.com/inventory/transactions?${params.toString()}`
+        );
+        const data = await res.json();
+        setTransactions(data.data || []);
+        setTotal(data.total || 0);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+      setLoading(false);
+    };
+
     fetchTransactions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage]);
-
-  const fetchTransactions = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      params.set("page", (page + 1).toString());
-      params.set("limit", rowsPerPage.toString());
-
-      if (itemSearch.trim() !== "") {
-        params.set("itemSearch", itemSearch.trim());
-      }
-      if (userSearch.trim() !== "") {
-        params.set("userSearch", userSearch.trim());
-      }
-      if (startDate.trim() !== "") {
-        params.set("startDate", startDate.trim());
-      }
-      if (endDate.trim() !== "") {
-        params.set("endDate", endDate.trim());
-      }
-
-      const res = await fetch(
-        `https://airtek-warranty.onrender.com/inventory/transactions?${params.toString()}`
-      );
-      const data = await res.json();
-      setTransactions(data.data || []);
-      setTotal(data.total || 0);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    }
-    setLoading(false);
-  };
+  }, [page, rowsPerPage, itemSearch, userSearch, startDate, endDate]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -80,23 +79,19 @@ const TransactionLogs: React.FC = () => {
   };
 
   const handleSearch = () => {
-    // Reset to page 0 and refetch with current filters
+    // When user clicks search, just reset to page 0
+    // The useEffect will handle refetching based on updated states
     setPage(0);
-    fetchTransactions();
   };
 
   const handleReset = () => {
-    // Clear all search fields
+    // Clear all search fields and reset pagination
     setItemSearch("");
     setUserSearch("");
     setStartDate("");
     setEndDate("");
-
-    // Reset pagination to first page
     setPage(0);
-
-    // Fetch transactions again without any filters
-    fetchTransactions();
+    // No direct fetch call here, useEffect will handle it after state updates
   };
 
   return (
