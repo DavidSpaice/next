@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { Transaction } from "@/types";
 
+const DEBOUNCE_DELAY = 500;
+
 const TransactionLogs: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [page, setPage] = useState(0);
@@ -30,41 +32,52 @@ const TransactionLogs: React.FC = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  // Whenever page, rowsPerPage, or any search-related state changes, fetch the transactions
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams();
-        params.set("page", (page + 1).toString());
-        params.set("limit", rowsPerPage.toString());
+  // Fetch function
+  const fetchTransactions = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.set("page", (page + 1).toString());
+      params.set("limit", rowsPerPage.toString());
 
-        if (itemSearch.trim() !== "") {
-          params.set("itemSearch", itemSearch.trim());
-        }
-        if (userSearch.trim() !== "") {
-          params.set("userSearch", userSearch.trim());
-        }
-        if (startDate.trim() !== "") {
-          params.set("startDate", startDate.trim());
-        }
-        if (endDate.trim() !== "") {
-          params.set("endDate", endDate.trim());
-        }
-
-        const res = await fetch(
-          `https://airtek-warranty.onrender.com/inventory/transactions?${params.toString()}`
-        );
-        const data = await res.json();
-        setTransactions(data.data || []);
-        setTotal(data.total || 0);
-      } catch (error) {
-        console.error("Error fetching transactions:", error);
+      if (itemSearch.trim() !== "") {
+        params.set("itemSearch", itemSearch.trim());
       }
-      setLoading(false);
-    };
+      if (userSearch.trim() !== "") {
+        params.set("userSearch", userSearch.trim());
+      }
+      if (startDate.trim() !== "") {
+        params.set("startDate", startDate.trim());
+      }
+      if (endDate.trim() !== "") {
+        params.set("endDate", endDate.trim());
+      }
 
-    fetchTransactions();
+      const res = await fetch(
+        `https://airtek-warranty.onrender.com/inventory/transactions?${params.toString()}`
+      );
+      const data = await res.json();
+      setTransactions(data.data || []);
+      setTotal(data.total || 0);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    }
+    setLoading(false);
+  };
+
+  // useEffect for fetching data
+  useEffect(() => {
+    // We'll debounce the fetch when searching by item, user, date range
+    // but immediate fetch for page/rowsPerPage is okay
+    // Actually, since we rely on these states too, we apply debounce universally for simplicity.
+
+    const handler = setTimeout(() => {
+      fetchTransactions();
+    }, DEBOUNCE_DELAY);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [page, rowsPerPage, itemSearch, userSearch, startDate, endDate]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -79,8 +92,7 @@ const TransactionLogs: React.FC = () => {
   };
 
   const handleSearch = () => {
-    // When user clicks search, just reset to page 0
-    // The useEffect will handle refetching based on updated states
+    // Just reset page to 0 and let useEffect handle refetch with debounce
     setPage(0);
   };
 
@@ -91,7 +103,6 @@ const TransactionLogs: React.FC = () => {
     setStartDate("");
     setEndDate("");
     setPage(0);
-    // No direct fetch call here, useEffect will handle it after state updates
   };
 
   return (
@@ -104,7 +115,10 @@ const TransactionLogs: React.FC = () => {
               label="Item Name"
               fullWidth
               value={itemSearch}
-              onChange={(e) => setItemSearch(e.target.value)}
+              onChange={(e) => {
+                setItemSearch(e.target.value);
+                // no fetch call here, debounce will handle it
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -112,7 +126,10 @@ const TransactionLogs: React.FC = () => {
               label="User Name"
               fullWidth
               value={userSearch}
-              onChange={(e) => setUserSearch(e.target.value)}
+              onChange={(e) => {
+                setUserSearch(e.target.value);
+                // debounce will handle fetching
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -122,7 +139,10 @@ const TransactionLogs: React.FC = () => {
               fullWidth
               InputLabelProps={{ shrink: true }}
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e) => {
+                setStartDate(e.target.value);
+                // debounce will handle fetching
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={3}>
@@ -132,7 +152,10 @@ const TransactionLogs: React.FC = () => {
               fullWidth
               InputLabelProps={{ shrink: true }}
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              onChange={(e) => {
+                setEndDate(e.target.value);
+                // debounce will handle fetching
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={1}>
