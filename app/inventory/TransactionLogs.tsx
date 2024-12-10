@@ -11,28 +11,50 @@ import {
   Box,
   TablePagination,
   CircularProgress,
+  TextField,
+  Button,
+  Grid,
 } from "@mui/material";
 import { Transaction } from "@/types";
 
 const TransactionLogs: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [page, setPage] = useState(0); // Zero-based page index
+  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(30);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  // Search states
+  const [itemSearch, setItemSearch] = useState("");
+  const [userSearch, setUserSearch] = useState("");
+  const [dateSearch, setDateSearch] = useState("");
+
+  // We'll refetch whenever page, rowsPerPage changes or after performing a new search
   useEffect(() => {
     fetchTransactions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, rowsPerPage]); // <-- Added rowsPerPage to dependency array
+  }, [page, rowsPerPage]);
 
   const fetchTransactions = async () => {
     setLoading(true);
     try {
+      // Build the query params
+      const params = new URLSearchParams();
+      params.set("page", (page + 1).toString());
+      params.set("limit", rowsPerPage.toString());
+
+      if (itemSearch.trim() !== "") {
+        params.set("itemSearch", itemSearch.trim());
+      }
+      if (userSearch.trim() !== "") {
+        params.set("userSearch", userSearch.trim());
+      }
+      if (dateSearch.trim() !== "") {
+        params.set("date", dateSearch.trim());
+      }
+
       const res = await fetch(
-        `https://airtek-warranty.onrender.com/inventory/transactions?page=${
-          page + 1
-        }&limit=${rowsPerPage}` // <-- Uses rowsPerPage for limit
+        `https://airtek-warranty.onrender.com/inventory/transactions?${params.toString()}`
       );
       const data = await res.json();
       setTransactions(data.data || []);
@@ -47,7 +69,6 @@ const TransactionLogs: React.FC = () => {
     setPage(newPage);
   };
 
-  // <-- Added handleChangeRowsPerPage function
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -55,8 +76,56 @@ const TransactionLogs: React.FC = () => {
     setPage(0); // Reset to first page
   };
 
+  const handleSearch = () => {
+    // When user clicks search, reset to page 0 and refetch with new filters
+    setPage(0);
+    fetchTransactions();
+  };
+
   return (
     <Paper elevation={2} style={{ padding: "16px", marginTop: "16px" }}>
+      {/* Search Fields */}
+      <Box marginBottom={2}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Item Name"
+              fullWidth
+              value={itemSearch}
+              onChange={(e) => setItemSearch(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="User Name"
+              fullWidth
+              value={userSearch}
+              onChange={(e) => setUserSearch(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Date (YYYY-MM-DD)"
+              type="date"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              value={dateSearch}
+              onChange={(e) => setDateSearch(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={2}>
+            <Button
+              variant="contained"
+              style={{ backgroundColor: "#182887" }}
+              onClick={handleSearch}
+              fullWidth
+            >
+              Search
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+
       <TableContainer component={Box} style={{ overflowX: "auto" }}>
         {loading ? (
           <Box display="flex" justifyContent="center" padding={2}>
@@ -110,8 +179,8 @@ const TransactionLogs: React.FC = () => {
         page={page}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[30, 50, 100]} // <-- Updated options
-        onRowsPerPageChange={handleChangeRowsPerPage} // <-- Updated handler
+        rowsPerPageOptions={[30, 50, 100]}
+        onRowsPerPageChange={handleChangeRowsPerPage}
       />
     </Paper>
   );
