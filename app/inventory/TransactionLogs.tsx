@@ -27,7 +27,8 @@ const TransactionLogs: React.FC = () => {
   // Search states
   const [itemSearch, setItemSearch] = useState("");
   const [userSearch, setUserSearch] = useState("");
-  const [dateSearch, setDateSearch] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // We'll refetch whenever page, rowsPerPage changes or after performing a new search
   useEffect(() => {
@@ -49,8 +50,11 @@ const TransactionLogs: React.FC = () => {
       if (userSearch.trim() !== "") {
         params.set("userSearch", userSearch.trim());
       }
-      if (dateSearch.trim() !== "") {
-        params.set("date", dateSearch.trim());
+      if (startDate.trim() !== "") {
+        params.set("startDate", startDate.trim());
+      }
+      if (endDate.trim() !== "") {
+        params.set("endDate", endDate.trim());
       }
 
       const res = await fetch(
@@ -87,7 +91,7 @@ const TransactionLogs: React.FC = () => {
       {/* Search Fields */}
       <Box marginBottom={2}>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <TextField
               label="Item Name"
               fullWidth
@@ -95,7 +99,7 @@ const TransactionLogs: React.FC = () => {
               onChange={(e) => setItemSearch(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <TextField
               label="User Name"
               fullWidth
@@ -103,14 +107,24 @@ const TransactionLogs: React.FC = () => {
               onChange={(e) => setUserSearch(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={3}>
             <TextField
-              label="Date (YYYY-MM-DD)"
+              label="Start Date"
               type="date"
               fullWidth
               InputLabelProps={{ shrink: true }}
-              value={dateSearch}
-              onChange={(e) => setDateSearch(e.target.value)}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              label="End Date"
+              type="date"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={2}>
