@@ -27,10 +27,10 @@ const TransactionLogs: React.FC = () => {
   // Search states
   const [itemSearch, setItemSearch] = useState("");
   const [userSearch, setUserSearch] = useState("");
-  const [startDate, setStartDate] = useState(""); // New start date field
-  const [endDate, setEndDate] = useState(""); // New end date field
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-  // We'll refetch whenever page, rowsPerPage changes
+  // We'll refetch whenever page or rowsPerPage changes
   useEffect(() => {
     fetchTransactions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -39,7 +39,6 @@ const TransactionLogs: React.FC = () => {
   const fetchTransactions = async () => {
     setLoading(true);
     try {
-      // Build the query params
       const params = new URLSearchParams();
       params.set("page", (page + 1).toString());
       params.set("limit", rowsPerPage.toString());
@@ -81,8 +80,22 @@ const TransactionLogs: React.FC = () => {
   };
 
   const handleSearch = () => {
-    // When user clicks search, reset to page 0 and refetch with new filters
+    // Reset to page 0 and refetch with current filters
     setPage(0);
+    fetchTransactions();
+  };
+
+  const handleReset = () => {
+    // Clear all search fields
+    setItemSearch("");
+    setUserSearch("");
+    setStartDate("");
+    setEndDate("");
+
+    // Reset pagination to first page
+    setPage(0);
+
+    // Fetch transactions again without any filters
     fetchTransactions();
   };
 
@@ -127,7 +140,7 @@ const TransactionLogs: React.FC = () => {
               onChange={(e) => setEndDate(e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid item xs={12} sm={1}>
             <Button
               variant="contained"
               style={{ backgroundColor: "#182887" }}
@@ -135,6 +148,16 @@ const TransactionLogs: React.FC = () => {
               fullWidth
             >
               Search
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={1}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleReset}
+              fullWidth
+            >
+              Reset
             </Button>
           </Grid>
         </Grid>
