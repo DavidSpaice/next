@@ -27,10 +27,10 @@ const TransactionLogs: React.FC = () => {
   // Search states
   const [itemSearch, setItemSearch] = useState("");
   const [userSearch, setUserSearch] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(""); // New start date field
+  const [endDate, setEndDate] = useState(""); // New end date field
 
-  // We'll refetch whenever page, rowsPerPage changes or after performing a new search
+  // We'll refetch whenever page, rowsPerPage changes
   useEffect(() => {
     fetchTransactions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
