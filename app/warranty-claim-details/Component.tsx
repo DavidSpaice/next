@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import * as XLSX from "xlsx";
 
 interface PartInfo {
@@ -18,6 +18,21 @@ interface DealerInfo {
   dealerAddress: string;
   explanation: string;
   parts: PartInfo[];
+  replacementStatus: string;
+  creditIssueStatus: string;
+}
+
+interface FlattenedRow {
+  _id: string; // claim-item combined ID
+  serialNumber: string;
+  dealerName: string;
+  dealerEmail: string;
+  dealerPhone: string;
+  dealerAddress: string;
+  explanation: string;
+  defectivePart: string;
+  defectDate: string;
+  replacDate: string;
   replacementStatus: string;
   creditIssueStatus: string;
 }
@@ -84,13 +99,21 @@ const ClaimTable: React.FC = () => {
       // Update the status in the state
       setDealerInfo((prevDealerInfo) =>
         prevDealerInfo.map((dealer) => {
-          if (dealer._id === combinedId) {
+          if (dealer._id.startsWith(claimId)) {
+            // If this dealer matches the claimId part
+            // Update the parts in the claim that match itemId
             const updatedDealer = { ...dealer };
-            if (statusType === "replacementStatus") {
-              updatedDealer.replacementStatus = newStatus;
-            } else if (statusType === "creditIssueStatus") {
-              updatedDealer.creditIssueStatus = newStatus;
-            }
+            updatedDealer.parts = updatedDealer.parts.map((part) => {
+              if (part._id === itemId) {
+                // Update the relevant status
+                if (statusType === "replacementStatus") {
+                  updatedDealer.replacementStatus = newStatus;
+                } else if (statusType === "creditIssueStatus") {
+                  updatedDealer.creditIssueStatus = newStatus;
+                }
+              }
+              return part;
+            });
             return updatedDealer;
           }
           return dealer;
@@ -101,35 +124,54 @@ const ClaimTable: React.FC = () => {
     }
   };
 
-  const filteredDealerInfo = dealerInfo.filter(
-    (dealer) =>
-      dealer.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      dealer.dealerName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter by serialNumber or dealerName
+  const filteredDealerInfo = useMemo(() => {
+    return dealerInfo.filter(
+      (dealer) =>
+        dealer.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        dealer.dealerName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [dealerInfo, searchTerm]);
+
+  // Flatten the filtered data so that each part is its own row
+  const flattenedData: FlattenedRow[] = useMemo(() => {
+    const rows: FlattenedRow[] = [];
+    filteredDealerInfo.forEach((dealer) => {
+      dealer.parts.forEach((part) => {
+        rows.push({
+          _id: dealer._id, // This represents claimItem ID
+          serialNumber: dealer.serialNumber,
+          dealerName: dealer.dealerName,
+          dealerEmail: dealer.dealerEmail,
+          dealerPhone: dealer.dealerPhone,
+          dealerAddress: dealer.dealerAddress,
+          explanation: dealer.explanation,
+          defectivePart: part.defectivePart,
+          defectDate: part.defectDate,
+          replacDate: part.replacDate,
+          replacementStatus: dealer.replacementStatus,
+          creditIssueStatus: dealer.creditIssueStatus,
+        });
+      });
+    });
+    return rows;
+  }, [filteredDealerInfo]);
 
   const handleExportToExcel = () => {
-    // Flatten current page filtered data
-    const exportData = filteredDealerInfo.map((dealer) => {
-      const defectiveParts = dealer.parts
-        .map((p) => p.defectivePart)
-        .join(", ");
-      const defectDates = dealer.parts.map((p) => p.defectDate).join(", ");
-      const replacDates = dealer.parts.map((p) => p.replacDate).join(", ");
-
-      return {
-        SerialNumber: dealer.serialNumber,
-        DealerName: dealer.dealerName,
-        DealerEmail: dealer.dealerEmail,
-        DealerPhone: dealer.dealerPhone,
-        DealerAddress: dealer.dealerAddress,
-        Explanation: dealer.explanation,
-        ReplacementStatus: dealer.replacementStatus,
-        CreditIssueStatus: dealer.creditIssueStatus,
-        DefectivePart: defectiveParts,
-        DefectDate: defectDates,
-        ReplacementDate: replacDates,
-      };
-    });
+    // Export current page (filtered) flattened data
+    const exportData = flattenedData.map((row) => ({
+      SerialNumber: row.serialNumber,
+      DealerName: row.dealerName,
+      DealerEmail: row.dealerEmail,
+      DealerPhone: row.dealerPhone,
+      DealerAddress: row.dealerAddress,
+      Explanation: row.explanation,
+      ReplacementStatus: row.replacementStatus,
+      CreditIssueStatus: row.creditIssueStatus,
+      DefectivePart: row.defectivePart,
+      DefectDate: row.defectDate,
+      ReplacementDate: row.replacDate,
+    }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
@@ -139,8 +181,7 @@ const ClaimTable: React.FC = () => {
 
   const handleExportAllToExcel = async () => {
     try {
-      // Attempt to fetch all claims by using a large limit
-      const largeLimit = 1000000; // Arbitrarily large number
+      const largeLimit = 1000000; // Fetch all
       const response = await fetch(
         `https://airtek-warranty.onrender.com/claim/claim-info?page=1&limit=${largeLimit}`
       );
@@ -151,28 +192,40 @@ const ClaimTable: React.FC = () => {
       const data = await response.json();
       const allDealerInfo: DealerInfo[] = data.results || [];
 
-      // Flatten all data
-      const exportData = allDealerInfo.map((dealer) => {
-        const defectiveParts = dealer.parts
-          .map((p) => p.defectivePart)
-          .join(", ");
-        const defectDates = dealer.parts.map((p) => p.defectDate).join(", ");
-        const replacDates = dealer.parts.map((p) => p.replacDate).join(", ");
-
-        return {
-          SerialNumber: dealer.serialNumber,
-          DealerName: dealer.dealerName,
-          DealerEmail: dealer.dealerEmail,
-          DealerPhone: dealer.dealerPhone,
-          DealerAddress: dealer.dealerAddress,
-          Explanation: dealer.explanation,
-          ReplacementStatus: dealer.replacementStatus,
-          CreditIssueStatus: dealer.creditIssueStatus,
-          DefectivePart: defectiveParts,
-          DefectDate: defectDates,
-          ReplacementDate: replacDates,
-        };
+      // Flatten all data (all claims)
+      const allFlattenedData: FlattenedRow[] = [];
+      allDealerInfo.forEach((dealer) => {
+        dealer.parts.forEach((part) => {
+          allFlattenedData.push({
+            _id: dealer._id,
+            serialNumber: dealer.serialNumber,
+            dealerName: dealer.dealerName,
+            dealerEmail: dealer.dealerEmail,
+            dealerPhone: dealer.dealerPhone,
+            dealerAddress: dealer.dealerAddress,
+            explanation: dealer.explanation,
+            defectivePart: part.defectivePart,
+            defectDate: part.defectDate,
+            replacDate: part.replacDate,
+            replacementStatus: dealer.replacementStatus,
+            creditIssueStatus: dealer.creditIssueStatus,
+          });
+        });
       });
+
+      const exportData = allFlattenedData.map((row) => ({
+        SerialNumber: row.serialNumber,
+        DealerName: row.dealerName,
+        DealerEmail: row.dealerEmail,
+        DealerPhone: row.dealerPhone,
+        DealerAddress: row.dealerAddress,
+        Explanation: row.explanation,
+        ReplacementStatus: row.replacementStatus,
+        CreditIssueStatus: row.creditIssueStatus,
+        DefectivePart: row.defectivePart,
+        DefectDate: row.defectDate,
+        ReplacementDate: row.replacDate,
+      }));
 
       const ws = XLSX.utils.json_to_sheet(exportData);
       const wb = XLSX.utils.book_new();
@@ -209,8 +262,8 @@ const ClaimTable: React.FC = () => {
       </div>
 
       <div style={{ marginBottom: "10px" }}>
-        <strong>Total Results: {filteredDealerInfo.length}</strong> (showing{" "}
-        {limit} per page)
+        <strong>Total Results: {flattenedData.length}</strong> (showing {limit}{" "}
+        per page)
       </div>
 
       <div
@@ -254,68 +307,56 @@ const ClaimTable: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredDealerInfo.map((dealer, index) => {
-            const defectiveParts = dealer.parts
-              .map((p) => p.defectivePart)
-              .join(", ");
-            const defectDates = dealer.parts
-              .map((p) => p.defectDate)
-              .join(", ");
-            const replacDates = dealer.parts
-              .map((p) => p.replacDate)
-              .join(", ");
-
-            return (
-              <tr key={index}>
-                <td style={tableCellStyle}>{dealer.serialNumber}</td>
-                <td style={tableCellStyle}>{dealer.dealerName}</td>
-                <td style={tableCellStyle}>{dealer.dealerEmail}</td>
-                <td style={tableCellStyle}>{dealer.dealerPhone}</td>
-                <td style={tableCellStyle}>{dealer.dealerAddress}</td>
-                <td style={tableCellStyle}>{dealer.explanation}</td>
-                <td style={tableCellStyle}>{defectiveParts}</td>
-                <td style={tableCellStyle}>{defectDates}</td>
-                <td style={tableCellStyle}>{replacDates}</td>
-                <td style={tableCellStyle}>
-                  <select
-                    value={dealer.replacementStatus}
-                    onChange={(e) =>
-                      handleStatusChange(
-                        dealer._id,
-                        "replacementStatus",
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value="Received">Received</option>
-                    <option value="Not Received">Not Received</option>
-                  </select>
-                </td>
-                <td style={tableCellStyle}>
-                  <select
-                    value={dealer.creditIssueStatus}
-                    onChange={(e) =>
-                      handleStatusChange(
-                        dealer._id,
-                        "creditIssueStatus",
-                        e.target.value
-                      )
-                    }
-                  >
-                    <option value="Issued">Issued</option>
-                    <option value="Not Issued">Not Issued</option>
-                  </select>
-                </td>
-              </tr>
-            );
-          })}
+          {flattenedData.map((row, index) => (
+            <tr key={index}>
+              <td style={tableCellStyle}>{row.serialNumber}</td>
+              <td style={tableCellStyle}>{row.dealerName}</td>
+              <td style={tableCellStyle}>{row.dealerEmail}</td>
+              <td style={tableCellStyle}>{row.dealerPhone}</td>
+              <td style={tableCellStyle}>{row.dealerAddress}</td>
+              <td style={tableCellStyle}>{row.explanation}</td>
+              <td style={tableCellStyle}>{row.defectivePart}</td>
+              <td style={tableCellStyle}>{row.defectDate}</td>
+              <td style={tableCellStyle}>{row.replacDate}</td>
+              <td style={tableCellStyle}>
+                <select
+                  value={row.replacementStatus}
+                  onChange={(e) =>
+                    handleStatusChange(
+                      row._id,
+                      "replacementStatus",
+                      e.target.value
+                    )
+                  }
+                >
+                  <option value="Received">Received</option>
+                  <option value="Not Received">Not Received</option>
+                </select>
+              </td>
+              <td style={tableCellStyle}>
+                <select
+                  value={row.creditIssueStatus}
+                  onChange={(e) =>
+                    handleStatusChange(
+                      row._id,
+                      "creditIssueStatus",
+                      e.target.value
+                    )
+                  }
+                >
+                  <option value="Issued">Issued</option>
+                  <option value="Not Issued">Not Issued</option>
+                </select>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
 
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "center",
           marginTop: "20px",
         }}
       >
@@ -326,7 +367,7 @@ const ClaimTable: React.FC = () => {
         >
           Previous
         </button>
-        <span>
+        <span style={{ padding: "10px" }}>
           Page {page} of {totalPages}
         </span>
         <button
