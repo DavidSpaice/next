@@ -108,8 +108,14 @@ const ClaimTable: React.FC = () => {
   );
 
   const handleExportToExcel = () => {
-    // Flatten data for export
+    // Flatten current page filtered data
     const exportData = filteredDealerInfo.map((dealer) => {
+      const defectiveParts = dealer.parts
+        .map((p) => p.defectivePart)
+        .join(", ");
+      const defectDates = dealer.parts.map((p) => p.defectDate).join(", ");
+      const replacDates = dealer.parts.map((p) => p.replacDate).join(", ");
+
       return {
         SerialNumber: dealer.serialNumber,
         DealerName: dealer.dealerName,
@@ -119,19 +125,62 @@ const ClaimTable: React.FC = () => {
         Explanation: dealer.explanation,
         ReplacementStatus: dealer.replacementStatus,
         CreditIssueStatus: dealer.creditIssueStatus,
-        Parts: dealer.parts
-          .map(
-            (p) =>
-              `${p.defectivePart} (Defect Date: ${p.defectDate}, Replacement Date: ${p.replacDate})`
-          )
-          .join("; "),
+        DefectivePart: defectiveParts,
+        DefectDate: defectDates,
+        ReplacementDate: replacDates,
       };
     });
 
     const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Claims");
+    XLSX.utils.book_append_sheet(wb, ws, "Claims_Current_Page");
     XLSX.writeFile(wb, `claims_page_${page}.xlsx`);
+  };
+
+  const handleExportAllToExcel = async () => {
+    try {
+      // Attempt to fetch all claims by using a large limit
+      const largeLimit = 1000000; // Arbitrarily large number
+      const response = await fetch(
+        `https://airtek-warranty.onrender.com/claim/claim-info?page=1&limit=${largeLimit}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const allDealerInfo: DealerInfo[] = data.results || [];
+
+      // Flatten all data
+      const exportData = allDealerInfo.map((dealer) => {
+        const defectiveParts = dealer.parts
+          .map((p) => p.defectivePart)
+          .join(", ");
+        const defectDates = dealer.parts.map((p) => p.defectDate).join(", ");
+        const replacDates = dealer.parts.map((p) => p.replacDate).join(", ");
+
+        return {
+          SerialNumber: dealer.serialNumber,
+          DealerName: dealer.dealerName,
+          DealerEmail: dealer.dealerEmail,
+          DealerPhone: dealer.dealerPhone,
+          DealerAddress: dealer.dealerAddress,
+          Explanation: dealer.explanation,
+          ReplacementStatus: dealer.replacementStatus,
+          CreditIssueStatus: dealer.creditIssueStatus,
+          DefectivePart: defectiveParts,
+          DefectDate: defectDates,
+          ReplacementDate: replacDates,
+        };
+      });
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "All_Claims");
+      XLSX.writeFile(wb, `all_claims.xlsx`);
+    } catch (error) {
+      console.error("Error exporting all claims:", error);
+    }
   };
 
   if (loading) {
@@ -152,7 +201,10 @@ const ClaimTable: React.FC = () => {
           style={{ padding: "10px", flexGrow: 1 }}
         />
         <button onClick={handleExportToExcel} style={{ padding: "10px" }}>
-          Export to Excel
+          Export Current Page to Excel
+        </button>
+        <button onClick={handleExportAllToExcel} style={{ padding: "10px" }}>
+          Export All Claims to Excel
         </button>
       </div>
 
@@ -194,74 +246,69 @@ const ClaimTable: React.FC = () => {
             <th style={tableHeaderStyle}>Dealer Phone</th>
             <th style={tableHeaderStyle}>Dealer Address</th>
             <th style={tableHeaderStyle}>Explanation</th>
-            <th style={tableHeaderStyle}>Defective Parts</th>
+            <th style={tableHeaderStyle}>Defective Part</th>
+            <th style={tableHeaderStyle}>Defect Date</th>
+            <th style={tableHeaderStyle}>Replacement Date</th>
             <th style={tableHeaderStyle}>Replacement Status</th>
             <th style={tableHeaderStyle}>Credit Issue Status</th>
           </tr>
         </thead>
         <tbody>
-          {filteredDealerInfo.map((dealer, index) => (
-            <tr key={index}>
-              <td style={tableCellStyle}>{dealer.serialNumber}</td>
-              <td style={tableCellStyle}>{dealer.dealerName}</td>
-              <td style={tableCellStyle}>{dealer.dealerEmail}</td>
-              <td style={tableCellStyle}>{dealer.dealerPhone}</td>
-              <td style={tableCellStyle}>{dealer.dealerAddress}</td>
-              <td style={tableCellStyle}>{dealer.explanation}</td>
-              <td style={tableCellStyle}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr>
-                      <th style={nestedTableHeaderStyle}>Defective Part</th>
-                      <th style={nestedTableHeaderStyle}>Defect Date</th>
-                      <th style={nestedTableHeaderStyle}>Replacement Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {dealer.parts.map((part, partIndex) => (
-                      <tr key={partIndex}>
-                        <td style={nestedTableCellStyle}>
-                          {part.defectivePart}
-                        </td>
-                        <td style={nestedTableCellStyle}>{part.defectDate}</td>
-                        <td style={nestedTableCellStyle}>{part.replacDate}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </td>
-              <td style={tableCellStyle}>
-                <select
-                  value={dealer.replacementStatus}
-                  onChange={(e) =>
-                    handleStatusChange(
-                      dealer._id,
-                      "replacementStatus",
-                      e.target.value
-                    )
-                  }
-                >
-                  <option value="Received">Received</option>
-                  <option value="Not Received">Not Received</option>
-                </select>
-              </td>
-              <td style={tableCellStyle}>
-                <select
-                  value={dealer.creditIssueStatus}
-                  onChange={(e) =>
-                    handleStatusChange(
-                      dealer._id,
-                      "creditIssueStatus",
-                      e.target.value
-                    )
-                  }
-                >
-                  <option value="Issued">Issued</option>
-                  <option value="Not Issued">Not Issued</option>
-                </select>
-              </td>
-            </tr>
-          ))}
+          {filteredDealerInfo.map((dealer, index) => {
+            const defectiveParts = dealer.parts
+              .map((p) => p.defectivePart)
+              .join(", ");
+            const defectDates = dealer.parts
+              .map((p) => p.defectDate)
+              .join(", ");
+            const replacDates = dealer.parts
+              .map((p) => p.replacDate)
+              .join(", ");
+
+            return (
+              <tr key={index}>
+                <td style={tableCellStyle}>{dealer.serialNumber}</td>
+                <td style={tableCellStyle}>{dealer.dealerName}</td>
+                <td style={tableCellStyle}>{dealer.dealerEmail}</td>
+                <td style={tableCellStyle}>{dealer.dealerPhone}</td>
+                <td style={tableCellStyle}>{dealer.dealerAddress}</td>
+                <td style={tableCellStyle}>{dealer.explanation}</td>
+                <td style={tableCellStyle}>{defectiveParts}</td>
+                <td style={tableCellStyle}>{defectDates}</td>
+                <td style={tableCellStyle}>{replacDates}</td>
+                <td style={tableCellStyle}>
+                  <select
+                    value={dealer.replacementStatus}
+                    onChange={(e) =>
+                      handleStatusChange(
+                        dealer._id,
+                        "replacementStatus",
+                        e.target.value
+                      )
+                    }
+                  >
+                    <option value="Received">Received</option>
+                    <option value="Not Received">Not Received</option>
+                  </select>
+                </td>
+                <td style={tableCellStyle}>
+                  <select
+                    value={dealer.creditIssueStatus}
+                    onChange={(e) =>
+                      handleStatusChange(
+                        dealer._id,
+                        "creditIssueStatus",
+                        e.target.value
+                      )
+                    }
+                  >
+                    <option value="Issued">Issued</option>
+                    <option value="Not Issued">Not Issued</option>
+                  </select>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
@@ -308,18 +355,6 @@ const tableCellStyle: React.CSSProperties = {
   borderBottom: "1px solid #ddd",
   padding: "10px",
   verticalAlign: "top",
-};
-
-const nestedTableHeaderStyle: React.CSSProperties = {
-  borderBottom: "1px solid #ddd",
-  backgroundColor: "#e6e6e6",
-  padding: "5px",
-  fontWeight: "bold",
-};
-
-const nestedTableCellStyle: React.CSSProperties = {
-  borderBottom: "1px solid #ddd",
-  padding: "5px",
 };
 
 export default ClaimTable;
