@@ -96,16 +96,12 @@ const ClaimTable: React.FC = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Update the status in the state
       setDealerInfo((prevDealerInfo) =>
         prevDealerInfo.map((dealer) => {
           if (dealer._id.startsWith(claimId)) {
-            // If this dealer matches the claimId part
-            // Update the parts in the claim that match itemId
             const updatedDealer = { ...dealer };
             updatedDealer.parts = updatedDealer.parts.map((part) => {
               if (part._id === itemId) {
-                // Update the relevant status
                 if (statusType === "replacementStatus") {
                   updatedDealer.replacementStatus = newStatus;
                 } else if (statusType === "creditIssueStatus") {
@@ -124,7 +120,6 @@ const ClaimTable: React.FC = () => {
     }
   };
 
-  // Filter by serialNumber or dealerName
   const filteredDealerInfo = useMemo(() => {
     return dealerInfo.filter(
       (dealer) =>
@@ -133,13 +128,12 @@ const ClaimTable: React.FC = () => {
     );
   }, [dealerInfo, searchTerm]);
 
-  // Flatten the filtered data so that each part is its own row
   const flattenedData: FlattenedRow[] = useMemo(() => {
     const rows: FlattenedRow[] = [];
     filteredDealerInfo.forEach((dealer) => {
       dealer.parts.forEach((part) => {
         rows.push({
-          _id: dealer._id, // This represents claimItem ID
+          _id: dealer._id,
           serialNumber: dealer.serialNumber,
           dealerName: dealer.dealerName,
           dealerEmail: dealer.dealerEmail,
@@ -158,7 +152,6 @@ const ClaimTable: React.FC = () => {
   }, [filteredDealerInfo]);
 
   const handleExportToExcel = () => {
-    // Export current page (filtered) flattened data
     const exportData = flattenedData.map((row) => ({
       SerialNumber: row.serialNumber,
       DealerName: row.dealerName,
@@ -192,7 +185,6 @@ const ClaimTable: React.FC = () => {
       const data = await response.json();
       const allDealerInfo: DealerInfo[] = data.results || [];
 
-      // Flatten all data (all claims)
       const allFlattenedData: FlattenedRow[] = [];
       allDealerInfo.forEach((dealer) => {
         dealer.parts.forEach((part) => {
@@ -236,11 +228,10 @@ const ClaimTable: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   const totalPages = Math.ceil(total / limit);
+
+  // Generate page options
+  const pageOptions = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
@@ -353,10 +344,13 @@ const ClaimTable: React.FC = () => {
         </tbody>
       </table>
 
+      {/* Unified Pagination Controls */}
       <div
         style={{
           display: "flex",
           justifyContent: "center",
+          alignItems: "center",
+          gap: "10px",
           marginTop: "20px",
         }}
       >
@@ -367,9 +361,24 @@ const ClaimTable: React.FC = () => {
         >
           Previous
         </button>
+
+        {/* Combine the "Page {page} of {totalPages}" with the dropdown */}
         <span style={{ padding: "10px" }}>
-          Page {page} of {totalPages}
+          Page{" "}
+          <select
+            value={page}
+            onChange={(e) => setPage(parseInt(e.target.value))}
+            style={{ padding: "5px" }}
+          >
+            {pageOptions.map((pageNum) => (
+              <option value={pageNum} key={pageNum}>
+                {pageNum}
+              </option>
+            ))}
+          </select>{" "}
+          of {totalPages}
         </span>
+
         <button
           onClick={() =>
             setPage((prev) => (prev < totalPages ? prev + 1 : prev))
