@@ -286,6 +286,7 @@ const model = [
   { model: "GMV-60WL/C-T(U)" },
   { model: "GMV-V48WL/C-T(U)" },
   { model: "GMV-V60WL/C-T(U)" },
+  { model: "GMV-ND12PHS/B-T(U)" },
 ];
 
 export default model;
