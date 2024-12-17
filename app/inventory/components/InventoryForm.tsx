@@ -31,7 +31,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
   onInventoryUpdate,
   refreshTrigger,
 }) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [items, setItems] = useState<Item[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [formData, setFormData] = useState({
@@ -94,7 +94,11 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
       return; // Do not proceed
     }
 
-    // Additional form validations can be added here if needed
+    // Ensure session data and user name are available
+    if (!session || !session.user?.name) {
+      setServerError("User session not fully loaded. Please wait or reload.");
+      return;
+    }
 
     setOpenConfirmSubmit(true); // Open confirmation dialog
   };
@@ -103,7 +107,12 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
     setOpenConfirmSubmit(false); // Close confirmation dialog
     setServerError(""); // Reset server error
 
-    const userName = session?.user?.name || "Unknown User";
+    if (!session || !session.user?.name) {
+      setServerError("Cannot submit without a valid user session.");
+      return;
+    }
+
+    const userName = session.user.name;
 
     // Proceed with submission
     const res = await fetch(
@@ -166,7 +175,14 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
   const handleResetLastTransaction = async () => {
     setResetInProgress(true);
     setServerError(""); // Reset server error
-    const userName = session?.user?.name || "Unknown User";
+
+    if (!session || !session.user?.name) {
+      setServerError("Cannot reset transaction without a valid user session.");
+      setResetInProgress(false);
+      return;
+    }
+
+    const userName = session.user.name;
 
     try {
       const res = await fetch(
@@ -203,6 +219,16 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
     setOpenConfirmReset(false);
     handleResetLastTransaction();
   };
+
+  // If session is still loading, display a loading state
+  if (status === "loading") {
+    return <div>Loading session, please wait...</div>;
+  }
+
+  // If session is not authenticated, display a message (or redirect)
+  if (status !== "authenticated") {
+    return <div>Please log in to update the inventory.</div>;
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -400,7 +426,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
             </Typography>
             {(formData.action === "in" || formData.action === "out") && (
               <Typography variant="body1">
-                <strong>Location:</strong>
+                <strong>Location:</strong>{" "}
                 {getLocationName(formData.toLocation)}
               </Typography>
             )}
