@@ -1117,136 +1117,142 @@ const WarrantyForm = () => {
             <div className="form-content w-4/5">
               <p className="serialNumber">Confirmation</p>
               <p>
-                Nous offrons une garantie complète pour leurs produits, couvrant
-                les défaillances résultant de défauts de matériaux et de
-                fabrication pendant l&apos;utilisation normale et
-                l&apos;entretien. Les termes et conditions de la garantie sont
-                détaillés ci-dessous, avec toutes les périodes de garantie
-                commençant à partir de la date de l&apos;installation originale,
-                du démarrage ou de la mise en service de l&apos;équipement.
-                Veuillez noter que cette garantie est soumise aux dispositions,
-                conditions, limitations et exclusions énumérées :
+                Nous offrons une garantie complète sur nos produits, couvrant
+                les pannes résultant de défauts de matériaux et de fabrication
+                dans des conditions d&apos;utilisation et d&apos;entretien
+                normales. Les modalités et conditions de la garantie sont
+                détaillées ci-dessous, toutes les périodes de garantie
+                commençant à partir de la date de l&apos;installation, de la
+                mise en service ou de la mise en fonctionnement initiale de
+                l&apos;équipement. Veuillez noter que cette garantie est soumise
+                aux dispositions, conditions, limitations et exclusions
+                énumérées :
               </p>
               <div className="list">
                 <ul>
                   <li>
                     Une période de garantie de dix (10) ans sur le compresseur
-                    et toutes les pièces au propriétaire enregistré original.
+                    et toutes les pièces pour le propriétaire initial
+                    enregistré.
                   </li>
                   <li>
-                    Une période de garantie de cinq (5) ans sur le compresseur &
-                    toutes les pièces pour PTAC au propriétaire enregistré
-                    original.
+                    Une période de garantie de cinq (5) ans sur le compresseur
+                    et toutes les pièces du PTAC pour le propriétaire initial
+                    enregistré.
                   </li>
                   <li>
                     Une période de garantie d&apos;un (1) an sur la télécommande
-                    fournie avec l&apos;équipement original.
+                    fournie avec l&apos;équipement d&apos;origine.
                   </li>
                   <li>
-                    Cette garantie s&apos;applique uniquement aux systèmes qui
-                    ont été professionnellement installés par un entrepreneur
+                    Cette garantie s&apos;applique uniquement aux systèmes
+                    installés de manière professionnelle par un entrepreneur
                     certifié et agréé, conformément à tous les codes du bâtiment
-                    applicables et aux permis, installés via les instructions
-                    d&apos;installation et de fonctionnement d&apos;Airtek/Gree.
+                    et permis applicables, et conformément aux instructions
+                    d&apos;installation et d&apos;utilisation Airtek/Gree.
                   </li>
                   <li>
                     Cette garantie s&apos;applique à tous les produits restant à
-                    leur emplacement installé original.
+                    leur emplacement d&apos;installation d&apos;origine.
                   </li>
                   <li>
-                    La garantie est annulée si l&apos;étiquette
-                    d&apos;identification de série du produit est retirée ou
-                    défigurée au point où l&apos;unité ne peut plus être
-                    identifiée.
+                    La garantie est annulée si la plaque d&apos;identification
+                    du numéro de série du produit est retirée ou altérée au
+                    point que l&apos;appareil ne puisse être identifié.
                   </li>
                   <li>
-                    Les accessoires installés sur le terrain ne sont couverts
-                    que pour une période d&apos;un (1) an à partir de la date
+                    Les accessoires installés sur site ne sont couverts que pour
+                    une période d&apos;un (1) an à partir de la date
                     d&apos;installation.
                   </li>
                   <li>
-                    La garantie n&apos;est pas applicable si les dommages
-                    résultent d&apos;une inondation, de la foudre, d&apos;un
-                    incendie, du vent ou de tout autre acte de la nature.
+                    La garantie ne s&apos;applique pas si les dommages résultent
+                    d&apos;une inondation, de la foudre, d&apos;un incendie, du
+                    vent ou de tout autre événement naturel.
                   </li>
                   <li>
-                    La garantie n&apos;est pas applicable si les dommages ou la
-                    défaillance sont le résultat d&apos;une installation dans un
+                    La garantie ne s&apos;applique pas si les dommages ou les
+                    pannes résultent d&apos;une installation dans un
                     environnement chimiquement corrosif.
                   </li>
                   <li>
-                    La garantie n&apos;est pas applicable si les dommages ou la
-                    défaillance sont le résultat d&apos;une mauvaise association
-                    des composants du produit.
+                    La garantie ne s&apos;applique pas si les dommages ou la
+                    panne résultent d&apos;une incompatibilité entre les
+                    composants du produit.
                   </li>
                   <li>
-                    La garantie n&apos;est pas applicable si les dommages ou la
-                    défaillance sont le résultat d&apos;une mauvaise taille ou
-                    conception du produit.
+                    La garantie ne s&apos;applique pas si les dommages ou la
+                    panne résultent d&apos;un dimensionnement ou d&apos;une
+                    conception incorrecte du produit.
                   </li>
                   <li>
-                    La garantie n&apos;est pas applicable si les dommages ou la
-                    défaillance sont le résultat d&apos;une alimentation en air
-                    inadéquate.
+                    La garantie ne s&apos;applique pas si les dommages ou la
+                    panne résultent d&apos;un apport d&apos;air inadéquat.
                   </li>
                   <li>
-                    La garantie n&apos;est pas applicable si les dommages ou la
-                    défaillance sont le résultat de l&apos;utilisation de
-                    composants ou d&apos;accessoires non compatibles avec les
-                    produits.
+                    La garantie ne s&apos;applique pas si les dommages ou la
+                    panne résultent de l&apos;utilisation de composants ou
+                    d&apos;accessoires non compatibles avec les produits.
                   </li>
                   <li>
-                    Tout coût pour remplacer, recharger ou éliminer le
-                    réfrigérant, y compris le coût du réfrigérant, n&apos;est
-                    pas couvert.
+                    Tout coût lié au remplacement, au remplissage ou à
+                    l&apos;élimination du réfrigérant, y compris le coût du
+                    réfrigérant lui-même, n&apos;est pas couvert.
                   </li>
                   <li>
-                    La garantie n&apos;est pas applicable si les dommages ou la
-                    défaillance sont le résultat de la modification ou de
-                    l&apos;incorporation de l&apos;installation dans
-                    d&apos;autres produits.
+                    La garantie ne s&apos;applique pas si les dommages ou la
+                    panne résultent de modifications ou de l&apos;incorporation
+                    de l&apos;installation dans d&apos;autres produits.
                   </li>
                   <li>
-                    Les défaillances ou dommages aux produits pendant les pannes
-                    de courant, les conditions de tension, les interruptions,
-                    les fusibles grillés, les disjoncteurs ouverts ou le service
-                    électrique incorrect/inadéquat.
+                    Les pannes ou dommages survenant lors de coupures de
+                    courant, de problèmes de tension, d&apos;interruptions, de
+                    fusibles grillés, de disjoncteurs déclenchés ou de services
+                    électriques incorrects/inadéquats ne sont pas couverts.
                   </li>
                   <li>
-                    Les dommages matériels, les blessures personnelles, les
-                    dysfonctionnements ou les défaillances du produit résultant
-                    d&apos;accidents, d&apos;une utilisation abusive, d&apos;une
-                    négligence par l&apos;entrepreneur ou le consommateur.
+                    Les dommages matériels, les blessures corporelles, les
+                    dysfonctionnements ou les pannes du produit résultant
+                    d&apos;accidents, de mauvaise utilisation, d&apos;abus ou de
+                    négligence de la part de l&apos;entrepreneur ou du
+                    consommateur ne sont pas couverts.
                   </li>
                   <li>
-                    La faute due à des tuyaux qui fuient, cassés, restreints,
-                    gelés et/ou des conduites de drainage restreintes n&apos;est
-                    pas couverte par cette garantie.
+                    Les défaillances causées par des canalisations fuies,
+                    cassées, obstruées, gelées et/ou des conduites
+                    d&apos;évacuation restreintes ne sont pas couvertes par
+                    cette garantie.
                   </li>
                   <li>
-                    Les dommages résultant de l&apos;échec à effectuer
-                    l&apos;entretien de routine tel que spécifié dans le manuel
-                    de l&apos;opérateur ne sont pas couverts par cette garantie.
+                    Les dommages résultant du non-respect de l&apos;entretien
+                    régulier tel que spécifié dans le manuel de
+                    l&apos;utilisateur ne sont pas couverts par cette garantie.
                   </li>
                   <li>
-                    Une preuve d&apos;achat d&apos;Airtek/Gree doit être fournie
-                    pour réclamer des pièces ou de la main-d&apos;œuvre.
+                    Une preuve d&apos;achat auprès d&apos;Airtek/Gree doit être
+                    fournie pour réclamer toute pièce ou main-d&apos;œuvre.
                   </li>
                   <li>
-                    La garantie est annulée si les pièces de remplacement ne
-                    sont pas fournies par Airtek/Gree.
+                    La garantie est annulée si les pièces de rechange ne sont
+                    pas fournies par Airtek/Gree.
                   </li>
                   <li>
-                    Les accessoires tels que les pompes de condensation, les
-                    ensembles de lignes et autres ne sont pas couverts par cette
-                    garantie.
+                    Les accessoires tels que les pompes à condensat, les
+                    liaisons frigorifiques et autres ne sont pas couverts par
+                    cette garantie.
                   </li>
                   <li>
-                    Les coûts d&apos;électricité ou de carburant, ou les
-                    augmentations des coûts d&apos;électricité ou de carburant,
-                    y compris l&apos;utilisation supplémentaire ou inhabituelle
-                    de chauffage électrique d&apos;appoint, ne sont pas couverts
+                    Les coûts d&apos;électricité ou de carburant, ou
+                    l&apos;augmentation de ces coûts, y compris
+                    l&apos;utilisation additionnelle ou inhabituelle du
+                    chauffage électrique d&apos;appoint, ne sont pas couverts
                     par cette garantie.
+                  </li>
+                  <li>
+                    <strong>Garanties prolongées :</strong> Selon votre
+                    emplacement et les détails de votre achat, vous pourriez
+                    être admissible à des options de garantie prolongée.
+                    Veuillez consulter votre reçu pour plus d&apos;informations.
                   </li>
                 </ul>
               </div>

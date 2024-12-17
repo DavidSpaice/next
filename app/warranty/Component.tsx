@@ -122,9 +122,7 @@ const WarrantyForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const thirdResponse = await fetch(
-          "https://airtek-warranty.onrender.com/dealerData"
-        );
+        const thirdResponse = await fetch("https://airtek-warranty.onrender.com/dealerData");
         const resDealerData = await thirdResponse.json();
 
         setDealerData(resDealerData);
@@ -494,16 +492,13 @@ const WarrantyForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await fetch(
-      `https://airtek-warranty.onrender.com/warranties/warranty-register`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      }
-    )
+    await fetch(`https://airtek-warranty.onrender.com/warranties/warranty-register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
       .then(function (response) {
         if (response.ok) {
           return response.text();
@@ -1112,7 +1107,7 @@ const WarrantyForm = () => {
             <div className="form-content w-4/5">
               <p className="serialNumber">Confirmation</p>
               <p>
-                We offer a comprehensive warranty for their products, covering
+                We offer a comprehensive warranty for our products, covering
                 failures resulting from defects in materials and workmanship
                 during normal use and maintenance. The warranty terms and
                 conditions are outlined below, with all warranty periods
@@ -1124,22 +1119,22 @@ const WarrantyForm = () => {
               <div className="list">
                 <ul>
                   <li>
-                    A warranty period of ten (10) years on compressor and all
-                    parts to the original registered owner.
+                    A warranty period of ten (10) years on the compressor and
+                    all parts to the original registered owner.
                   </li>
                   <li>
-                    A warranty period of five (5) years on compressor & all
+                    A warranty period of five (5) years on the compressor & all
                     parts for PTAC to the original registered owner.
                   </li>
                   <li>
                     A warranty period of one (1) year on the remote control
-                    provided with original equipment.
+                    provided with the original equipment.
                   </li>
                   <li>
                     This warranty only applies to systems that have been
                     professionally installed by a certified & licensed
-                    contractor. In accordance with all applicable building codes
-                    and permits, installed via Airtek/Gree installation and
+                    contractor, in accordance with all applicable building codes
+                    and permits, and installed via Airtek/Gree installation and
                     operating instructions.
                   </li>
                   <li>
@@ -1153,7 +1148,7 @@ const WarrantyForm = () => {
                   </li>
                   <li>
                     Field installed accessories are only covered for a period of
-                    one (1) year from date of installation.
+                    one (1) year from the date of installation.
                   </li>
                   <li>
                     Warranty is not applicable if damage is a result of a flood,
@@ -1165,15 +1160,15 @@ const WarrantyForm = () => {
                   </li>
                   <li>
                     Warranty is not applicable if damage or failure is a result
-                    of Improper matching of Product components.
+                    of improper matching of product components.
                   </li>
                   <li>
                     Warranty is not applicable if damage or failure is a result
-                    of Improper sizing or design of product.
+                    of improper sizing or design of the product.
                   </li>
                   <li>
                     Warranty is not applicable if damage or failure is a result
-                    of Inadequate Air Supply.
+                    of inadequate air supply.
                   </li>
                   <li>
                     Warranty is not applicable if damage or failure is a result
@@ -1181,12 +1176,12 @@ const WarrantyForm = () => {
                     products.
                   </li>
                   <li>
-                    Any cost to replace, refill or dispose of refrigerant,
-                    including the cost of refrigerant is not covered.
+                    Any cost to replace, refill, or dispose of refrigerant,
+                    including the cost of refrigerant, is not covered.
                   </li>
                   <li>
                     Warranty is not applicable if damage or failure is a result
-                    of Modification of or incorporation of installation into
+                    of modification of or incorporation of installation into
                     other products.
                   </li>
                   <li>
@@ -1196,35 +1191,42 @@ const WarrantyForm = () => {
                   </li>
                   <li>
                     Property damage, personal injury, malfunction, or failure of
-                    product by a result of accidents, misuse, abuse, negligence
+                    product as a result of accidents, misuse, abuse, negligence
                     by contractor or consumer.
                   </li>
                   <li>
-                    Fault due to leaky, broken, restricted, frozen pipes and or
+                    Fault due to leaky, broken, restricted, frozen pipes and/or
                     restricted drain lines not covered under this warranty.
                   </li>
                   <li>
-                    Damage as a result from failure to perform routine
-                    maintenance as specified in the operator&apos;s manual is
-                    not covered under this warranty.
+                    Damage as a result of failure to perform routine maintenance
+                    as specified in the operator&apos;s manual is not covered
+                    under this warranty.
                   </li>
                   <li>
                     Proof of purchase from Airtek/Gree must be provided to claim
-                    for any parts or labour.
+                    any parts or labor.
                   </li>
                   <li>
-                    Warranty void if replacement parts are not supplied by
+                    Warranty is void if replacement parts are not supplied by
                     Airtek/Gree.
                   </li>
                   <li>
-                    Accessories such as condensate pumps, line sets and others
+                    Accessories such as condensate pumps, line sets, and others
                     are not covered under this warranty.
                   </li>
                   <li>
                     Electricity or fuel costs, or increases in electricity or
                     fuel costs, including additional or unusual use of
-                    supplemental electric heat is not covered under this
+                    supplemental electric heat, are not covered under this
                     warranty.
+                  </li>
+                  {/* Summarized Extended Warranty Section */}
+                  <li>
+                    <strong>Extended Warranties:</strong> Depending on your
+                    location and purchase details, you may be eligible for
+                    extended warranty options. Please refer to your receipt for
+                    more information.
                   </li>
                 </ul>
               </div>
