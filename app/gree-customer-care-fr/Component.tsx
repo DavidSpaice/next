@@ -369,8 +369,8 @@ function CustomerCare() {
                     <p>
                       &quot;En cliquant sur &lsquo;Soumettre,&rsquo;
                       j&apos;accepte de recevoir des informations sur les
-                      produits et services d&apos;un concessionnaire Airtek
-                      Ontario Inc. proche en utilisant les coordonnées fournies.
+                      produits et services d&apos;un concessionnaire Airtek.
+                      proche en utilisant les coordonnées fournies.
                     </p>
                   </div>
                   <div>
