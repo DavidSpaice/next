@@ -122,7 +122,9 @@ const WarrantyForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const thirdResponse = await fetch("https://airtek-warranty.onrender.com/dealerData");
+        const thirdResponse = await fetch(
+          "https://airtek-warranty.onrender.com/dealerData"
+        );
         const resDealerData = await thirdResponse.json();
 
         setDealerData(resDealerData);
@@ -492,13 +494,16 @@ const WarrantyForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await fetch(`https://airtek-warranty.onrender.com/warranties/warranty-register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
+    await fetch(
+      `https://airtek-warranty.onrender.com/warranties/warranty-register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    )
       .then(function (response) {
         if (response.ok) {
           return response.text();
