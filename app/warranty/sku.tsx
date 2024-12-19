@@ -287,6 +287,9 @@ const model = [
   { model: "GMV-V48WL/C-T(U)" },
   { model: "GMV-V60WL/C-T(U)" },
   { model: "GMV-ND12PHS/B-T(U)" },
+  { model: "SUP18-A240V12" },
+  { model: "SUP25-A240V20 (1HP)" },
+  { model: "SUP30-A240V20 (1HP)" },
 ];
 
 export default model;
