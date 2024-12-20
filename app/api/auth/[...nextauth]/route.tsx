@@ -6,7 +6,7 @@ interface User {
   name: string;
   email: string;
   password: string;
-  role: "admin" | "user" | "super";
+  role: "admin" | "user" | "super" | "guest";
 }
 
 const users: User[] = [
@@ -58,6 +58,13 @@ const users: User[] = [
     email: "lilian@example.com",
     password: "lilianpass2024",
     role: "super",
+  },
+  {
+    id: "8",
+    name: "Guest",
+    email: "guest@example.com",
+    password: "pass2024guest",
+    role: "guest",
   },
 ];
 
