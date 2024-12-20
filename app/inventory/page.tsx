@@ -50,8 +50,7 @@ const Home: React.FC = () => {
         </Grid>
 
         {/* Update Inventory - Visible to admin */}
-        {(session?.user?.role === "guest" ||
-          session?.user?.role === "user" ||
+        {(session?.user?.role === "user" ||
           session?.user?.role === "admin" ||
           session?.user.role == "super") && (
           <Grid item xs={12}>
