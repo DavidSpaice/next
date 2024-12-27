@@ -21,10 +21,13 @@ interface InventoryListProps {
   refreshTrigger: number;
 }
 
+// 1. Define priority items in a Set
+const PRIORITY_ITEMS = new Set<string>(["GUD36W/A-D(U)", "GUD60W/A-D(U)"]);
+
 const InventoryList: React.FC<InventoryListProps> = ({ refreshTrigger }) => {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [page, setPage] = useState(0); // Page index starts from 0
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -35,13 +38,7 @@ const InventoryList: React.FC<InventoryListProps> = ({ refreshTrigger }) => {
   useEffect(() => {
     fetchInventory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    page,
-    rowsPerPage,
-    itemSearch,
-    locationSearch,
-    refreshTrigger, // Refetch when refreshTrigger changes
-  ]);
+  }, [page, rowsPerPage, itemSearch, locationSearch, refreshTrigger]);
 
   const fetchInventory = async () => {
     setLoading(true);
@@ -54,8 +51,26 @@ const InventoryList: React.FC<InventoryListProps> = ({ refreshTrigger }) => {
         )}&locationSearch=${encodeURIComponent(locationSearch)}`
       );
       const data = await res.json();
-      setInventory(data.data || []); // Ensure inventory is an array
+
+      let fetchedData: InventoryItem[] = data.data || [];
       setTotal(data.total || 0);
+
+      // 2. Priority sorting: items in PRIORITY_ITEMS come first
+      fetchedData.sort((a, b) => {
+        const aName = a.itemId?.name || "";
+        const bName = b.itemId?.name || "";
+        const aIsPriority = PRIORITY_ITEMS.has(aName);
+        const bIsPriority = PRIORITY_ITEMS.has(bName);
+
+        // If a is priority and b is not => a first
+        if (aIsPriority && !bIsPriority) return -1;
+        // If b is priority and a is not => b first
+        if (!aIsPriority && bIsPriority) return 1;
+        // Otherwise keep their original relative order
+        return 0;
+      });
+
+      setInventory(fetchedData);
     } catch (error) {
       console.error("Error fetching inventory:", error);
       setInventory([]); // On error, set inventory to empty array
@@ -71,7 +86,7 @@ const InventoryList: React.FC<InventoryListProps> = ({ refreshTrigger }) => {
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    setRowsPerPage(parseInt(event.target.value, 25));
     setPage(0);
   };
 
