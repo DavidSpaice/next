@@ -127,7 +127,7 @@ const WarrantyForm = () => {
         );
         const resDealerData = await thirdResponse.json();
 
-        setDealerData(resDealerData.data);
+        setDealerData(resDealerData);
       } catch (error) {
         console.error("Error fetching serial number data:", error);
       }
