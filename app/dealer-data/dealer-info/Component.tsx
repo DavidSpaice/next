@@ -82,7 +82,7 @@ const Dealers: React.FC = () => {
           });
 
           const response = await fetch(
-            `https://airtek-warranty.onrender.com/dealerData?${queryParams.toString()}`
+            `https://airtek-warranty.onrender.com/dealerData/dealers?${queryParams.toString()}`
           );
           const json = await response.json();
 
