@@ -948,11 +948,17 @@ const WarrantyForm = () => {
         return (
           <div className="w-full sm:w-2/4">
             <div className="w-full flex flex-col justify-center items-center">
-              <Grid container className="w-full sm:w-4/5" spacing={3}>
-                <Grid item xs={12} md={12} alignItems="center">
+              <Grid
+                container
+                spacing={2}
+                alignItems="center"
+                className="w-full sm:w-4/5"
+              >
+                {/* Header/Text */}
+                <Grid item xs={12}>
                   <p className="title">Tell Us About The Installation</p>
                   <p>
-                    If your coils are Aspen, No need to register online; simply
+                    If your coils are Aspen, no need to register online; simply
                     bring them to our warehouse.
                   </p>
                   <div style={{ color: "#d32f2f" }}>
@@ -962,51 +968,52 @@ const WarrantyForm = () => {
                   </div>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                {/* Model Autocomplete */}
+                <Grid item xs={12} md={3}>
                   <Autocomplete
                     freeSolo
-                    id="free-solo-2-demo"
                     disableClearable
                     filterOptions={skuFilterOptions}
                     ListboxProps={{ style: { maxHeight: 150 } }}
+                    // Use your "model" array here:
                     options={model}
                     getOptionLabel={(option) =>
                       typeof option === "string" ? option : option.model
                     }
-                    onInputChange={modelOnChange}
-                    value={newItem.model}
-                    renderOption={(props, option) => {
-                      return (
-                        <li {...props} key={option.model}>
-                          {option.model}
-                        </li>
-                      );
-                    }}
+                    // Render each option:
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.model}>
+                        {option.model}
+                      </li>
+                    )}
+                    // The text field:
                     renderInput={(params) => (
                       <TextField
                         {...params}
                         type="text"
-                        label="Search a Model Number"
+                        label="Search a Model Number *"
                         size="small"
-                        error={errors.model ? true : false}
+                        error={!!errors.model}
                         helperText={errors.model}
                         name="model"
                         required
+                        sx={{ width: "100%" }}
                         InputProps={{
                           ...params.InputProps,
                           type: "search",
                         }}
                       />
                     )}
+                    // Whenever user types:
+                    onInputChange={modelOnChange}
+                    // Current input value:
+                    value={newItem.model}
+                    sx={{ width: "100%" }}
                   />
                 </Grid>
 
-                <Grid
-                  item
-                  xs={12}
-                  md={4}
-                  className="flex flex-row justify-center items-center"
-                >
+                {/* Serial Number */}
+                <Grid item xs={12} md={3}>
                   <Controls
                     type="text"
                     label="Serial Number"
@@ -1015,39 +1022,47 @@ const WarrantyForm = () => {
                     value={newItem.serialNumber}
                     onChange={adaptedSerialNumberOnChange}
                     error={errors.serialNumber}
-                    required
+                    sx={{ width: "100%" }}
+                    required={true}
                   />
                 </Grid>
 
-                <Grid
-                  item
-                  xs={12}
-                  md={2}
-                  className="flex flex-row justify-center items-center"
-                >
+                {/* Installation Date */}
+                <Grid item xs={12} md={3}>
                   <DatePicker
                     label="Installation Date"
-                    slotProps={{ textField: { size: "small" } }}
+                    // The MUI-provided "slotProps" let us pass props to the underlying TextField
+                    slotProps={{
+                      textField: {
+                        size: "small",
+                        sx: { width: "100%" },
+                        required: false, // or true if you want to enforce
+                      },
+                    }}
                     value={newItem.installationDate}
                     onChange={dateOnChange}
                   />
                 </Grid>
 
+                {/* Add Item Button */}
                 <Grid
                   item
                   xs={12}
-                  md={2}
-                  className="flex flex-row justify-center items-center"
+                  md={3}
+                  display="flex"
+                  justifyContent="center"
                 >
                   <button
-                    type="button"
                     className="list-btn"
+                    type="button"
                     onClick={handleAddItem}
                   >
                     Add Item
                   </button>
                 </Grid>
-                <Grid item xs={12} md={12} alignItems="center">
+
+                {/* Table - Display Items */}
+                <Grid item xs={12}>
                   {formData.items.length > 0 && (
                     <Table>
                       <TableHead>
@@ -1082,7 +1097,6 @@ const WarrantyForm = () => {
               </Grid>
 
               <br />
-              <br />
               <Grid item xs={12} md={12}>
                 <div className="w-full flex flex-row justify-center items-center">
                   <button
@@ -1102,10 +1116,9 @@ const WarrantyForm = () => {
                 </div>
               </Grid>
             </div>
-
-            {/* </Box> */}
           </div>
         );
+
       case 5:
         return (
           <div className="w-2/4 flex flex-col justify-center items-center">

@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField } from "@mui/material";
+import { TextField, SxProps, Theme } from "@mui/material";
 
 interface InputProps {
   type: string;
@@ -7,11 +7,12 @@ interface InputProps {
   label: string;
   value: string;
   size: "small" | "medium";
-  required: boolean;
+  required?: boolean;
   disabled?: boolean;
   error?: string | null;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   inputRef?: React.RefObject<HTMLInputElement>;
+  sx?: SxProps<Theme>;
 }
 
 export default function Input(props: InputProps) {
@@ -25,6 +26,7 @@ export default function Input(props: InputProps) {
     error = null,
     onChange,
     inputRef,
+    sx,
   } = props;
 
   return (
@@ -37,6 +39,7 @@ export default function Input(props: InputProps) {
       onChange={onChange}
       required={required}
       inputRef={inputRef}
+      sx={sx}
       {...(error && { error: true, helperText: error })}
     />
   );

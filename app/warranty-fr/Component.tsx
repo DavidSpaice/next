@@ -950,8 +950,14 @@ const WarrantyForm = () => {
         return (
           <div className="w-full sm:w-2/4">
             <div className="w-full flex flex-col justify-center items-center">
-              <Grid container className="w-full sm:w-4/5" spacing={3}>
-                <Grid item xs={12} md={12} alignItems="center">
+              <Grid
+                container
+                spacing={2} // Uniform spacing between grid items
+                alignItems="center"
+                className="w-full sm:w-4/5"
+              >
+                {/* Title & Intro */}
+                <Grid item xs={12}>
                   <p className="title">
                     Dites-nous à propos de l&apos;installation
                   </p>
@@ -967,10 +973,10 @@ const WarrantyForm = () => {
                   </div>
                 </Grid>
 
+                {/* Recherche de Modèle */}
                 <Grid item xs={12} md={3}>
                   <Autocomplete
                     freeSolo
-                    id="free-solo-2-demo"
                     disableClearable
                     filterOptions={skuFilterOptions}
                     ListboxProps={{ style: { maxHeight: 150 } }}
@@ -978,81 +984,87 @@ const WarrantyForm = () => {
                     getOptionLabel={(option) =>
                       typeof option === "string" ? option : option.model
                     }
-                    onInputChange={modelOnChange}
-                    value={newItem.model}
-                    renderOption={(props, option) => {
-                      return (
-                        <li {...props} key={option.model}>
-                          {option.model}
-                        </li>
-                      );
-                    }}
+                    renderOption={(props, option) => (
+                      <li {...props} key={option.model}>
+                        {option.model}
+                      </li>
+                    )}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        type="text"
-                        label="Recherchez un numéro de modèle"
+                        label="Recherchez un numéro de modèle *"
                         size="small"
-                        error={errors.model ? true : false}
-                        helperText={errors.model}
                         name="model"
+                        error={!!errors.model}
+                        helperText={errors.model}
                         required
+                        sx={{ width: "100%" }}
                         InputProps={{
                           ...params.InputProps,
                           type: "search",
                         }}
                       />
                     )}
+                    onInputChange={modelOnChange}
+                    value={newItem.model}
+                    sx={{ width: "100%" }}
                   />
                 </Grid>
 
-                <Grid
-                  item
-                  xs={12}
-                  md={3}
-                  className="flex flex-row justify-center items-center"
-                >
+                {/* Numéro de série */}
+                <Grid item xs={12} md={3}>
                   <Controls
                     type="text"
-                    label="Numéro de série"
+                    label="Numéro de série *"
                     name="serialNumber"
                     size="small"
                     value={newItem.serialNumber}
                     onChange={adaptedSerialNumberOnChange}
                     error={errors.serialNumber}
-                    required
+                    required={true}
+                    sx={{ width: "100%" }}
                   />
                 </Grid>
 
-                <Grid
-                  item
-                  xs={12}
-                  md={3}
-                  className="flex flex-row justify-center items-center"
-                >
+                {/* Date d'installation */}
+                <Grid item xs={12} md={3}>
                   <DatePicker
                     label="Date d'installation"
-                    slotProps={{ textField: { size: "small" } }}
+                    slotProps={{
+                      textField: {
+                        size: "small",
+                        sx: { width: "100%" },
+                      },
+                    }}
                     value={newItem.installationDate}
                     onChange={dateOnChange}
                   />
                 </Grid>
 
+                {/* Bouton Ajouter un article */}
                 <Grid
                   item
                   xs={12}
                   md={3}
-                  className="flex flex-row justify-center items-center"
+                  display="flex"
+                  justifyContent="center"
                 >
                   <button
                     type="button"
+                    style={{
+                      whiteSpace: "nowrap", // Empêche le texte de passer à la ligne
+                      minWidth: "120px",
+                      padding: "8px 16px",
+                    }}
                     className="list-btn"
                     onClick={handleAddItem}
                   >
                     Ajouter un article
                   </button>
                 </Grid>
-                <Grid item xs={12} md={12} alignItems="center">
+
+                {/* Tableau des articles ajoutés */}
+                <Grid item xs={12}>
                   {formData.items.length > 0 && (
                     <Table>
                       <TableHead>
@@ -1087,7 +1099,6 @@ const WarrantyForm = () => {
               </Grid>
 
               <br />
-              <br />
               <Grid item xs={12} md={12}>
                 <div className="w-full flex flex-row justify-center items-center">
                   <button
@@ -1107,10 +1118,9 @@ const WarrantyForm = () => {
                 </div>
               </Grid>
             </div>
-
-            {/* </Box> */}
           </div>
         );
+
       case 5:
         return (
           <div className="w-2/4 flex flex-col justify-center items-center">
