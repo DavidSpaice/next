@@ -1060,7 +1060,7 @@ const WarrantyForm = () => {
                   justifyContent="center"
                 >
                   <button
-                    className="list-btn"
+                    className="list-btn-soreno"
                     type="button"
                     onClick={handleAddItem}
                   >
