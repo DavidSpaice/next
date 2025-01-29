@@ -91,6 +91,37 @@
   background-color: rgb(37, 48, 110);
 }
 
+.next-btn-soreno,
+.pre-btn-soreno,
+.list-btn-soreno {
+  cursor: pointer;
+  border-radius: 4px;
+  border-color: rgba(0, 0, 0, 0);
+  color: rgb(255, 255, 255);
+  /* font-family: Arial, Helvetica, sans-serif; */
+  /* font-style: normal; */
+  background-color: #333333;
+  height: fit-content;
+  width: fit-content;
+  max-width: 100%;
+  line-height: 1.32;
+  font-weight: bold;
+  font-size: 16px;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 2px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  padding: 11px 30px;
+  margin: 4px 2px;
+}
+
+.next-btn-soreno:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  background-color: #746e6e;
+}
+
 .pre-btn {
   background-color: rgb(231, 231, 231);
   color: #111111;
