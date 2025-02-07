@@ -46,6 +46,13 @@ const Dashboard: React.FC = () => {
     },
   ];
 
+  const widgetLinks = [
+    {
+      title: "Barcode Scanner",
+      url: "https://scan-barcode-rho.vercel.app/",
+    },
+  ];
+
   return (
     <Box
       sx={{
@@ -109,6 +116,35 @@ const Dashboard: React.FC = () => {
           <Divider sx={{ mb: 2 }} />
           <List disablePadding>
             {sorenoLinks.map((link, index) => (
+              <ListItem key={index} disableGutters>
+                <ListItemButton
+                  component="a"
+                  href={link.url}
+                  target="_blank"
+                  sx={{
+                    borderRadius: 1,
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                    },
+                  }}
+                >
+                  <ListItemText
+                    primary={link.title}
+                    primaryTypographyProps={{ color: "primary" }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+
+        <Box>
+          <Typography variant="h6" component="h2" sx={{ mb: 1 }}>
+            Widget
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <List disablePadding>
+            {widgetLinks.map((link, index) => (
               <ListItem key={index} disableGutters>
                 <ListItemButton
                   component="a"
