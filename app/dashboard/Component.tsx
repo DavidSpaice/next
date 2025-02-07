@@ -53,6 +53,13 @@ const Dashboard: React.FC = () => {
     },
   ];
 
+  const passwordsLinks = [
+    {
+      title: "Passwords Documentation",
+      url: "https://docs.google.com/document/d/1I0i9Bzywfqt9zILKxMUuZJeK-SvcUBAU/edit?usp=drive_link&ouid=115067540708844596375&rtpof=true&sd=true",
+    },
+  ];
+
   return (
     <Box
       sx={{
@@ -145,6 +152,35 @@ const Dashboard: React.FC = () => {
           <Divider sx={{ mb: 2 }} />
           <List disablePadding>
             {widgetLinks.map((link, index) => (
+              <ListItem key={index} disableGutters>
+                <ListItemButton
+                  component="a"
+                  href={link.url}
+                  target="_blank"
+                  sx={{
+                    borderRadius: 1,
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                    },
+                  }}
+                >
+                  <ListItemText
+                    primary={link.title}
+                    primaryTypographyProps={{ color: "primary" }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+
+        <Box>
+          <Typography variant="h6" component="h2" sx={{ mb: 1 }}>
+            Passwords Documentation
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <List disablePadding>
+            {passwordsLinks.map((link, index) => (
               <ListItem key={index} disableGutters>
                 <ListItemButton
                   component="a"
