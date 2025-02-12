@@ -33,8 +33,8 @@ const users: User[] = [
   },
   {
     id: "4",
-    name: "Muskan",
-    email: "muskan@example.com",
+    name: "Gaganpreet",
+    email: "gaganpreet@example.com",
     password: "userpass",
     role: "user",
   },
