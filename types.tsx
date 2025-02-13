@@ -54,6 +54,7 @@ export interface FormData extends ComType {
 }
 
 export interface WarrantyType extends ComType {
+  _id?: string;
   extension?: string;
   items: NewItem[];
   agreedToTerms: boolean;
@@ -150,4 +151,61 @@ export interface Transaction {
   deviceInfo?: string;
   isReset: boolean;
   userName?: string;
+}
+
+// FlattenedWarrantyRow.ts
+
+/**
+ * A single "flat" row combining top-level Warranty fields
+ * plus a single item (model, serialNumber, installationDate).
+ */
+export interface FlattenedWarrantyRow {
+  _id?: string;
+  installType: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  streetAddress: string;
+  city: string;
+  stateProvince: string;
+  postalCode: string;
+  country: string;
+  phone: string;
+  extension?: string;
+  dealerName: string;
+  dealerEmail: string;
+  dealerPhone: string;
+  dealerAddress: string;
+
+  // Flattened item fields
+  model?: string;
+  serialNumber?: string;
+  installationDate?: string | null; // storing as string or null, not Dayjs
+}
+/**
+ * A single "flat" row combining top-level Warranty fields
+ * plus a single item (model, serialNumber, installationDate).
+ */
+export interface FlattenedWarrantyRow {
+  _id?: string;
+  installType: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  streetAddress: string;
+  city: string;
+  stateProvince: string;
+  postalCode: string;
+  country: string;
+  phone: string;
+  extension?: string;
+  dealerName: string;
+  dealerEmail: string;
+  dealerPhone: string;
+  dealerAddress: string;
+
+  // Flattened item fields
+  model?: string;
+  serialNumber?: string;
+  installationDate?: string | null; // storing as string or null, not Dayjs
 }

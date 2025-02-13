@@ -34,8 +34,8 @@ const Dashboard: React.FC = () => {
       url: "https://next-nine-pied.vercel.app/submit-credit-email",
     },
     {
-      title: "Airtek Warranty Registration Search",
-      url: "https://next-nine-pied.vercel.app/warranty-management/search-warranty",
+      title: "Airtek Warranty Management",
+      url: "https://next-nine-pied.vercel.app/warranty-management/edit-warranty",
     },
   ];
 
