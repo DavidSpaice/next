@@ -71,7 +71,7 @@ export default function AddSerialNumber() {
     setError("");
 
     try {
-      const res = await fetch("https://next-nine-pied.vercel.app/serial", {
+      const res = await fetch("https://airtek-warranty.onrender.com/serial", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Force uppercase again for safety

@@ -58,7 +58,7 @@ export default function WarrantyTableFlattened() {
     try {
       const serverPage = pageNum + 1;
       const res = await fetch(
-        `https://next-nine-pied.vercel.app/warranties?page=${serverPage}&limit=${limit}`
+        `https://airtek-warranty.onrender.com/warranties?page=${serverPage}&limit=${limit}`
       );
       if (!res.ok) {
         throw new Error("Failed to fetch");
@@ -85,7 +85,7 @@ export default function WarrantyTableFlattened() {
     }
     try {
       const res = await fetch(
-        "https://next-nine-pied.vercel.app/warranties/search-warranty",
+        "https://airtek-warranty.onrender.com/warranties/search-warranty",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -125,7 +125,7 @@ export default function WarrantyTableFlattened() {
     try {
       // Here we assume the backend route uses the serialNumber or some ID
       const res = await fetch(
-        `https://next-nine-pied.vercel.app/warranties/delete-warranty/${deleteKey}`,
+        `https://airtek-warranty.onrender.com/warranties/delete-warranty/${deleteKey}`,
         { method: "DELETE" }
       );
       if (!res.ok) {
@@ -166,7 +166,7 @@ export default function WarrantyTableFlattened() {
     if (!editingKey) return;
     try {
       const res = await fetch(
-        `https://next-nine-pied.vercel.app/warranties/modify-warranty/${editingKey}`,
+        `https://airtek-warranty.onrender.com/warranties/modify-warranty/${editingKey}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
