@@ -497,13 +497,12 @@ const WarrantyForm = () => {
     await fetch(
       `https://airtek-warranty.onrender.com/soreno-warranty/warranty-register`,
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      }
-    )
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
       .then(function (response) {
         if (response.ok) {
           return response.text();
@@ -512,12 +511,12 @@ const WarrantyForm = () => {
       })
       .then(function (responseText) {
         setLoading(true);
-        router.push("warranty/thank-you");
+        router.push("soreno-water-warranty/thank-you");
         // console.log(responseText);
         setIsDisabled(false);
       })
       .catch(function (error) {
-        router.push("warranty/error");
+        router.push("soreno-water-warranty/error");
         // console.error(error);
         setIsDisabled(false);
       });
