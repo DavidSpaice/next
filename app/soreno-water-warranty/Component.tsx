@@ -497,12 +497,13 @@ const WarrantyForm = () => {
     await fetch(
       `https://airtek-warranty.onrender.com/soreno-warranty/warranty-register`,
       {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    })
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    )
       .then(function (response) {
         if (response.ok) {
           return response.text();
@@ -1131,129 +1132,100 @@ const WarrantyForm = () => {
             <div className="form-content w-4/5">
               <p className="serialNumber">Confirmation</p>
               <p>
-                We offer a comprehensive warranty for our products, covering
-                failures resulting from defects in materials and workmanship
-                during normal use and maintenance. The warranty terms and
-                conditions are outlined below, with all warranty periods
-                commencing from the date of the original installation, start-up,
-                or commissioning of the equipment. Please note that this
-                warranty is subject to the provisions, conditions, limitations,
-                and exclusions listed:
+                Soreno Water products are manufactured to the highest standards.
+                Our Limited Warranty covers defects in materials and workmanship
+                for products purchased from authorized Soreno Water sellers and
+                installed by qualified professionals following our installation
+                and maintenance guidelines. All warranty periods commence from
+                the date of purchase or installation and are subject to the
+                conditions, limitations, and exclusions listed below:
               </p>
               <div className="list">
                 <ul>
                   <li>
-                    A warranty period of ten (10) years on the compressor and
-                    all parts to the original registered owner.
+                    A warranty period begins on the date of purchase for all
+                    Soreno Water products.
                   </li>
                   <li>
-                    A warranty period of five (5) years on the compressor & all
-                    parts for PTAC to the original registered owner.
+                    Warranty covers defects in materials or workmanship under
+                    normal use and proper maintenance.
                   </li>
                   <li>
-                    A warranty period of one (1) year on the remote control
-                    provided with the original equipment.
+                    Products must be installed by qualified professionals in
+                    compliance with local codes and Soreno Water&apos;s
+                    instructions.
                   </li>
                   <li>
-                    This warranty only applies to systems that have been
-                    professionally installed by a certified & licensed
-                    contractor, in accordance with all applicable building codes
-                    and permits, and installed via Airtek/Gree installation and
-                    operating instructions.
+                    Proof of purchase and online registration are required to
+                    validate any warranty claim.
                   </li>
                   <li>
-                    This warranty applies to all products remaining in their
-                    original installed location.
+                    The warranty is non-transferable and applies only to the
+                    original purchaser/owner.
                   </li>
                   <li>
-                    The warranty is void if the product serial identification
-                    tag is removed or defaced to a point where the unit cannot
-                    be identified.
+                    Free replacement parts or products may be provided if a
+                    defect is confirmed.
                   </li>
                   <li>
-                    Field installed accessories are only covered for a period of
-                    one (1) year from the date of installation.
+                    Warranty does not cover damages resulting from improper
+                    installation, maintenance, or misuse.
                   </li>
                   <li>
-                    Warranty is not applicable if damage is a result of a flood,
-                    lightning, fire, wind, or any other acts of nature.
+                    The warranty is void if installation deviates from Soreno
+                    Water&apos;s prescribed guidelines.
                   </li>
                   <li>
-                    Warranty is not applicable if damage or failure is a result
-                    of installation in a chemically corrosive environment.
+                    Damage due to water quality issues beyond the product&apos;s
+                    design capability is excluded.
                   </li>
                   <li>
-                    Warranty is not applicable if damage or failure is a result
-                    of improper matching of product components.
+                    Labor, transportation, and installation costs for replacing
+                    defective parts are not covered.
                   </li>
                   <li>
-                    Warranty is not applicable if damage or failure is a result
-                    of improper sizing or design of the product.
+                    Maintenance requirements, such as timely filter and membrane
+                    replacements, must be met to keep the warranty valid.
                   </li>
                   <li>
-                    Warranty is not applicable if damage or failure is a result
-                    of inadequate air supply.
+                    Damage caused by natural events (e.g., floods, lightning,
+                    fire, or other acts of nature) is not covered.
                   </li>
                   <li>
-                    Warranty is not applicable if damage or failure is a result
-                    of use of components or accessories not compatible with
-                    products.
+                    The warranty is void if any product identification labels
+                    are removed or defaced.
                   </li>
                   <li>
-                    Any cost to replace, refill, or dispose of refrigerant,
-                    including the cost of refrigerant, is not covered.
+                    Field-installed accessories are covered for a limited period
+                    under specific conditions.
                   </li>
                   <li>
-                    Warranty is not applicable if damage or failure is a result
-                    of modification of or incorporation of installation into
-                    other products.
+                    Extended warranty options may be available; please refer to
+                    your receipt for details.
                   </li>
                   <li>
-                    Failure or damage to products during power failures, voltage
-                    conditions, interruptions, blown fuses, open circuit
-                    breakers, or incorrect/inadequate electrical service.
+                    Warranty covers only defects occurring under normal
+                    operating conditions.
                   </li>
                   <li>
-                    Property damage, personal injury, malfunction, or failure of
-                    product as a result of accidents, misuse, abuse, negligence
-                    by contractor or consumer.
+                    All claims must be supported with proper documentation,
+                    including proof of purchase and installation records.
                   </li>
                   <li>
-                    Fault due to leaky, broken, restricted, frozen pipes and/or
-                    restricted drain lines not covered under this warranty.
+                    Soreno Water reserves the right to update the warranty terms
+                    and conditions at any time.
                   </li>
                   <li>
-                    Damage as a result of failure to perform routine maintenance
-                    as specified in the operator&apos;s manual is not covered
-                    under this warranty.
+                    Any unauthorized modifications or alterations to the product
+                    void the warranty.
                   </li>
                   <li>
-                    Proof of purchase from Airtek/Gree must be provided to claim
-                    any parts or labor.
-                  </li>
-                  <li>
-                    Warranty is void if replacement parts are not supplied by
-                    Airtek/Gree.
-                  </li>
-                  <li>
-                    Accessories such as condensate pumps, line sets, and others
-                    are not covered under this warranty.
-                  </li>
-                  <li>
-                    Electricity or fuel costs, or increases in electricity or
-                    fuel costs, including additional or unusual use of
-                    supplemental electric heat, are not covered under this
-                    warranty.
-                  </li>
-                  {/* Summarized Extended Warranty Section */}
-                  <li>
-                    <strong>Extended Warranties:</strong> Depending on your
-                    location and purchase details, you may be eligible for
-                    extended warranty options. Please refer to your receipt for
-                    more information.
+                    Soreno Water&apos;s liability is limited to the purchase
+                    price and excludes incidental or consequential damages.
                   </li>
                 </ul>
               </div>
+
               <br />
               <div>
                 <label htmlFor="agreedToTerms">
