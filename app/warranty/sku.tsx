@@ -290,6 +290,18 @@ const model = [
   { model: "SUP18-A240V12" },
   { model: "SUP25-A240V20 (1HP)" },
   { model: "SUP30-A240V20 (1HP)" },
+  { model: "ESCX-130" },
+  { model: "CA-09UXEO" },
+  { model: "CA-12UXEO" },
+  { model: "CA-18UXEO" },
+  { model: "CA-24UXEO" },
+  { model: "CA-09UWXI" },
+  { model: "CA-12UWXI" },
+  { model: "CA-18UWXI" },
+  { model: "CA-24UWXI" },
+  { model: "CA3-24UMTO" },
+  { model: "CA4-36UMTO" },
+  { model: "CA5-42UMTO" },
 ];
 
 export default model;
