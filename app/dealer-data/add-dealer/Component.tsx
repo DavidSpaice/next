@@ -308,7 +308,7 @@ export default function AddDealerData() {
             {/* Location (dropdown) */}
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
-                <InputLabel id="location-label">Company Location *</InputLabel>
+                <InputLabel id="location-label">Branch Location *</InputLabel>
                 <Select
                   labelId="location-label"
                   label="Company Location *"
