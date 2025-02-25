@@ -214,7 +214,7 @@ const Dealers: React.FC = () => {
           variant="contained"
           className="list-btn"
           onClick={handleAddDealer}
-          style={{ marginBottom: 20 }}
+          style={{ marginBottom: 20, backgroundColor: "rgb(37, 48, 110)" }}
         >
           Add New Dealer
         </Button>
