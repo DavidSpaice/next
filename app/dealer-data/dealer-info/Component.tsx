@@ -270,7 +270,7 @@ const Dealers: React.FC = () => {
               <TableCell style={{ color: "white" }}>Email</TableCell>
               <TableCell style={{ color: "white" }}>Phone</TableCell>
               <TableCell style={{ color: "white" }}>Address</TableCell>
-              <TableCell style={{ color: "white" }}>Location</TableCell>
+              <TableCell style={{ color: "white" }}>Branch</TableCell>
               <TableCell style={{ color: "white" }}>Actions</TableCell>
             </TableRow>
           </TableHead>
