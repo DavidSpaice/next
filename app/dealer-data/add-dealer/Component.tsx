@@ -311,7 +311,7 @@ export default function AddDealerData() {
                 <InputLabel id="location-label">Branch Location *</InputLabel>
                 <Select
                   labelId="location-label"
-                  label="Company Location *"
+                  label="Branch Location *"
                   name="location"
                   required
                   value={formData.location}
