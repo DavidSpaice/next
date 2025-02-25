@@ -16,7 +16,6 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 
-// Allowed locations for the "Company Location" dropdown
 const allowedLocations = [
   "Manitoba",
   "Ontario",
@@ -26,7 +25,6 @@ const allowedLocations = [
   "Vancouver",
 ];
 
-// List of Canadian Provinces (add/remove as needed)
 const CANADIAN_PROVINCES = [
   "Alberta",
   "British Columbia",
@@ -51,43 +49,39 @@ export default function AddDealerData() {
     dealerName: "",
     dealerEmail: "",
     dealerPhone: "",
-    // Combined dealerAddress
     dealerAddress: "",
-    // Individual address fields
     street: "",
     city: "",
     province: "",
     postcode: "",
-    // Additional dropdown for location/branch
     location: "",
   });
 
-  // For basic client-side validation errors
   const [errors, setErrors] = useState({
     dealerEmail: "",
     dealerPhone: "",
   });
 
-  // Handle text fields (ID, Name, Email, Phone, Street, City, Postcode)
+  // Update input change handler to filter _id and remove non-alphanumeric characters.
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    // Trim leading/trailing spaces
-    const trimmedValue = value.trim();
-
+    let processedValue = value;
+    if (name === "_id") {
+      // Only allow letters and numbers
+      processedValue = value.replace(/[^A-Za-z0-9]/g, "");
+    }
+    // Trim the value and update state
     setFormData((prevData) => ({
       ...prevData,
-      [name]: trimmedValue,
+      [name]: processedValue.trim(),
     }));
-
-    // Clear any existing errors as user types
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  // Handle province & location dropdown changes
+  // Handle dropdown changes as before
   const handleSelectChange = (event: SelectChangeEvent<string>) => {
     const { name, value } = event.target;
-    if (!name) return; // Safety check
-
+    if (!name) return;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -97,8 +91,7 @@ export default function AddDealerData() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // ========= BASIC VALIDATIONS =========
-    // Email regex check
+    // Basic validations
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.dealerEmail)) {
       setErrors((prev) => ({
@@ -107,8 +100,6 @@ export default function AddDealerData() {
       }));
       return;
     }
-
-    // Phone numeric check
     const phoneRegex = /^[0-9]+$/;
     if (formData.dealerPhone && !phoneRegex.test(formData.dealerPhone)) {
       setErrors((prev) => ({
@@ -117,21 +108,21 @@ export default function AddDealerData() {
       }));
       return;
     }
-    // ========= END VALIDATIONS ===========
 
-    // Combine address fields into single dealerAddress string
+    // Combine address fields
     const dealerAddress = [
       formData.street,
       formData.city,
       formData.province,
       formData.postcode,
     ]
-      .filter(Boolean) // Only keep non-empty fields
+      .filter(Boolean)
       .join(", ");
 
-    // The final data object, including combined address
+    // Convert _id to uppercase when passing to the server
     const dataToSubmit = {
       ...formData,
+      _id: formData._id.toUpperCase(),
       dealerAddress,
     };
 
@@ -270,7 +261,7 @@ export default function AddDealerData() {
               />
             </Grid>
 
-            {/* Province (dropdown) */}
+            {/* Province Dropdown */}
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel id="province-label">Province</InputLabel>
@@ -305,7 +296,7 @@ export default function AddDealerData() {
               />
             </Grid>
 
-            {/* Location (dropdown) */}
+            {/* Location Dropdown */}
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel id="location-label">Branch Location *</InputLabel>
