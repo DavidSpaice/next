@@ -45,6 +45,9 @@ const ClaimTable: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(30);
 
+  // ---------------------
+  // Fetch Data
+  // ---------------------
   const fetchData = async (p: number = page, l: number = limit) => {
     try {
       setLoading(true);
@@ -69,6 +72,9 @@ const ClaimTable: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, limit]);
 
+  // ---------------------
+  // Handle Status Change
+  // ---------------------
   const handleStatusChange = async (
     combinedId: string,
     statusType: string,
@@ -96,6 +102,7 @@ const ClaimTable: React.FC = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // Update local state for the changed status
       setDealerInfo((prevDealerInfo) =>
         prevDealerInfo.map((dealer) => {
           if (dealer._id.startsWith(claimId)) {
@@ -120,6 +127,9 @@ const ClaimTable: React.FC = () => {
     }
   };
 
+  // ---------------------
+  // Filter & Flatten
+  // ---------------------
   const filteredDealerInfo = useMemo(() => {
     return dealerInfo.filter(
       (dealer) =>
@@ -151,6 +161,9 @@ const ClaimTable: React.FC = () => {
     return rows;
   }, [filteredDealerInfo]);
 
+  // ---------------------
+  // Export
+  // ---------------------
   const handleExportToExcel = () => {
     const exportData = flattenedData.map((row) => ({
       SerialNumber: row.serialNumber,
@@ -174,14 +187,13 @@ const ClaimTable: React.FC = () => {
 
   const handleExportAllToExcel = async () => {
     try {
-      const largeLimit = 1000000; // Fetch all
+      const largeLimit = 1000000; // fetch all
       const response = await fetch(
         `https://airtek-warranty.onrender.com/claim/claim-info?page=1&limit=${largeLimit}`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const data = await response.json();
       const allDealerInfo: DealerInfo[] = data.results || [];
 
@@ -228,26 +240,32 @@ const ClaimTable: React.FC = () => {
     }
   };
 
+  // ---------------------
+  // Pagination
+  // ---------------------
   const totalPages = Math.ceil(total / limit);
-
-  // Generate page options
   const pageOptions = Array.from({ length: totalPages }, (_, i) => i + 1);
 
+  // ---------------------
+  // Render
+  // ---------------------
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1>Claim Information</h1>
-      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+    <div style={containerStyle}>
+      <h1 style={headingStyle}>Claim Information</h1>
+
+      {/* Top Controls: Search + Export */}
+      <div style={topControlsStyle}>
         <input
           type="text"
           placeholder="Search by Serial Number or Dealer Name"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ padding: "10px", flexGrow: 1 }}
+          style={searchInputStyle}
         />
-        <button onClick={handleExportToExcel} style={{ padding: "10px" }}>
+        <button onClick={handleExportToExcel} style={buttonStyle}>
           Export Current Page to Excel
         </button>
-        <button onClick={handleExportAllToExcel} style={{ padding: "10px" }}>
+        <button onClick={handleExportAllToExcel} style={buttonStyle}>
           Export All Claims to Excel
         </button>
       </div>
@@ -257,14 +275,7 @@ const ClaimTable: React.FC = () => {
         per page)
       </div>
 
-      <div
-        style={{
-          marginBottom: "20px",
-          display: "flex",
-          gap: "10px",
-          alignItems: "center",
-        }}
-      >
+      <div style={itemsPerPageStyle}>
         <span>Items per page:</span>
         <select
           value={limit}
@@ -272,6 +283,7 @@ const ClaimTable: React.FC = () => {
             setPage(1);
             setLimit(parseInt(e.target.value));
           }}
+          style={selectStyle}
         >
           <option value="30">30</option>
           <option value="50">50</option>
@@ -279,22 +291,21 @@ const ClaimTable: React.FC = () => {
         </select>
       </div>
 
-      <table
-        style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}
-      >
+      {/* Table */}
+      <table style={tableStyle}>
         <thead>
           <tr>
-            <th style={tableHeaderStyle}>Serial Number</th>
-            <th style={tableHeaderStyle}>Dealer Name</th>
-            <th style={tableHeaderStyle}>Dealer Email</th>
-            <th style={tableHeaderStyle}>Dealer Phone</th>
-            <th style={tableHeaderStyle}>Dealer Address</th>
-            <th style={tableHeaderStyle}>Explanation</th>
-            <th style={tableHeaderStyle}>Defective Part</th>
-            <th style={tableHeaderStyle}>Defect Date</th>
-            <th style={tableHeaderStyle}>Replacement Date</th>
-            <th style={tableHeaderStyle}>Replacement Status</th>
-            <th style={tableHeaderStyle}>Credit Issue Status</th>
+            <th style={tableHeaderCellStyle}>Serial Number</th>
+            <th style={tableHeaderCellStyle}>Dealer Name</th>
+            <th style={tableHeaderCellStyle}>Dealer Email</th>
+            <th style={tableHeaderCellStyle}>Dealer Phone</th>
+            <th style={tableHeaderCellStyle}>Dealer Address</th>
+            <th style={tableHeaderCellStyle}>Explanation</th>
+            <th style={tableHeaderCellStyle}>Defective Part</th>
+            <th style={tableHeaderCellStyle}>Defect Date</th>
+            <th style={tableHeaderCellStyle}>Replacement Date</th>
+            <th style={tableHeaderCellStyle}>Replacement Status</th>
+            <th style={tableHeaderCellStyle}>Credit Issue Status</th>
           </tr>
         </thead>
         <tbody>
@@ -319,6 +330,7 @@ const ClaimTable: React.FC = () => {
                       e.target.value
                     )
                   }
+                  style={dropdownStyle}
                 >
                   <option value="Received">Received</option>
                   <option value="Not Received">Not Received</option>
@@ -334,6 +346,7 @@ const ClaimTable: React.FC = () => {
                       e.target.value
                     )
                   }
+                  style={dropdownStyle}
                 >
                   <option value="Issued">Issued</option>
                   <option value="Not Issued">Not Issued</option>
@@ -344,31 +357,22 @@ const ClaimTable: React.FC = () => {
         </tbody>
       </table>
 
-      {/* Unified Pagination Controls */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "10px",
-          marginTop: "20px",
-        }}
-      >
+      {/* Pagination */}
+      <div style={paginationStyle}>
         <button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
-          style={{ padding: "10px" }}
+          style={buttonStyle}
         >
           Previous
         </button>
 
-        {/* Combine the "Page {page} of {totalPages}" with the dropdown */}
         <span style={{ padding: "10px" }}>
           Page{" "}
           <select
             value={page}
             onChange={(e) => setPage(parseInt(e.target.value))}
-            style={{ padding: "5px" }}
+            style={{ ...selectStyle, padding: "5px" }}
           >
             {pageOptions.map((pageNum) => (
               <option value={pageNum} key={pageNum}>
@@ -384,7 +388,7 @@ const ClaimTable: React.FC = () => {
             setPage((prev) => (prev < totalPages ? prev + 1 : prev))
           }
           disabled={page === totalPages}
-          style={{ padding: "10px" }}
+          style={buttonStyle}
         >
           Next
         </button>
@@ -393,12 +397,71 @@ const ClaimTable: React.FC = () => {
   );
 };
 
-const tableHeaderStyle: React.CSSProperties = {
-  borderBottom: "2px solid #ddd",
+export default ClaimTable;
+
+/* ---------------------------
+   Inline Styles
+------------------------------ */
+const containerStyle: React.CSSProperties = {
+  margin: "2rem", // more spacious margin
+  fontFamily: "Arial, sans-serif",
+};
+
+const headingStyle: React.CSSProperties = {
+  marginBottom: "1rem",
+  color: "rgb(37, 48, 110)", // dark bluish color for heading
+};
+
+const topControlsStyle: React.CSSProperties = {
+  display: "flex",
+  gap: "10px",
+  marginBottom: "20px",
+  flexWrap: "wrap",
+};
+
+const searchInputStyle: React.CSSProperties = {
+  padding: "10px",
+  flexGrow: 1,
+  borderRadius: "4px",
+  border: "1px solid #ccc",
+};
+
+const buttonStyle: React.CSSProperties = {
+  backgroundColor: "rgb(37, 48, 110)",
+  color: "white",
+  padding: "10px 15px",
+  border: "none",
+  borderRadius: "4px",
+  cursor: "pointer",
+};
+
+const itemsPerPageStyle: React.CSSProperties = {
+  marginBottom: "20px",
+  display: "flex",
+  gap: "10px",
+  alignItems: "center",
+};
+
+const selectStyle: React.CSSProperties = {
+  padding: "5px",
+  borderRadius: "4px",
+  border: "1px solid #ccc",
+  cursor: "pointer",
+};
+
+const tableStyle: React.CSSProperties = {
+  width: "100%",
+  borderCollapse: "collapse",
+  fontSize: "14px",
+};
+
+const tableHeaderCellStyle: React.CSSProperties = {
   padding: "10px",
   textAlign: "left",
-  backgroundColor: "#f2f2f2",
+  backgroundColor: "rgb(37, 48, 110)",
+  color: "white",
   fontWeight: "bold",
+  border: "1px solid #ddd",
 };
 
 const tableCellStyle: React.CSSProperties = {
@@ -407,4 +470,17 @@ const tableCellStyle: React.CSSProperties = {
   verticalAlign: "top",
 };
 
-export default ClaimTable;
+const dropdownStyle: React.CSSProperties = {
+  padding: "5px",
+  borderRadius: "4px",
+  border: "1px solid #ccc",
+  cursor: "pointer",
+};
+
+const paginationStyle: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: "10px",
+  marginTop: "20px",
+};
