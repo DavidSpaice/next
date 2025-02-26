@@ -41,6 +41,10 @@ const Dashboard: React.FC = () => {
 
   const sorenoLinks = [
     {
+      title: "Soreno Water Dealer Info",
+      url: "https://next-nine-pied.vercel.app/soreno-water-dealer-data/dealer-info",
+    },
+    {
       title: "Soreno Blogs Management",
       url: "https://next-nine-pied.vercel.app/blogs",
     },

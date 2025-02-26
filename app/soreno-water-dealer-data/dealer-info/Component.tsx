@@ -216,7 +216,7 @@ const Dealers: React.FC = () => {
           onClick={handleAddDealer}
           style={{ marginBottom: 20, backgroundColor: "rgb(37, 48, 110)" }}
         >
-          Add New Dealer
+          Add Soreno Water New Dealer
         </Button>
       </div>
 

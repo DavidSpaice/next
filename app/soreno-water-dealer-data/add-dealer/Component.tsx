@@ -171,7 +171,7 @@ export default function AddDealerData() {
     <div style={{ margin: "2rem" }}>
       <Paper style={{ padding: "2rem" }} elevation={3}>
         <Typography variant="h5" gutterBottom>
-          Add Dealer Data
+          Add Soreno Water Dealer Data
         </Typography>
 
         <form onSubmit={handleSubmit}>
