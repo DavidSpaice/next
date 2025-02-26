@@ -111,7 +111,9 @@ const Dealers: React.FC = () => {
 
   // Add new dealer
   const handleAddDealer = () => {
-    router.push("https://next-nine-pied.vercel.app/soreno-dealers/add-dealer");
+    router.push(
+      "https://next-nine-pied.vercel.app/soreno-water-dealer-data/add-dealer"
+    );
   };
 
   // Begin editing a dealer
