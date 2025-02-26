@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -13,8 +11,11 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  SelectChangeEvent,
+  Snackbar,
+  Alert,
+  AlertColor,
 } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material/Select";
 
 const allowedLocations = [
   "Manitoba",
@@ -41,6 +42,12 @@ const CANADIAN_PROVINCES = [
   "Yukon",
 ];
 
+interface NotificationState {
+  open: boolean;
+  message: string;
+  severity: AlertColor;
+}
+
 export default function AddDealerData() {
   const router = useRouter();
 
@@ -62,6 +69,21 @@ export default function AddDealerData() {
     dealerPhone: "",
   });
 
+  // Snackbar notification state
+  const [notification, setNotification] = useState<NotificationState>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const handleCloseNotification = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") return;
+    setNotification((prev) => ({ ...prev, open: false }));
+  };
+
   // Update input change handler to filter _id and remove non-alphanumeric characters.
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -78,7 +100,7 @@ export default function AddDealerData() {
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  // Handle dropdown changes as before
+  // Handle dropdown changes
   const handleSelectChange = (event: SelectChangeEvent<string>) => {
     const { name, value } = event.target;
     if (!name) return;
@@ -139,7 +161,11 @@ export default function AddDealerData() {
       );
 
       if (response.ok) {
-        alert("Dealer Data added successfully!");
+        setNotification({
+          open: true,
+          message: "Dealer Data added successfully!",
+          severity: "success",
+        });
         setFormData({
           _id: "",
           dealerName: "",
@@ -154,16 +180,28 @@ export default function AddDealerData() {
         });
       } else {
         if (response.status === 400) {
-          alert("Dealer ID already exists. Please use a different ID.");
+          setNotification({
+            open: true,
+            message: "Dealer ID already exists. Please use a different ID.",
+            severity: "error",
+          });
         } else {
           const errorText = await response.text();
           console.error("Error adding dealer data:", errorText);
-          alert("Error adding dealer data. Please try again.");
+          setNotification({
+            open: true,
+            message: errorText || "Error adding dealer data. Please try again.",
+            severity: "error",
+          });
         }
       }
     } catch (error) {
       console.error("Network error or issue preventing request:", error);
-      alert("Network error or issue preventing request. Please try again.");
+      setNotification({
+        open: true,
+        message: "Network error or issue preventing request. Please try again.",
+        severity: "error",
+      });
     }
   };
 
@@ -335,7 +373,7 @@ export default function AddDealerData() {
 
         {/* Back Link */}
         <div style={{ marginTop: "1rem" }}>
-          <Link href="/dealer-data/dealer-info" passHref>
+          <Link href="/soreno-water-dealer-data/dealer-info" passHref>
             <Button
               variant="contained"
               style={{
@@ -348,6 +386,22 @@ export default function AddDealerData() {
           </Link>
         </div>
       </Paper>
+
+      {/* Snackbar Notification */}
+      <Snackbar
+        open={notification.open}
+        autoHideDuration={6000}
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseNotification}
+          severity={notification.severity}
+          sx={{ width: "100%" }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
