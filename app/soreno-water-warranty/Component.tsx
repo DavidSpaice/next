@@ -798,7 +798,15 @@ const WarrantyForm = () => {
               {/* Dealer Information Toggle */}
               <div className="w-full flex flex-col items-center justify-center">
                 <FormControl component="fieldset" sx={{ m: 1 }}>
-                  <FormLabel component="legend">Dealer Information</FormLabel>
+                  <FormLabel
+                    sx={{
+                      "&.MuiFormLabel-root.Mui-focused": {
+                        color: "#333333",
+                      },
+                    }}
+                  >
+                    Dealer Information
+                  </FormLabel>
                   <RadioGroup
                     row
                     name="hasDealerId"
@@ -826,12 +834,28 @@ const WarrantyForm = () => {
                   >
                     <FormControlLabel
                       value="yes"
-                      control={<Radio />}
+                      control={
+                        <Radio
+                          sx={{
+                            "&.Mui-checked": {
+                              color: "#333333",
+                            },
+                          }}
+                        />
+                      }
                       label="I have a Dealer ID"
                     />
                     <FormControlLabel
                       value="no"
-                      control={<Radio />}
+                      control={
+                        <Radio
+                          sx={{
+                            "&.Mui-checked": {
+                              color: "#333333",
+                            },
+                          }}
+                        />
+                      }
                       label="I don't have a Dealer ID"
                     />
                   </RadioGroup>
