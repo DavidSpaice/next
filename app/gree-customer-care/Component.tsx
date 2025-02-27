@@ -59,27 +59,26 @@ function CustomerCare() {
         : "Minimum 10 numbers required and number only.";
     if ("streetAddress" in formData)
       errors.streetAddress =
-        formData.streetAddress ?? "".length != 0
+        formData.streetAddress ?? "".length !== 0
           ? ""
           : "This field is required.";
     if ("city" in formData)
       errors.city =
-        formData.city ?? "".length != 0 ? "" : "This field is required.";
+        formData.city ?? "".length !== 0 ? "" : "This field is required.";
     if ("stateProvince" in formData)
       errors.stateProvince =
-        formData.stateProvince ?? "".length != 0
+        formData.stateProvince ?? "".length !== 0
           ? ""
           : "This field is required.";
     if ("postalCode" in formData)
       errors.postalCode =
-        formData.postalCode ?? "".length != 0 ? "" : "This field is required.";
+        formData.postalCode ?? "".length !== 0 ? "" : "This field is required.";
 
     setErrors({
       ...errors,
     });
 
-    if (formData == formData)
-      return Object.values(errors).every((x) => x == "");
+    return Object.values(errors).every((x) => x === "");
   };
 
   const handleChange = (
@@ -87,7 +86,6 @@ function CustomerCare() {
     validateChange: boolean | string = false
   ) => {
     validateChange = true;
-
     const { name, value } = e.target;
 
     setFormData((prevData) => ({
@@ -121,12 +119,10 @@ function CustomerCare() {
       .then(function (responseText) {
         setLoading(true);
         router.push("gree-customer-care/thank-you");
-        // console.log(responseText);
         setIsDisabled(false);
       })
       .catch(function (error) {
         router.push("gree-customer-care/error");
-        // console.error(error);
         setIsDisabled(false);
       });
   };
@@ -148,7 +144,6 @@ function CustomerCare() {
               animation: spin 2s linear infinite;
               margin: auto;
             }
-
             @keyframes spin {
               0% {
                 transform: rotate(0deg);
@@ -163,66 +158,124 @@ function CustomerCare() {
       ) : (
         <div className="container">
           <div className="form-content">
-            {/* <div>
-                            <h1 className="title text-xl">
-                                Gree Prestige Partnership Dealers!
-                            </h1>
-                        </div> */}
             <br />
+            {/* New Main Content */}
             <div className="">
               <img src="customer_service.png" alt="customer_service" />
-              <br />
-              <div>
-                <h1 className="title">Parts Concession Program</h1>
-                <br />
-                <h2 className="title">1. Parts Concession</h2>
-                <br />
-                <p>
-                  One of the standout features of choosing Gree Prestige
-                  Partnership is our Parts Concession program, powered by
-                  Airtek. This program empowers our valued dealers to concession
-                  a Major Component Part within specific time periods, which we
-                  refer to as the &quot;Concession Period.&quot; Under this
-                  program, Airtek takes care of the Part, while our dealers are
-                  responsible for conceding 100% of the labor required for
-                  replacement.
-                </p>
-                <br />
-                <h2 className="title">1.1. Eligible Major Components</h2>
-                <br />
-                <p>
-                  Our Concession program applies exclusively to the following
-                  major components: Compressor, Outdoor coil, and Indoor coil -
-                  collectively known as &quot;Major Component Parts&quot; or
-                  simply &quot;Parts.&quot;
-                </p>
-                <br />
-                <h2 className="title">1.2. Concession Periods</h2>
-                <br />
-                <p>
-                  The Concession Period is determined by the length of the
-                  registered limited warranty period. To give you an idea of how
-                  this works:
-                </p>
-                <br />
-                <ul className="pl-4">
-                  <li className="list-disc font-bold">
-                    For a 10-year registered limited warranty period, the
-                    Concession Period extends to 12 months beyond the
-                    warranty&apos;s expiration.
-                  </li>
 
-                  <li className="list-disc font-bold">
-                    With a 5-year registered limited warranty, the Concession
-                    Period is 18 months post-expiration.
-                  </li>
-
-                  <li className="list-disc font-bold">
-                    For a 1-year registered limited warranty, the Concession
-                    Period spans 24 months after the warranty&apos;s expiration.
-                  </li>
-                </ul>
-              </div>
+              <h1 className="title">2025 AIRTEK PRESTIGE DEALER PROGRAM</h1>
+              <p className="text-sm">February 26, 2025</p>
+              <h2 className="title">Airtek Prestige Dealer Program</h2>
+              <p className="text-sm mt-2">
+                The Airtek Prestige Dealer Program comprises a select group of
+                dealers dedicated to delivering superior comfort solutions,
+                optimizing efficiency, and providing exceptional customer
+                service to residential consumers.
+              </p>
+              <p className="text-sm mt-2">
+                As a Prestige Dealer, you have access to a powerful tool for
+                promoting Airtek&quot;s products in the residential market - up
+                to a 12-year limited warranty on eligible products. Airtek
+                Prestige Dealers may offer their residential customers an
+                additional 2-year limited warranty on top of the standard
+                10-year limited warranty for qualifying products, provided all
+                of the following conditions are met:
+              </p>
+              <ol className="list-decimal ml-4 text-sm mt-2">
+                <li>
+                  Dealers must maintain a signed, valid, and active Dealer
+                  Agreement with Airtek and be in good standing as determined
+                  solely by Airtek.
+                </li>
+                <li>
+                  All installations must be performed in Canada by qualified and
+                  licensed technicians in compliance with local laws,
+                  regulations, and codes.
+                </li>
+                <li>
+                  Each installation must include an appropriate and compatible
+                  surge protector, pre-approved by Airtek for each specific
+                  product.
+                </li>
+                <li>
+                  Products must be purchased from Airtek and have verifiable
+                  serial numbers.
+                </li>
+                <li>
+                  Products must be registered to the original owner according to
+                  Airtek&quot;s warranty registration timeline and guidelines.
+                </li>
+              </ol>
+              <h3 className="title mt-2">Exclusions</h3>
+              <ul className="list-disc ml-4 text-sm mt-2">
+                <li>
+                  Products sold to builders without a direct homeowner purchase
+                  agreement with the Dealer at the time of sale does not
+                  qualify.
+                </li>
+                <li>
+                  Commercial products and installations are excluded from this
+                  Program.
+                </li>
+                <li>
+                  Replacement parts or components not pre-approved by Airtek are
+                  not permitted and may void warranty eligibility.
+                </li>
+              </ul>
+              <h3 className="title mt-2">Claims Process</h3>
+              <ul className="list-disc ml-4 text-sm mt-2">
+                <li>
+                  Dealers must submit all claims through the Airtek Prestige
+                  Dealer Program.
+                </li>
+                <li>
+                  Dealers must provide the product&quot;s serial number, the
+                  homeowner&quot;s information, and proof of registration.
+                </li>
+                <li>
+                  Airtek reserves the right to approve or decline claims at its
+                  sole discretion.
+                </li>
+              </ul>
+              <h3 className="title mt-2">Legal Requirements</h3>
+              <p className="text-sm mt-2">
+                This document contains confidential, proprietary, and trade
+                secret information belonging to Airtek. Unauthorized
+                distribution is strictly prohibited.
+              </p>
+              <h3 className="title mt-2">General Provisions</h3>
+              <ul className="list-disc ml-4 text-sm mt-2">
+                <li>
+                  Dealers must retain warranty claim documentation for at least
+                  24 months after reimbursement. Claims are subject to audit,
+                  and Dealers must cooperate with the process. If a claim is
+                  deemed ineligible, Airtek may debit or invoice the Dealer for
+                  the reimbursement amount plus associated audit costs.
+                </li>
+                <li>
+                  All Dealer claims and payments must adhere to Airtek&quot;s
+                  legal and financial guidelines.
+                </li>
+                <li>
+                  Breach of any terms or conditions may result in termination of
+                  agreements and revocation of the Dealer&quot;s right to use
+                  Airtek branding.
+                </li>
+                <li>
+                  Airtek reserves the right to amend, modify, or cancel the
+                  program at any time.
+                </li>
+                <li>
+                  Airtek assumes no legal responsibility for local program
+                  execution.
+                </li>
+                <li>
+                  Airtek may directly contact homeowners based on Dealer
+                  registrations and submissions. Homeowner information is
+                  collected for service quality and research purposes in
+                  compliance with Airtek&quot;s privacy policy.
+                </li>
+              </ul>
             </div>
             <br />
             <br />
@@ -231,7 +284,6 @@ function CustomerCare() {
             <div className="title text-xl">
               <h1>Contact a local dealer</h1>
             </div>
-
             <br />
             <div className="w-full h-[120%] sm:h-96 flex flex-row justify-center items-center border-2 border-gray-200 rounded-3xl shadow-md">
               <div className="w-1/4 h-[700px] sm:h-full flex flex-col pt-20 px-4 items-center rounded-s-3xl bg-[#182778]">
@@ -239,7 +291,6 @@ function CustomerCare() {
                   <h1>We&apos;re here to help</h1>
                 </div>
                 <br />
-
                 <div className="text-white text-center text-md">
                   <p>
                     Contact Customer Care for product, warranty, and dealer
@@ -258,9 +309,9 @@ function CustomerCare() {
                     >
                       <path
                         d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       ></path>
                     </svg>
                   </i>{" "}
@@ -285,7 +336,6 @@ function CustomerCare() {
                       onChange={handleChange}
                       required
                     />
-
                     <Controls
                       error={errors.lastName}
                       type="text"
@@ -330,7 +380,6 @@ function CustomerCare() {
                       onChange={handleChange}
                       required
                     />
-
                     <Controls
                       error={errors.stateProvince}
                       type="text"
@@ -353,7 +402,6 @@ function CustomerCare() {
                       onChange={handleChange}
                       required
                     />
-
                     <Controls
                       error={errors.phone}
                       type="text"
@@ -369,9 +417,9 @@ function CustomerCare() {
                 <div className="w-full form-btn flex flex-col items-center">
                   <div className="w-2/3 text-center text-xs">
                     <p>
-                      &quot;By clicking &apos;Submit,&apos; I agree to receive
+                      By clicking &quot;Submit,&quot; I agree to receive
                       information about products and services from a nearby
-                      Airtek. dealer using the provided contact details.
+                      Airtek dealer using the provided contact details.
                     </p>
                   </div>
                   <div>
