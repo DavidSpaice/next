@@ -3,7 +3,7 @@ import { useState, useEffect, ChangeEvent, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import Radio from "@mui/material/Radio";
-
+import { SelectChangeEvent } from "@mui/material/Select";
 import Grid from "@mui/material/Grid";
 import model from "./sku";
 import city from "./cities";
@@ -24,6 +24,9 @@ import {
   TableRow,
   TableCell,
   IconButton,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Controls from "./Controls";
@@ -37,6 +40,21 @@ import { NewItem, FormData, CustomError } from "@/types";
 import { debounce } from "lodash";
 
 const WarrantyForm = () => {
+  const CANADIAN_PROVINCES = [
+    "Alberta",
+    "British Columbia",
+    "Manitoba",
+    "New Brunswick",
+    "Newfoundland and Labrador",
+    "Nova Scotia",
+    "Ontario",
+    "Prince Edward Island",
+    "Quebec",
+    "Saskatchewan",
+    "Northwest Territories",
+    "Nunavut",
+    "Yukon",
+  ];
   const [dealerData, setDealerData] = useState<
     {
       _id: string;
@@ -47,7 +65,7 @@ const WarrantyForm = () => {
       location: string;
     }[]
   >([]);
-
+  const [hasDealerId, setHasDealerId] = useState(true);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -314,52 +332,76 @@ const WarrantyForm = () => {
           : "This field is required.";
 
     // Check if dealerId is empty and update errors immediately
-    if ("dealerId" in fieldValues) {
-      if (
-        typeof fieldValues.dealerId === "string" &&
-        fieldValues.dealerId.trim() === ""
-      ) {
-        errors.dealerId = "Invalid Dealer Id.";
-        // Update the FormData with the dealer details
-        setFormData((prevData) => ({
-          ...prevData,
-          dealerName: "",
-          dealerEmail: "",
-          dealerPhone: "",
-          dealerAddress: "",
-          location: "",
-        }));
-      } else if (typeof fieldValues.dealerId === "string") {
-        const dealerExists = dealerData.some(
-          (dealer) =>
-            dealer?._id &&
-            dealer?._id.toLowerCase() === fieldValues.dealerId?.toLowerCase()
-        );
-
-        if (dealerExists) {
-          const dealerDetails = dealerData.find(
+    if (hasDealerId) {
+      // Validate dealerId only
+      if ("dealerId" in fieldValues) {
+        if (
+          typeof fieldValues.dealerId === "string" &&
+          fieldValues.dealerId.trim() === ""
+        ) {
+          errors.dealerId = "Invalid Dealer Id.";
+          // Clear auto-populated fields
+          setFormData((prevData) => ({
+            ...prevData,
+            dealerName: "",
+            dealerEmail: "",
+            dealerPhone: "",
+            dealerAddress: "",
+            location: "",
+          }));
+        } else if (typeof fieldValues.dealerId === "string") {
+          const dealerExists = dealerData.some(
             (dealer) =>
               dealer?._id &&
               dealer?._id.toLowerCase() === fieldValues.dealerId?.toLowerCase()
           );
-
-          // Convert dealerPhone to string before setting it in the FormData
-          const dealerPhoneAsString =
-            dealerDetails?.dealerPhone?.toString() || "";
-
-          // Update the FormData with the dealer details
-          setFormData((prevData) => ({
-            ...prevData,
-            dealerName: dealerDetails?.dealerName || "",
-            dealerEmail: dealerDetails?.dealerEmail || "",
-            dealerPhone: dealerPhoneAsString,
-            dealerAddress: dealerDetails?.dealerAddress || "",
-            location: dealerDetails?.location || "",
-          }));
+          if (dealerExists) {
+            const dealerDetails = dealerData.find(
+              (dealer) =>
+                dealer?._id &&
+                dealer?._id.toLowerCase() ===
+                  fieldValues.dealerId?.toLowerCase()
+            );
+            const dealerPhoneAsString =
+              dealerDetails?.dealerPhone?.toString() || "";
+            setFormData((prevData) => ({
+              ...prevData,
+              dealerName: dealerDetails?.dealerName || "",
+              dealerEmail: dealerDetails?.dealerEmail || "",
+              dealerPhone: dealerPhoneAsString,
+              dealerAddress: dealerDetails?.dealerAddress || "",
+              location: dealerDetails?.location || "",
+            }));
+          }
+          errors.dealerId = dealerExists ? "" : "Invalid Dealer Id.";
         }
-
-        errors.dealerId = dealerExists ? "" : "Invalid Dealer Id.";
       }
+    } else {
+      // Validate manual dealer information
+      if ("dealerName" in fieldValues)
+        errors.dealerName =
+          fieldValues.dealerName && fieldValues.dealerName.trim() !== ""
+            ? ""
+            : "This field is required.";
+      if ("dealerEmail" in fieldValues)
+        errors.dealerEmail = emailValidate.test(fieldValues.dealerEmail ?? "")
+          ? ""
+          : "Email is not valid.";
+      if ("dealerPhone" in fieldValues)
+        errors.dealerPhone =
+          fieldValues.dealerPhone && fieldValues.dealerPhone.trim().length > 9
+            ? ""
+            : "Minimum 10 numbers required.";
+      if ("dealerAddress" in fieldValues)
+        errors.dealerAddress =
+          fieldValues.dealerAddress && fieldValues.dealerAddress.trim() !== ""
+            ? ""
+            : "This field is required.";
+      if ("location" in fieldValues)
+        errors.location =
+          fieldValues.location && fieldValues.location.trim() !== ""
+            ? ""
+            : "This field is required.";
     }
 
     setErrors({
@@ -396,22 +438,30 @@ const WarrantyForm = () => {
   const handleChange = (
     event:
       | React.SyntheticEvent<Element, Event>
-      | React.ChangeEvent<HTMLInputElement>,
-    value?: string,
-    reason?: AutocompleteInputChangeReason
-  ) => {
+      | React.ChangeEvent<HTMLInputElement>
+      | SelectChangeEvent<string>,
+    secondArg?: string | React.ReactNode,
+    thirdArg?: AutocompleteInputChangeReason
+  ): void => {
     let name: string;
     let inputValue: string;
 
-    if (value !== undefined && reason) {
-      // This means it's being called from Autocomplete
-      name = (event.target as HTMLInputElement).name;
-      inputValue = value;
+    if (secondArg !== undefined) {
+      // If secondArg is a string and thirdArg is defined, treat it as Autocomplete.
+      if (typeof secondArg === "string" && thirdArg !== undefined) {
+        name = (event.target as HTMLInputElement).name;
+        inputValue = secondArg;
+      } else {
+        // Otherwise, assume it's coming from a Select onChange, where secondArg is the selected child.
+        const target = event.target as { name: string; value: string };
+        name = target.name;
+        inputValue = target.value;
+      }
     } else {
-      // This is a standard input change
-      const inputEvent = event as React.ChangeEvent<HTMLInputElement>;
-      name = inputEvent.target.name;
-      inputValue = inputEvent.target.value;
+      // Standard text input change.
+      const target = event.target as { name: string; value: string };
+      name = target.name;
+      inputValue = target.value;
     }
 
     setFormData((prevData) => ({
@@ -419,7 +469,7 @@ const WarrantyForm = () => {
       [name]: inputValue,
     }));
 
-    // Assume validation is always needed
+    // Call validations.
     validateType({ [name]: inputValue });
     validate({ [name]: inputValue });
   };
@@ -737,7 +787,6 @@ const WarrantyForm = () => {
         return (
           <div>
             <p className="title">Home Owner Information</p>
-
             <Box
               component="div"
               sx={{
@@ -746,18 +795,148 @@ const WarrantyForm = () => {
               display="flex-col"
               alignItems="center"
             >
-              <div className="w-full flex flex-col items-center justify-center  sm:flex-row">
-                <Controls
-                  error={errors.dealerId}
-                  type="text"
-                  label="Dealer ID"
-                  size="small"
-                  name="dealerId"
-                  value={formData.dealerId}
-                  onChange={handleChange}
-                  required
-                />
+              {/* Dealer Information Toggle */}
+              <div className="w-full flex flex-col items-center justify-center">
+                <FormControl component="fieldset" sx={{ m: 1 }}>
+                  <FormLabel component="legend">Dealer Information</FormLabel>
+                  <RadioGroup
+                    row
+                    name="hasDealerId"
+                    value={hasDealerId ? "yes" : "no"}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setHasDealerId(value === "yes");
+                      // When switching, clear the opposing fields
+                      if (value === "no") {
+                        setFormData((prevData) => ({
+                          ...prevData,
+                          dealerId: "",
+                        }));
+                      } else {
+                        setFormData((prevData) => ({
+                          ...prevData,
+                          dealerName: "",
+                          dealerEmail: "",
+                          dealerPhone: "",
+                          dealerAddress: "",
+                          location: "",
+                        }));
+                      }
+                    }}
+                  >
+                    <FormControlLabel
+                      value="yes"
+                      control={<Radio />}
+                      label="I have a Dealer ID"
+                    />
+                    <FormControlLabel
+                      value="no"
+                      control={<Radio />}
+                      label="I don't have a Dealer ID"
+                    />
+                  </RadioGroup>
+                </FormControl>
               </div>
+
+              {/* Dealer fields: conditional based on toggle */}
+              {hasDealerId ? (
+                // Just a single row with Dealer ID if user has one
+                <div className="w-full flex flex-col items-center justify-center sm:flex-row">
+                  <Controls
+                    error={errors.dealerId}
+                    type="text"
+                    label="Dealer ID"
+                    size="small"
+                    name="dealerId"
+                    value={formData.dealerId}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              ) : (
+                <>
+                  {/* Row 1: Dealer Name + Dealer Email */}
+                  <div className="w-full flex flex-col items-center justify-center sm:flex-row">
+                    <Controls
+                      error={errors.dealerName}
+                      type="text"
+                      label="Dealer Name"
+                      size="small"
+                      name="dealerName"
+                      value={formData.dealerName}
+                      onChange={handleChange}
+                      required
+                    />
+                    <Controls
+                      error={errors.dealerEmail}
+                      type="text"
+                      label="Dealer Email"
+                      size="small"
+                      name="dealerEmail"
+                      value={formData.dealerEmail}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  {/* Row 2: Dealer Phone + Dealer Address */}
+                  <div className="w-full flex flex-col items-center justify-center sm:flex-row">
+                    <Controls
+                      error={errors.dealerPhone}
+                      type="text"
+                      label="Dealer Phone"
+                      size="small"
+                      name="dealerPhone"
+                      value={formData.dealerPhone}
+                      onChange={handleChange}
+                      required
+                    />
+                    <Controls
+                      error={errors.dealerAddress}
+                      type="text"
+                      label="Dealer Address"
+                      size="small"
+                      name="dealerAddress"
+                      value={formData.dealerAddress}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  {/* Row 3: Dealer Location (Dropdown) */}
+                  <div className="w-full flex flex-col items-center justify-center sm:flex-row">
+                    <FormControl
+                      size="small"
+                      sx={{ m: 1, width: "25ch" }}
+                      required
+                      error={!!errors.location}
+                    >
+                      <InputLabel id="dealerLocation-label">
+                        Dealer Location
+                      </InputLabel>
+                      <Select
+                        labelId="dealerLocation-label"
+                        id="dealerLocation"
+                        name="location"
+                        value={formData.location}
+                        onChange={handleChange}
+                        label="Dealer Location"
+                      >
+                        {CANADIAN_PROVINCES.map((province) => (
+                          <MenuItem key={province} value={province}>
+                            {province}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {errors.location && (
+                        <FormHelperText>{errors.location}</FormHelperText>
+                      )}
+                    </FormControl>
+                  </div>
+                </>
+              )}
+
+              {/* Home Owner fields (same as before) */}
               <div className="w-full flex flex-col items-center justify-center sm:flex-row">
                 <Controls
                   error={errors.firstName}
@@ -769,7 +948,6 @@ const WarrantyForm = () => {
                   onChange={handleChange}
                   required
                 />
-
                 <Controls
                   error={errors.lastName}
                   type="text"
@@ -814,7 +992,6 @@ const WarrantyForm = () => {
                   }
                   value={formData.city}
                   onInputChange={(event, newInputValue, reason) => {
-                    // This handles the input change directly, regardless of selection
                     if (reason === "input") {
                       setFormData((prevData) => ({
                         ...prevData,
@@ -823,7 +1000,6 @@ const WarrantyForm = () => {
                     }
                   }}
                   onChange={(event, newValue) => {
-                    // This handles the final selection or clear event
                     const value =
                       typeof newValue === "string"
                         ? newValue
@@ -845,7 +1021,6 @@ const WarrantyForm = () => {
                     />
                   )}
                 />
-
                 <Autocomplete
                   freeSolo
                   disableClearable
@@ -856,7 +1031,6 @@ const WarrantyForm = () => {
                   }
                   value={formData.stateProvince}
                   onInputChange={(event, newInputValue, reason) => {
-                    // This handles the input change directly, regardless of selection
                     if (reason === "input") {
                       setFormData((prevData) => ({
                         ...prevData,
@@ -865,7 +1039,6 @@ const WarrantyForm = () => {
                     }
                   }}
                   onChange={(event, newValue) => {
-                    // This handles the final selection or clear event
                     const value =
                       typeof newValue === "string"
                         ? newValue
@@ -888,7 +1061,6 @@ const WarrantyForm = () => {
                   )}
                 />
               </div>
-
               <div className="w-full flex flex-col items-center justify-center sm:flex-row">
                 <Controls
                   error={errors.postalCode}
@@ -900,7 +1072,6 @@ const WarrantyForm = () => {
                   onChange={handleChange}
                   required
                 />
-
                 <Controls
                   error={errors.country}
                   type="text"
@@ -923,7 +1094,6 @@ const WarrantyForm = () => {
                   onChange={handleChange}
                   required
                 />
-
                 <Controls
                   type="text"
                   name="extension"
