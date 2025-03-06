@@ -107,15 +107,19 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role; // Ensure token.role is "admin" | "user"
+        token.role = user.role;
         token.id = user.id;
+        token.name = user.name; // <-- add this
+        token.email = user.email; // <-- add this
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.role = token.role as "admin" | "user" | "super";
+        session.user.role = token.role;
         session.user.id = token.id;
+        session.user.name = token.name; // <-- add this
+        session.user.email = token.email; // <-- add this
       }
       return session;
     },
