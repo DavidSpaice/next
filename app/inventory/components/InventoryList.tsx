@@ -17,6 +17,9 @@ import {
 } from "@mui/material";
 import { InventoryItem } from "@/types";
 
+// Import necessary SheetJS utils
+import * as XLSX from "xlsx";
+
 interface InventoryListProps {
   refreshTrigger: number;
 }
@@ -86,7 +89,7 @@ const InventoryList: React.FC<InventoryListProps> = ({ refreshTrigger }) => {
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 25));
+    setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
@@ -102,6 +105,44 @@ const InventoryList: React.FC<InventoryListProps> = ({ refreshTrigger }) => {
     setLocationSearch("");
     setPage(0);
     fetchInventory();
+  };
+
+  /**
+   * Export ALL inventory records to Excel (ignores current pagination).
+   * This function refetches the inventory data with a high limit so we can
+   * download everything, or you can add a custom "export" endpoint if you prefer.
+   */
+  const handleExportToExcel = async () => {
+    try {
+      // 1. Fetch all inventory data ignoring pagination
+      const response = await fetch(
+        `https://airtek-warranty.onrender.com/inventory?page=1&limit=999999&itemSearch=${encodeURIComponent(
+          itemSearch
+        )}&locationSearch=${encodeURIComponent(locationSearch)}`
+      );
+      const result = await response.json();
+      const allData: InventoryItem[] = result.data || [];
+
+      // 2. Transform data into a simple array of objects for Excel
+      // (We'll flatten item/location info into strings)
+      const exportData = allData.map((inv) => ({
+        Item: inv.itemId?.name || "Unknown Item",
+        Location: inv.locationId?.name || "Unknown Location",
+        Quantity: inv.quantity,
+      }));
+
+      // 3. Create a worksheet
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+      // 4. Create a new workbook and append the worksheet
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Inventory");
+
+      // 5. Trigger the download
+      XLSX.writeFile(workbook, "Inventory.xlsx");
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
+    }
   };
 
   return (
@@ -148,6 +189,17 @@ const InventoryList: React.FC<InventoryListProps> = ({ refreshTrigger }) => {
           </Grid>
         </form>
       </Paper>
+
+      {/* Export Button */}
+      <Box display="flex" justifyContent="flex-end" marginBottom={2}>
+        <Button
+          variant="contained"
+          style={{ backgroundColor: "#182887" }}
+          onClick={handleExportToExcel}
+        >
+          Export All Inventory to Excel
+        </Button>
+      </Box>
 
       {/* Inventory Table */}
       <Paper elevation={2}>
