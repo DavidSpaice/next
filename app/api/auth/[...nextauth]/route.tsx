@@ -66,6 +66,13 @@ const users: User[] = [
     password: "pass2024guest",
     role: "guest",
   },
+  {
+    id: "9",
+    name: "Rob",
+    email: "rob@example.com",
+    password: "robpass",
+    role: "super",
+  },
 ];
 
 const authOptions: NextAuthOptions = {
