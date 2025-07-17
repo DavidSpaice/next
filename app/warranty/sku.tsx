@@ -302,6 +302,7 @@ const model = [
   { model: "CA3-24UMTO" },
   { model: "CA4-36UMTO" },
   { model: "CA5-42UMTO" },
+  { model: "CMA1412SG-O" },
 ];
 
 export default model;
