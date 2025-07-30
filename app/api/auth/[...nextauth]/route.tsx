@@ -87,6 +87,13 @@ const users: User[] = [
     password: "anthonypass",
     role: "user",
   },
+  {
+    id: "12",
+    name: "mohammad",
+    email: "mohammad@example.com",
+    password: "mohammadpass",
+    role: "user",
+  },
 ];
 
 const authOptions: NextAuthOptions = {
