@@ -93,6 +93,7 @@ const cities = [
   { city: "Lac du Bonnet" },
   { city: "Marchand" },
   { city: "Rennie" },
+  { city: "Traverse Bay" },
 ];
 
 export default cities;
