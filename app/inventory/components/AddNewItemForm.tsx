@@ -246,12 +246,12 @@ const AddNewItemWithQuantityForm: React.FC<AddNewItemWithQuantityFormProps> = ({
                 ))}
               </Select>
             </FormControl>
-            <IconButton
+            {/* <IconButton
               color="primary"
               onClick={() => setOpenNewLocationDialog(true)}
             >
               <AddIcon />
-            </IconButton>
+            </IconButton> */}
           </Box>
           {errors.locationName && (
             <p style={{ color: "red", margin: "0.5em 0 0 0" }}>
