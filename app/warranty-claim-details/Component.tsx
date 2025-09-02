@@ -80,7 +80,27 @@ const ClaimTable: React.FC = () => {
     statusType: string,
     newStatus: string
   ) => {
-    const [claimId, itemId] = combinedId.split("-");
+    // Robustly parse combinedId: "<claimId>-<itemId>" while tolerating additional dashes
+    const dashIndex = combinedId.indexOf("-");
+    const claimId = dashIndex > -1 ? combinedId.slice(0, dashIndex) : combinedId;
+    const itemId = dashIndex > -1 ? combinedId.slice(dashIndex + 1) : "";
+
+    // Optimistic UI update
+    setDealerInfo((prev) =>
+      prev.map((dealer) => {
+        if (dealer._id === claimId || dealer._id.startsWith(claimId)) {
+          const updated = { ...dealer };
+          if (statusType === "replacementStatus") {
+            updated.replacementStatus = newStatus;
+          } else if (statusType === "creditIssueStatus") {
+            updated.creditIssueStatus = newStatus;
+          }
+          return updated;
+        }
+        return dealer;
+      })
+    );
+
     try {
       const response = await fetch(
         "https://airtek-warranty.onrender.com/claim/update-status",
@@ -101,24 +121,24 @@ const ClaimTable: React.FC = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      // Update local state for the changed status
-      setDealerInfo((prevDealerInfo) =>
-        prevDealerInfo.map((dealer) => {
-          if (dealer._id === claimId) {
-            const updatedDealer = { ...dealer };
+    } catch (error) {
+      console.error("Error updating status:", error);
+      // Roll back optimistic update on error
+      setDealerInfo((prev) =>
+        prev.map((dealer) => {
+          if (dealer._id === claimId || dealer._id.startsWith(claimId)) {
+            const reverted = { ...dealer };
             if (statusType === "replacementStatus") {
-              updatedDealer.replacementStatus = newStatus;
+              // Flip back to the opposite of newStatus if it's one of the two known values
+              reverted.replacementStatus = newStatus === "Received" ? "Not Received" : "Received";
             } else if (statusType === "creditIssueStatus") {
-              updatedDealer.creditIssueStatus = newStatus;
+              reverted.creditIssueStatus = newStatus === "Issued" ? "Not Issued" : "Issued";
             }
-            return updatedDealer;
+            return reverted;
           }
           return dealer;
         })
       );
-    } catch (error) {
-      console.error("Error updating status:", error);
     }
   };
 
