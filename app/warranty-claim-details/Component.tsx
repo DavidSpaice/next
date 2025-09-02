@@ -83,7 +83,7 @@ const ClaimTable: React.FC = () => {
     // Robustly parse combinedId: "<claimId>-<itemId>" while tolerating additional dashes
     const dashIndex = combinedId.indexOf("-");
     const claimId = dashIndex > -1 ? combinedId.slice(0, dashIndex) : combinedId;
-    const itemId = dashIndex > -1 ? combinedId.slice(dashIndex + 1) : "";
+    const itemId = dashIndex > -1 ? combinedId.slice(dashIndex + 1, combinedId.length) : "";
 
     // Optimistic UI update
     setDealerInfo((prev) =>
