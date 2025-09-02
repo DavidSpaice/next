@@ -81,11 +81,10 @@ const ClaimTable: React.FC = () => {
     newStatus: string
   ) => {
     // Robustly parse combinedId: "<claimId>-<itemId>" while tolerating additional dashes
-    const dashIndex = combinedId.indexOf("-");
-    const claimId = dashIndex > -1 ? combinedId.slice(0, dashIndex) : combinedId;
-    const itemId = dashIndex > -1 ? combinedId.slice(dashIndex + 1, combinedId.length) : "";
+    const parts = combinedId.split("-");
+    const claimId = parts[0] ?? "";
+    const itemId = parts[1] ?? "";
     console.log("combinedId:", combinedId);
-    console.log("dashIndex:", dashIndex);
     console.log("claimId:", claimId);
     console.log("itemId:", itemId);
 
