@@ -84,6 +84,10 @@ const ClaimTable: React.FC = () => {
     const dashIndex = combinedId.indexOf("-");
     const claimId = dashIndex > -1 ? combinedId.slice(0, dashIndex) : combinedId;
     const itemId = dashIndex > -1 ? combinedId.slice(dashIndex + 1, combinedId.length) : "";
+    console.log("combinedId:", combinedId);
+    console.log("dashIndex:", dashIndex);
+    console.log("claimId:", claimId);
+    console.log("itemId:", itemId);
 
     // Optimistic UI update
     setDealerInfo((prev) =>
