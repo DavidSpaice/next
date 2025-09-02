@@ -105,18 +105,13 @@ const ClaimTable: React.FC = () => {
       // Update local state for the changed status
       setDealerInfo((prevDealerInfo) =>
         prevDealerInfo.map((dealer) => {
-          if (dealer._id.startsWith(claimId)) {
+          if (dealer._id === claimId) {
             const updatedDealer = { ...dealer };
-            updatedDealer.parts = updatedDealer.parts.map((part) => {
-              if (part._id === itemId) {
-                if (statusType === "replacementStatus") {
-                  updatedDealer.replacementStatus = newStatus;
-                } else if (statusType === "creditIssueStatus") {
-                  updatedDealer.creditIssueStatus = newStatus;
-                }
-              }
-              return part;
-            });
+            if (statusType === "replacementStatus") {
+              updatedDealer.replacementStatus = newStatus;
+            } else if (statusType === "creditIssueStatus") {
+              updatedDealer.creditIssueStatus = newStatus;
+            }
             return updatedDealer;
           }
           return dealer;
@@ -143,7 +138,7 @@ const ClaimTable: React.FC = () => {
     filteredDealerInfo.forEach((dealer) => {
       dealer.parts.forEach((part) => {
         rows.push({
-          _id: dealer._id,
+          _id: `${dealer._id}-${part._id}`,
           serialNumber: dealer.serialNumber,
           dealerName: dealer.dealerName,
           dealerEmail: dealer.dealerEmail,
@@ -201,7 +196,7 @@ const ClaimTable: React.FC = () => {
       allDealerInfo.forEach((dealer) => {
         dealer.parts.forEach((part) => {
           allFlattenedData.push({
-            _id: dealer._id,
+            _id: `${dealer._id}-${part._id}`,
             serialNumber: dealer.serialNumber,
             dealerName: dealer.dealerName,
             dealerEmail: dealer.dealerEmail,
