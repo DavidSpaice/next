@@ -89,9 +89,9 @@ const users: User[] = [
   },
   {
     id: "12",
-    name: "lydnsay",
-    email: "lydnsay@example.com",
-    password: "lydnsaypass",
+    name: "lyndsay",
+    email: "lyndsay@example.com",
+    password: "lyndsaypass",
     role: "user",
   },
 ];
