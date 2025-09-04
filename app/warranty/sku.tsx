@@ -305,6 +305,9 @@ const model = [
   { model: "CMA1412SG-O" },
   { model: "GWH18AGDXF-D6DNA4B/I" },
   { model: "GWH18AGDXF-D6DNA4B/O" },
+  { model: "GWH12ATCXB-D6DNA1A/I" },
+  { model: "GWH09AGCXD-D6DNA4A/I" },
+  { model: "GWHD(42)ND6MO" },
 ];
 
 export default model;
