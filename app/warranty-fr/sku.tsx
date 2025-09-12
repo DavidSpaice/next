@@ -302,6 +302,16 @@ const model = [
   { model: "CA3-24UMTO" },
   { model: "CA4-36UMTO" },
   { model: "CA5-42UMTO" },
+  { model: "CMA1412SG-O" },
+  { model: "GWH18AGDXF-D6DNA4B/I" },
+  { model: "GWH18AGDXF-D6DNA4B/O" },
+  { model: "GWH12ATCXB-D6DNA1A/I" },
+  { model: "GWH09AGCXD-D6DNA4D/I" },
+  { model: "GWHD(42)ND6MO" },
+  { model: "GWH12ATCXB-D3DNA4C/I" },
+  { model: "GWH09ATCXB-D3DNA4A/I" },
+  { model: "GWH36ATEXH-D6DNA1G/O" },
+  { model: "GWH24AGEXF-D6DNA4J/I" },
 ];
 
 export default model;
