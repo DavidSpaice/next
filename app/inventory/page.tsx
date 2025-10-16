@@ -67,8 +67,7 @@ const Home: React.FC = () => {
         )}
 
         {/* Add New Items and Transaction Logs - Visible to normal users */}
-        {(session?.user?.role === "user" ||
-          session?.user?.role === "admin" ||
+        {(session?.user?.role === "admin" ||
           session?.user.role == "super") && (
           <Grid item xs={12}>
             <Paper elevation={3} style={{ padding: "16px" }}>

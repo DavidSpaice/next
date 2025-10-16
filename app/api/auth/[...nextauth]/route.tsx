@@ -15,7 +15,7 @@ const users: User[] = [
     name: "Saagar",
     email: "admin@example.com",
     password: "saagarpass",
-    role: "admin",
+    role: "user",
   },
   {
     id: "2",
@@ -36,7 +36,7 @@ const users: User[] = [
     name: "Gaganpreet",
     email: "gaganpreet@example.com",
     password: "userpass",
-    role: "user",
+    role: "admin",
   },
   {
     id: "5",
@@ -71,7 +71,7 @@ const users: User[] = [
     name: "Rob",
     email: "rob@example.com",
     password: "robpass",
-    role: "super",
+    role: "user",
   },
   {
     id: "10",
