@@ -244,6 +244,7 @@ export default function AddDealerData() {
                 name="street"
                 variant="outlined"
                 fullWidth
+                required
                 value={formData.street}
                 onChange={handleInputChange}
               />
@@ -256,6 +257,7 @@ export default function AddDealerData() {
                 name="city"
                 variant="outlined"
                 fullWidth
+                required
                 value={formData.city}
                 onChange={handleInputChange}
               />
@@ -269,6 +271,7 @@ export default function AddDealerData() {
                   labelId="province-label"
                   label="Province"
                   name="province"
+                  required
                   value={formData.province}
                   onChange={handleSelectChange}
                 >
@@ -291,6 +294,7 @@ export default function AddDealerData() {
                 name="postcode"
                 variant="outlined"
                 fullWidth
+                required
                 value={formData.postcode}
                 onChange={handleInputChange}
               />
