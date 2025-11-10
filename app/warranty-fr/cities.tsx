@@ -95,6 +95,7 @@ const cities = [
   { city: "Rennie" },
   { city: "Traverse Bay" },
   { city: "Vassar" },
+  { city: "Beausejour" }
 ];
 
 export default cities;
