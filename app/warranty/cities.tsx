@@ -95,7 +95,8 @@ const cities = [
   { city: "Rennie" },
   { city: "Traverse Bay" },
   { city: "Vassar" },
-  { city: "Beausejour" }
+  { city: "Beausejour" },
+  { city: "Pelican Lake" },
 ];
 
 export default cities;
