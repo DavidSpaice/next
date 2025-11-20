@@ -29,7 +29,7 @@ const users: User[] = [
     name: "Stanley",
     email: "stanley@example.com",
     password: "stanley2024",
-    role: "user",
+    role: "super",
   },
   {
     id: "4",
