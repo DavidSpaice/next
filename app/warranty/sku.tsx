@@ -320,6 +320,7 @@ const model = [
   { model: "TCAT36F/NaA" },
   { model: "GWHD(36)ND6MO" },
   { model: "GWH18ATDXD-D6DNA1A/I" },
+  { model: "GWH12ATCXB-D6DNA3B/I" },
 
 ];
 
