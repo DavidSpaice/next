@@ -161,7 +161,7 @@ function CustomerCare() {
             <br />
             {/* New Main Content in French */}
             <div className="">
-              <img src="customer_service.png" alt="service_client" />
+              <img src="https://res.cloudinary.com/dikchkuzx/image/upload/v1765210831/Airtek_Shop/Gree-Prestige-Partnership-Baanner-FR_sdfntl.png" alt="service_client" />
 
               <h1 className="title">
                 PROGRAMME DE CONCESSIONNAIRES PRESTIGE AIRTEK 2025
