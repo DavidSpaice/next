@@ -90,6 +90,7 @@ const cities = [
   { city: "Woodstock" },
   { city: "Etobicoke" },
   { city: "Maple" },
+  { city: "Pine Falls" },
 ];
 
 export default cities;
