@@ -329,6 +329,7 @@ const model = [
   { model: "GWH12AGCXD-D6DNA4D/I" },
   { model: "GUD24AH2/A-D(U)" },
   { model: "GWH24ATEXF-D6DNA1F/I" },
+  { model: "C75-2-V"},
 
 ];
 

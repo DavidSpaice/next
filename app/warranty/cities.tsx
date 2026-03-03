@@ -98,6 +98,10 @@ const cities = [
   { city: "Beausejour" },
   { city: "Pelican Lake" },
   { city: "Pine Falls" },
+  { city: "Belair"},
+  { city: "The Pas"},
+  { city: "Teulon"},
+  { city: "St. Malo"}
 ];
 
 export default cities;

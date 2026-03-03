@@ -91,6 +91,10 @@ const cities = [
   { city: "Etobicoke" },
   { city: "Maple" },
   { city: "Pine Falls" },
+  { city: "Belair"},
+  { city: "The Pas"},
+  { city: "Teulon"},
+  { city: "St. Malo"}
 ];
 
 export default cities;
