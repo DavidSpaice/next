@@ -101,7 +101,13 @@ const cities = [
   { city: "Belair"},
   { city: "The Pas"},
   { city: "Teulon"},
-  { city: "St. Malo"}
+  { city: "St. Malo"},
+  { city: "Altona"},
+  { city: "Steinbach"},
+  { city: "St Laurent"},
+  { city: "Petersfield"},
+  { city: "Stonewall"},
+  { city: "Gimli"},
 ];
 
 export default cities;

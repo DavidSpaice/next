@@ -97,6 +97,17 @@ const cities = [
   { city: "Vassar" },
   { city: "Beausejour" },
   { city: "Pelican Lake" },
+  { city: "Pine Falls" },
+  { city: "Belair"},
+  { city: "The Pas"},
+  { city: "Teulon"},
+  { city: "St. Malo"},
+  { city: "Altona"},
+  { city: "Steinbach"},
+  { city: "St Laurent"},
+  { city: "Petersfield"},
+  { city: "Stonewall"},
+  { city: "Gimli"},
 ];
 
 export default cities;
