@@ -330,6 +330,9 @@ const model = [
   { model: "GUD24AH2/A-D(U)" },
   { model: "GWH24ATEXF-D6DNA1F/I" },
   { model: "C75-2-V"},
+  { model: "COT-60CNR1-14"},
+  { model: "CA60A2G-195L-000"},
+  { model: "CA60E44-240L-000"},
 
 ];
 
