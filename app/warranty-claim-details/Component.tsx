@@ -39,14 +39,17 @@ interface FlattenedRow {
 
 const ClaimTable: React.FC = () => {
   const [dealerInfo, setDealerInfo] = useState<DealerInfo[]>([]);
+  const [allDealerInfo, setAllDealerInfo] = useState<DealerInfo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [total, setTotal] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(30);
+  const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
+  const [allDataFetched, setAllDataFetched] = useState<boolean>(false);
 
   // ---------------------
-  // Fetch Data
+  // Fetch Data (paginated, for normal browsing)
   // ---------------------
   const fetchData = async (p: number = page, l: number = limit) => {
     try {
@@ -58,8 +61,8 @@ const ClaimTable: React.FC = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setDealerInfo(data.results);
-      setTotal(data.total);
+      setDealerInfo(data.results || []);
+      setTotal(data.total || 0);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching dealer info:", error);
@@ -67,10 +70,48 @@ const ClaimTable: React.FC = () => {
     }
   };
 
+  // ---------------------
+  // Fetch ALL Data (for search mode)
+  // ---------------------
+  const fetchAllData = async () => {
+    if (allDataFetched) return;
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `https://airtek-warranty.onrender.com/claim/claim-info?page=1&limit=1000000`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setAllDealerInfo(data.results || []);
+      setAllDataFetched(true);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching all dealer info:", error);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchData(page, limit);
+    if (!isSearchMode) {
+      fetchData(page, limit);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit]);
+  }, [page, limit, isSearchMode]);
+
+  useEffect(() => {
+    const trimmed = searchTerm.trim();
+    if (trimmed.length > 0) {
+      setIsSearchMode(true);
+      setPage(1);
+      fetchAllData();
+    } else {
+      setIsSearchMode(false);
+      setPage(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm]);
 
   // ---------------------
   // Handle Status Change
@@ -88,9 +129,9 @@ const ClaimTable: React.FC = () => {
     console.log("claimId:", claimId);
     console.log("itemId:", itemId);
 
-    // Optimistic UI update
-    setDealerInfo((prev) =>
-      prev.map((dealer) => {
+    // Optimistic UI update helper
+    const applyUpdate = (list: DealerInfo[]) =>
+      list.map((dealer) => {
         if (dealer._id === claimId || dealer._id.startsWith(claimId)) {
           const updated = { ...dealer };
           if (statusType === "replacementStatus") {
@@ -101,8 +142,10 @@ const ClaimTable: React.FC = () => {
           return updated;
         }
         return dealer;
-      })
-    );
+      });
+
+    setDealerInfo((prev) => applyUpdate(prev));
+    setAllDealerInfo((prev) => applyUpdate(prev));
 
     try {
       const response = await fetch(
@@ -127,12 +170,11 @@ const ClaimTable: React.FC = () => {
     } catch (error) {
       console.error("Error updating status:", error);
       // Roll back optimistic update on error
-      setDealerInfo((prev) =>
-        prev.map((dealer) => {
+      const applyRollback = (list: DealerInfo[]) =>
+        list.map((dealer) => {
           if (dealer._id === claimId || dealer._id.startsWith(claimId)) {
             const reverted = { ...dealer };
             if (statusType === "replacementStatus") {
-              // Flip back to the opposite of newStatus if it's one of the two known values
               reverted.replacementStatus = newStatus === "Received" ? "Not Received" : "Received";
             } else if (statusType === "creditIssueStatus") {
               reverted.creditIssueStatus = newStatus === "Issued" ? "Not Issued" : "Issued";
@@ -140,44 +182,64 @@ const ClaimTable: React.FC = () => {
             return reverted;
           }
           return dealer;
-        })
-      );
+        });
+      setDealerInfo((prev) => applyRollback(prev));
+      setAllDealerInfo((prev) => applyRollback(prev));
     }
   };
 
   // ---------------------
   // Filter & Flatten
   // ---------------------
-  const filteredDealerInfo = useMemo(() => {
-    return dealerInfo.filter(
-      (dealer) =>
-        dealer.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        dealer.dealerName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [dealerInfo, searchTerm]);
+  const sourceData = isSearchMode ? allDealerInfo : dealerInfo;
 
-  const flattenedData: FlattenedRow[] = useMemo(() => {
+  const filteredDealerInfo = useMemo(() => {
+    const trimmed = searchTerm.trim().toLowerCase();
+    if (!trimmed) return sourceData;
+    return sourceData.filter(
+      (dealer) =>
+        (dealer.serialNumber || "").toLowerCase().includes(trimmed) ||
+        (dealer.dealerName || "").toLowerCase().includes(trimmed)
+    );
+  }, [sourceData, searchTerm]);
+
+  const allFlattenedData: FlattenedRow[] = useMemo(() => {
     const rows: FlattenedRow[] = [];
     filteredDealerInfo.forEach((dealer) => {
-      dealer.parts.forEach((part) => {
+      const parts = dealer.parts || [];
+      if (parts.length === 0) return;
+      parts.forEach((part) => {
         rows.push({
           _id: `${dealer._id}-${part._id}`,
-          serialNumber: dealer.serialNumber,
-          dealerName: dealer.dealerName,
-          dealerEmail: dealer.dealerEmail,
-          dealerPhone: dealer.dealerPhone,
-          dealerAddress: dealer.dealerAddress,
-          explanation: dealer.explanation,
-          defectivePart: part.defectivePart,
-          defectDate: part.defectDate,
-          replacDate: part.replacDate,
-          replacementStatus: dealer.replacementStatus,
-          creditIssueStatus: dealer.creditIssueStatus,
+          serialNumber: dealer.serialNumber || "",
+          dealerName: dealer.dealerName || "",
+          dealerEmail: dealer.dealerEmail || "",
+          dealerPhone: dealer.dealerPhone || "",
+          dealerAddress: dealer.dealerAddress || "",
+          explanation: dealer.explanation || "",
+          defectivePart: part.defectivePart || "",
+          defectDate: part.defectDate || "",
+          replacDate: part.replacDate || "",
+          replacementStatus: dealer.replacementStatus || "",
+          creditIssueStatus: dealer.creditIssueStatus || "",
         });
       });
     });
     return rows;
   }, [filteredDealerInfo]);
+
+  // In search mode, paginate the filtered results client-side
+  // In normal mode, the server already paginated for us
+  const flattenedData: FlattenedRow[] = useMemo(() => {
+    if (isSearchMode) {
+      const start = (page - 1) * limit;
+      return allFlattenedData.slice(start, start + limit);
+    }
+    return allFlattenedData;
+  }, [isSearchMode, allFlattenedData, page, limit]);
+
+  const displayTotal = isSearchMode ? allFlattenedData.length : total;
+  const totalPages = Math.max(1, Math.ceil(displayTotal / limit));
 
   // ---------------------
   // Export
@@ -261,7 +323,6 @@ const ClaimTable: React.FC = () => {
   // ---------------------
   // Pagination
   // ---------------------
-  const totalPages = Math.ceil(total / limit);
   const pageOptions = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   // ---------------------
@@ -289,7 +350,7 @@ const ClaimTable: React.FC = () => {
       </div>
 
       <div style={{ marginBottom: "10px" }}>
-        <strong>Total Results: {flattenedData.length}</strong> (showing {limit}{" "}
+        <strong>Total Results: {displayTotal}</strong>{isSearchMode ? " (filtered)" : ""} (showing {limit}{" "}
         per page)
       </div>
 
@@ -327,6 +388,19 @@ const ClaimTable: React.FC = () => {
           </tr>
         </thead>
         <tbody>
+          {loading ? (
+            <tr>
+              <td colSpan={11} style={{ ...tableCellStyle, textAlign: "center" }}>
+                Loading...
+              </td>
+            </tr>
+          ) : flattenedData.length === 0 ? (
+            <tr>
+              <td colSpan={11} style={{ ...tableCellStyle, textAlign: "center" }}>
+                No results found.
+              </td>
+            </tr>
+          ) : null}
           {flattenedData.map((row, index) => (
             <tr key={index}>
               <td style={tableCellStyle}>{row.serialNumber}</td>
