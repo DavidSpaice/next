@@ -129,10 +129,12 @@ const ClaimTable: React.FC = () => {
     console.log("claimId:", claimId);
     console.log("itemId:", itemId);
 
+    const exactId = `${claimId}-${itemId}`;
+
     // Optimistic UI update helper
     const applyUpdate = (list: DealerInfo[]) =>
       list.map((dealer) => {
-        if (dealer._id === claimId || dealer._id.startsWith(claimId)) {
+        if (dealer._id === exactId) {
           const updated = { ...dealer };
           if (statusType === "replacementStatus") {
             updated.replacementStatus = newStatus;
@@ -172,7 +174,7 @@ const ClaimTable: React.FC = () => {
       // Roll back optimistic update on error
       const applyRollback = (list: DealerInfo[]) =>
         list.map((dealer) => {
-          if (dealer._id === claimId || dealer._id.startsWith(claimId)) {
+          if (dealer._id === exactId) {
             const reverted = { ...dealer };
             if (statusType === "replacementStatus") {
               reverted.replacementStatus = newStatus === "Received" ? "Not Received" : "Received";
