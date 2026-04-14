@@ -334,6 +334,7 @@ const model = [
   { model: "CA60A2G-195L-000"},
   { model: "CA60E44-240L-000"},
   { model: "GWH18ATDXD-D6DNA3F/I"},
+  { model: "GUD48AH2/A-D(U)"},
 
 ];
 
