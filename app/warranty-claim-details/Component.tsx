@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import * as XLSX from "xlsx";
 
 interface PartInfo {
@@ -12,24 +12,35 @@ interface PartInfo {
 interface DealerInfo {
   _id: string;
   serialNumber: string;
+  model: string;
+  installationDate: string;
+  invoice: string;
   dealerName: string;
   dealerEmail: string;
   dealerPhone: string;
   dealerAddress: string;
   explanation: string;
+  imageUrls: string[];
   parts: PartInfo[];
   replacementStatus: string;
   creditIssueStatus: string;
 }
 
+type SortField = "defectDate" | "replacDate";
+type SortDirection = "asc" | "desc";
+
 interface FlattenedRow {
   _id: string; // claim-item combined ID
   serialNumber: string;
+  model: string;
+  installationDate: string;
+  invoice: string;
   dealerName: string;
   dealerEmail: string;
   dealerPhone: string;
   dealerAddress: string;
   explanation: string;
+  imageUrls: string[];
   defectivePart: string;
   defectDate: string;
   replacDate: string;
@@ -47,6 +58,8 @@ const ClaimTable: React.FC = () => {
   const [limit, setLimit] = useState<number>(30);
   const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
   const [allDataFetched, setAllDataFetched] = useState<boolean>(false);
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   // ---------------------
   // Fetch Data (paginated, for normal browsing)
@@ -214,11 +227,15 @@ const ClaimTable: React.FC = () => {
         rows.push({
           _id: `${dealer._id}-${part._id}`,
           serialNumber: dealer.serialNumber || "",
+          model: dealer.model || "",
+          installationDate: dealer.installationDate || "",
+          invoice: dealer.invoice || "",
           dealerName: dealer.dealerName || "",
           dealerEmail: dealer.dealerEmail || "",
           dealerPhone: dealer.dealerPhone || "",
           dealerAddress: dealer.dealerAddress || "",
           explanation: dealer.explanation || "",
+          imageUrls: dealer.imageUrls || [],
           defectivePart: part.defectivePart || "",
           defectDate: part.defectDate || "",
           replacDate: part.replacDate || "",
@@ -230,15 +247,39 @@ const ClaimTable: React.FC = () => {
     return rows;
   }, [filteredDealerInfo]);
 
+  // ---------------------
+  // Sorting
+  // ---------------------
+  const sortedFlattenedData: FlattenedRow[] = useMemo(() => {
+    if (!sortField) return allFlattenedData;
+    return [...allFlattenedData].sort((a, b) => {
+      const aVal = a[sortField] || "";
+      const bVal = b[sortField] || "";
+      const cmp = aVal.localeCompare(bVal);
+      return sortDirection === "asc" ? cmp : -cmp;
+    });
+  }, [allFlattenedData, sortField, sortDirection]);
+
+  const handleSort = useCallback((field: SortField) => {
+    setSortField((prev) => {
+      if (prev === field) {
+        setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+        return field;
+      }
+      setSortDirection("asc");
+      return field;
+    });
+  }, []);
+
   // In search mode, paginate the filtered results client-side
   // In normal mode, the server already paginated for us
   const flattenedData: FlattenedRow[] = useMemo(() => {
     if (isSearchMode) {
       const start = (page - 1) * limit;
-      return allFlattenedData.slice(start, start + limit);
+      return sortedFlattenedData.slice(start, start + limit);
     }
-    return allFlattenedData;
-  }, [isSearchMode, allFlattenedData, page, limit]);
+    return sortedFlattenedData;
+  }, [isSearchMode, sortedFlattenedData, page, limit]);
 
   const displayTotal = isSearchMode ? allFlattenedData.length : total;
   const totalPages = Math.max(1, Math.ceil(displayTotal / limit));
@@ -249,11 +290,15 @@ const ClaimTable: React.FC = () => {
   const handleExportToExcel = () => {
     const exportData = flattenedData.map((row) => ({
       SerialNumber: row.serialNumber,
+      Model: row.model,
+      InstallationDate: row.installationDate,
+      Invoice: row.invoice,
       DealerName: row.dealerName,
       DealerEmail: row.dealerEmail,
       DealerPhone: row.dealerPhone,
       DealerAddress: row.dealerAddress,
       Explanation: row.explanation,
+      ImageUrls: (row.imageUrls || []).join(", "),
       ReplacementStatus: row.replacementStatus,
       CreditIssueStatus: row.creditIssueStatus,
       DefectivePart: row.defectivePart,
@@ -279,17 +324,21 @@ const ClaimTable: React.FC = () => {
       const data = await response.json();
       const allDealerInfo: DealerInfo[] = data.results || [];
 
-      const allFlattenedData: FlattenedRow[] = [];
+      const allExportFlattenedData: FlattenedRow[] = [];
       allDealerInfo.forEach((dealer) => {
-        dealer.parts.forEach((part) => {
-          allFlattenedData.push({
+        (dealer.parts || []).forEach((part) => {
+          allExportFlattenedData.push({
             _id: `${dealer._id}-${part._id}`,
             serialNumber: dealer.serialNumber,
+            model: dealer.model || "",
+            installationDate: dealer.installationDate || "",
+            invoice: dealer.invoice || "",
             dealerName: dealer.dealerName,
             dealerEmail: dealer.dealerEmail,
             dealerPhone: dealer.dealerPhone,
             dealerAddress: dealer.dealerAddress,
             explanation: dealer.explanation,
+            imageUrls: dealer.imageUrls || [],
             defectivePart: part.defectivePart,
             defectDate: part.defectDate,
             replacDate: part.replacDate,
@@ -299,13 +348,17 @@ const ClaimTable: React.FC = () => {
         });
       });
 
-      const exportData = allFlattenedData.map((row) => ({
+      const exportData = allExportFlattenedData.map((row) => ({
         SerialNumber: row.serialNumber,
+        Model: row.model,
+        InstallationDate: row.installationDate,
+        Invoice: row.invoice,
         DealerName: row.dealerName,
         DealerEmail: row.dealerEmail,
         DealerPhone: row.dealerPhone,
         DealerAddress: row.dealerAddress,
         Explanation: row.explanation,
+        ImageUrls: (row.imageUrls || []).join(", "),
         ReplacementStatus: row.replacementStatus,
         CreditIssueStatus: row.creditIssueStatus,
         DefectivePart: row.defectivePart,
@@ -377,14 +430,22 @@ const ClaimTable: React.FC = () => {
         <thead>
           <tr>
             <th style={tableHeaderCellStyle}>Serial Number</th>
+            <th style={tableHeaderCellStyle}>Model</th>
+            <th style={tableHeaderCellStyle}>Installation Date</th>
+            <th style={tableHeaderCellStyle}>Invoice</th>
             <th style={tableHeaderCellStyle}>Dealer Name</th>
             <th style={tableHeaderCellStyle}>Dealer Email</th>
             <th style={tableHeaderCellStyle}>Dealer Phone</th>
             <th style={tableHeaderCellStyle}>Dealer Address</th>
             <th style={tableHeaderCellStyle}>Explanation</th>
+            <th style={tableHeaderCellStyle}>Images</th>
             <th style={tableHeaderCellStyle}>Defective Part</th>
-            <th style={tableHeaderCellStyle}>Defect Date</th>
-            <th style={tableHeaderCellStyle}>Replacement Date</th>
+            <th style={sortableHeaderStyle} onClick={() => handleSort("defectDate")}>
+              Defect Date {sortField === "defectDate" ? (sortDirection === "asc" ? "▲" : "▼") : "⇅"}
+            </th>
+            <th style={sortableHeaderStyle} onClick={() => handleSort("replacDate")}>
+              Replacement Date {sortField === "replacDate" ? (sortDirection === "asc" ? "▲" : "▼") : "⇅"}
+            </th>
             <th style={tableHeaderCellStyle}>Replacement Status</th>
             <th style={tableHeaderCellStyle}>Credit Issue Status</th>
           </tr>
@@ -392,13 +453,13 @@ const ClaimTable: React.FC = () => {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={11} style={{ ...tableCellStyle, textAlign: "center" }}>
+              <td colSpan={15} style={{ ...tableCellStyle, textAlign: "center" }}>
                 Loading...
               </td>
             </tr>
           ) : flattenedData.length === 0 ? (
             <tr>
-              <td colSpan={11} style={{ ...tableCellStyle, textAlign: "center" }}>
+              <td colSpan={15} style={{ ...tableCellStyle, textAlign: "center" }}>
                 No results found.
               </td>
             </tr>
@@ -406,11 +467,25 @@ const ClaimTable: React.FC = () => {
           {flattenedData.map((row, index) => (
             <tr key={index}>
               <td style={tableCellStyle}>{row.serialNumber}</td>
+              <td style={tableCellStyle}>{row.model}</td>
+              <td style={tableCellStyle}>{row.installationDate}</td>
+              <td style={tableCellStyle}>{row.invoice}</td>
               <td style={tableCellStyle}>{row.dealerName}</td>
               <td style={tableCellStyle}>{row.dealerEmail}</td>
               <td style={tableCellStyle}>{row.dealerPhone}</td>
               <td style={tableCellStyle}>{row.dealerAddress}</td>
               <td style={tableCellStyle}>{row.explanation}</td>
+              <td style={tableCellStyle}>
+                {(row.imageUrls || []).length > 0 ? (
+                  row.imageUrls.map((url, i) => (
+                    <a key={i} href={url} target="_blank" rel="noopener noreferrer" style={{ display: "block", color: "#1a73e8", fontSize: "12px" }}>
+                      Image {i + 1}
+                    </a>
+                  ))
+                ) : (
+                  "—"
+                )}
+              </td>
               <td style={tableCellStyle}>{row.defectivePart}</td>
               <td style={tableCellStyle}>{row.defectDate}</td>
               <td style={tableCellStyle}>{row.replacDate}</td>
@@ -556,6 +631,12 @@ const tableHeaderCellStyle: React.CSSProperties = {
   color: "white",
   fontWeight: "bold",
   border: "1px solid #ddd",
+};
+
+const sortableHeaderStyle: React.CSSProperties = {
+  ...tableHeaderCellStyle,
+  cursor: "pointer",
+  userSelect: "none",
 };
 
 const tableCellStyle: React.CSSProperties = {
