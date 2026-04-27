@@ -109,6 +109,7 @@ const cities = [
   { city: "Stonewall"},
   { city: "Gimli"},
   { city: "Argyle"},
+  { city: "Cormorant"},
 ];
 
 export default cities;
