@@ -337,6 +337,7 @@ const model = [
   { model: "GUD48AH2/A-D(U)"},
   { model: "MRD-60S110GNN1-M134L"},
   { model: "GUD60W2/NhE-D(U)"},
+  { model: "GUD60AH2/G-D(U)"},
 
 ];
 
