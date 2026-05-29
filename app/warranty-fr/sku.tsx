@@ -338,7 +338,8 @@ const model = [
   { model: "MRD-60S110GNN1-M134L"},
   { model: "GUD60W2/NhE-D(U)"},
   { model: "GUD60AH2/G-D(U)"},
-
+  { model: "BX24-HP15ECO"},
+  { model: "BLC-24HWAC1"},
 ];
 
 export default model;
