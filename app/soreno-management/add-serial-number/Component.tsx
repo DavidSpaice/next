@@ -15,7 +15,7 @@ import {
   Divider,
 } from "@mui/material";
 
-const SERIAL_API = "https://airtek-warranty.onrender.com/serial";
+const SERIAL_API = "https://airtek-warranty.onrender.com/soreno-serial";
 
 /**
  * Force uppercase and allow only A-Z, digits 0-9, dash `-`, slash `/`,
@@ -27,7 +27,7 @@ function sanitizeSerialInput(input: string) {
   return upper;
 }
 
-export default function AddSerialNumber() {
+export default function AddSorenoSerialNumber() {
   const [serial, setSerial] = useState("");
   const [batchSerials, setBatchSerials] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

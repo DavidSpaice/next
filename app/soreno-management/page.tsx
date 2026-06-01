@@ -7,26 +7,20 @@ function page() {
       <div className="mx-auto max-w-4xl">
         <header className="mb-6 border-b border-[#ded8cf] pb-5">
           <p className="text-sm font-semibold uppercase tracking-wide text-[#111111]">
-            Warranty Management
+            Soreno Management
           </p>
-          <h1 className="mt-2 text-3xl font-bold">Warranty Tools</h1>
+          <h1 className="mt-2 text-3xl font-bold">Soreno Serial Tools</h1>
         </header>
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Link
-            href="/warranty-management/edit-warranty"
-            className="rounded border border-[#ded8cf] bg-white p-5 font-semibold text-[#111111] shadow-sm hover:border-[#111111] hover:bg-[#fff3ed]"
-          >
-            Warranty Home
-          </Link>
-          <Link
-            href="/warranty-management/serial-numbers"
+            href="/soreno-management/serial-numbers"
             className="rounded border border-[#ded8cf] bg-white p-5 font-semibold text-[#111111] shadow-sm hover:border-[#111111] hover:bg-[#fff3ed]"
           >
             Serial Number List
           </Link>
           <Link
-            href="/warranty-management/add-serial-number"
+            href="/soreno-management/add-serial-number"
             className="rounded border border-[#ded8cf] bg-white p-5 font-semibold text-[#111111] shadow-sm hover:border-[#111111] hover:bg-[#fff3ed]"
           >
             Add Serial Number
