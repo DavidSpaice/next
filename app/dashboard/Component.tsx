@@ -35,7 +35,7 @@ const Dashboard: React.FC = () => {
     },
     {
       title: "Airtek Warranty Management",
-      url: "https://next-nine-pied.vercel.app/warranty-management/edit-warranty",
+      url: "https://next-nine-pied.vercel.app/warranty-management",
     },
   ];
 
