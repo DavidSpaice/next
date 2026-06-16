@@ -342,6 +342,8 @@ const model = [
   { model: "BLC-24HWAC1"},
   { model: "GWH18ATDXD-D3DNA4A/I"},
   { model: "GWH24ATEXF-D6DNA4H/O"},
+  { model: "GWH12ATCXB-D6DNA4B/I"},
+  { model: "GWH12ATCXB-D6DNA4B/O"},
 ];
 
 export default model;
