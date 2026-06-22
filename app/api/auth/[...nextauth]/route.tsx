@@ -87,13 +87,13 @@ const users: User[] = [
     password: "anthonypass",
     role: "user",
   },
-  {
-    id: "12",
-    name: "lyndsay",
-    email: "lyndsay@example.com",
-    password: "lyndsaypass",
-    role: "user",
-  },
+  // {
+  //   id: "12",
+  //   name: "lyndsay",
+  //   email: "lyndsay@example.com",
+  //   password: "lyndsaypass",
+  //   role: "user",
+  // },
   {
     id: "13",
     name: "Sofiia",
