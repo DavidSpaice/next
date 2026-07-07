@@ -111,6 +111,7 @@ const cities = [
   { city: "Argyle"},
   { city: "Cormorant"},
   { city: "Cooks Creek"},
+  { city: "Rosebrook"},
 ];
 
 export default cities;
