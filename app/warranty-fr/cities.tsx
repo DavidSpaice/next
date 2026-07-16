@@ -112,6 +112,7 @@ const cities = [
   { city: "Cormorant"},
   { city: "Cooks Creek"},
   { city: "Rosebrook"},
+  { city: "Hochfeld"},
 ];
 
 export default cities;
