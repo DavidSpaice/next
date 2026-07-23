@@ -358,6 +358,7 @@ const model = [
   { model: "DHPA12Y10E"},
   { model: "GUD36W2/NHE-D(U)"},
   { model: "GCAC24F/NhE-D(U)"},
+  { model: "GWH24AUDXF-D6DNA2J/I"},
 ];
 
 export default model;
