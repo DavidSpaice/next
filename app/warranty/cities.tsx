@@ -114,6 +114,7 @@ const cities = [
   { city: "Rosebrook"},
   { city: "Hochfeld"},
   { city: "Anola"},
+  { city: "Stony Mountain"},
 ];
 
 export default cities;
