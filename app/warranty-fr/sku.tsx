@@ -360,7 +360,8 @@ const model = [
   { model: "GCAC24F/NhE-D(U)"},
   { model: "GWH24AUDXF-D6DNA2J/I"},
   { model: "GWH09ATCXB-D6DNA4D/I"},
-  { model: "GWH09ATCXB-D6DNA4D/O"}
+  { model: "GWH09ATCXB-D6DNA4D/O"},
+  { model: "GFH(18)DB-D6DNA1A/I"},
 ];
 
 export default model;
