@@ -366,6 +366,7 @@ const model = [
   { model: "GWH18ATDXD-D6DNA4F/O"},
   { model: "GWH18ATDXD-D6DNA4F/I"},
   { model: "GWH12AFCXD-D3DNA1A/I"},
+  { model: "GTH12CAD3DNA1AI"},
 ];
 
 export default model;
